@@ -22,8 +22,8 @@ public class ChessPiece {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {return true;}
+        if (o == null || getClass() != o.getClass()) {return false;}
         ChessPiece that=(ChessPiece) o;
         return pieceColor == that.pieceColor && type == that.type;
     }
@@ -133,7 +133,8 @@ public class ChessPiece {
 
         return validMoves;
     }
-    public Boolean tryPawnForwardOne(ChessBoard board, ChessPosition myPosition, int row, int col, PieceType promotionPiece, Collection<ChessMove> validMoves){
+    public Boolean tryPawnForwardOne(ChessBoard board, ChessPosition myPosition,
+                                    int row, int col, PieceType promotionPiece, Collection<ChessMove> validMoves){
         ChessPosition firstPosition = new ChessPosition(row, col);
             ChessPiece piece = board.getPiece(firstPosition);
             if (piece == null) {
@@ -143,30 +144,20 @@ public class ChessPiece {
             }
         return false;
     }
-    public void tryPawnAttackRight(ChessBoard board, ChessPosition myPosition, int row, int col, PieceType promotionPiece, Collection<ChessMove> validMoves){
+    public void tryPawnAttack(ChessBoard board, ChessPosition myPosition, int row, int col,
+                                   PieceType promotionPiece, Collection<ChessMove> validMoves){
         //check if a piece is there
         ChessPosition testPosition=new ChessPosition(row, col);
         ChessPiece testPiece=board.getPiece(testPosition);
         if (testPiece != null) {
             //if so, is it my same team? if not i can capture that spot
             if (testPiece.getTeamColor() != this.getTeamColor()) {
-                ChessMove captureRight=new ChessMove(myPosition, testPosition, promotionPiece);
-                validMoves.add(captureRight);
+                ChessMove capturePiece=new ChessMove(myPosition, testPosition, promotionPiece);
+                validMoves.add(capturePiece);
             }
         }
     }
-    public void tryPawnAttackLeft(ChessBoard board, ChessPosition myPosition, int row, int col, PieceType promotionPiece, Collection<ChessMove> validMoves){
-        //check if a piece is there
-        ChessPosition testPosition=new ChessPosition(row, col);
-        ChessPiece testPiece=board.getPiece(testPosition);
-        if (testPiece != null) {
-            //if so, is it my same team? if not i can capture that spot
-            if (testPiece.getTeamColor() != this.getTeamColor()) {
-                ChessMove captureRight=new ChessMove(myPosition, testPosition, promotionPiece);
-                validMoves.add(captureRight);
-            }
-        }
-    }
+
     public Collection<ChessMove> blackPawnMoves(ChessBoard board, ChessPosition myPosition, Collection<ChessMove> validMoves) {
         int row=myPosition.getRow();
         int col=myPosition.getColumn();
@@ -187,7 +178,7 @@ public class ChessPiece {
             row --;
             col --;
             if(col >= 1){
-                tryPawnAttackRight(board, myPosition, row, col, null, validMoves);
+                tryPawnAttack(board, myPosition, row, col, null, validMoves);
             }
 
             //reset
@@ -198,7 +189,7 @@ public class ChessPiece {
             row --;
             col ++;
             if(col <= 8){
-                tryPawnAttackLeft(board, myPosition, row, col, null, validMoves);
+                tryPawnAttack(board, myPosition, row, col, null, validMoves);
             }
             //reset
             row = myPosition.getRow();
@@ -218,27 +209,27 @@ public class ChessPiece {
 
                 col--;
                 if (col >= 1) {
-                    tryPawnAttackRight(board, myPosition, row, col, PieceType.QUEEN, validMoves);
-                    tryPawnAttackRight(board, myPosition, row, col, PieceType.BISHOP, validMoves);
-                    tryPawnAttackRight(board, myPosition, row, col, PieceType.KNIGHT, validMoves);
-                    tryPawnAttackRight(board, myPosition, row, col, PieceType.ROOK, validMoves);
+                    tryPawnAttack(board, myPosition, row, col, PieceType.QUEEN, validMoves);
+                    tryPawnAttack(board, myPosition, row, col, PieceType.BISHOP, validMoves);
+                    tryPawnAttack(board, myPosition, row, col, PieceType.KNIGHT, validMoves);
+                    tryPawnAttack(board, myPosition, row, col, PieceType.ROOK, validMoves);
                 }
                 col += 2;
                 if (col <= 8) {
-                    tryPawnAttackLeft(board, myPosition, row, col, PieceType.QUEEN, validMoves);
-                    tryPawnAttackLeft(board, myPosition, row, col, PieceType.BISHOP, validMoves);
-                    tryPawnAttackLeft(board, myPosition, row, col, PieceType.KNIGHT, validMoves);
-                    tryPawnAttackLeft(board, myPosition, row, col, PieceType.ROOK, validMoves);
+                    tryPawnAttack(board, myPosition, row, col, PieceType.QUEEN, validMoves);
+                    tryPawnAttack(board, myPosition, row, col, PieceType.BISHOP, validMoves);
+                    tryPawnAttack(board, myPosition, row, col, PieceType.KNIGHT, validMoves);
+                    tryPawnAttack(board, myPosition, row, col, PieceType.ROOK, validMoves);
                 }
             } else {
                 tryPawnForwardOne(board, myPosition, row, col, null, validMoves);
                 col--;
                 if (col >= 1) {
-                    tryPawnAttackRight(board, myPosition, row, col, null, validMoves);
+                    tryPawnAttack(board, myPosition, row, col, null, validMoves);
                 }
                 col += 2;
                 if (col <= 8) {
-                    tryPawnAttackLeft(board, myPosition, row, col, null, validMoves);
+                    tryPawnAttack(board, myPosition, row, col, null, validMoves);
                 }
             }
         }
@@ -265,7 +256,7 @@ public class ChessPiece {
             row++;
             col++;
             if (row <= 8 && col <= 8) {
-                tryPawnAttackRight(board, myPosition, row, col, null, validMoves);
+                tryPawnAttack(board, myPosition, row, col, null, validMoves);
             }
 
             //reset
@@ -276,7 +267,7 @@ public class ChessPiece {
             row++;
             col--;
             if (row <= 8 && col >= 1) {
-                tryPawnAttackLeft(board, myPosition, row, col, null, validMoves);
+                tryPawnAttack(board, myPosition, row, col, null, validMoves);
             }
             //reset
             row = myPosition.getRow();
@@ -295,27 +286,27 @@ public class ChessPiece {
                 tryPawnForwardOne(board, myPosition, row, col, PieceType.ROOK, validMoves);
                 col++;
                 if (col <= 8) {
-                    tryPawnAttackRight(board, myPosition, row, col, PieceType.QUEEN, validMoves);
-                    tryPawnAttackRight(board, myPosition, row, col, PieceType.BISHOP, validMoves);
-                    tryPawnAttackRight(board, myPosition, row, col, PieceType.KNIGHT, validMoves);
-                    tryPawnAttackRight(board, myPosition, row, col, PieceType.ROOK, validMoves);
+                    tryPawnAttack(board, myPosition, row, col, PieceType.QUEEN, validMoves);
+                    tryPawnAttack(board, myPosition, row, col, PieceType.BISHOP, validMoves);
+                    tryPawnAttack(board, myPosition, row, col, PieceType.KNIGHT, validMoves);
+                    tryPawnAttack(board, myPosition, row, col, PieceType.ROOK, validMoves);
                 }
                 col -= 2;
                 if (col >= 1) {
-                    tryPawnAttackLeft(board, myPosition, row, col, PieceType.QUEEN, validMoves);
-                    tryPawnAttackLeft(board, myPosition, row, col, PieceType.BISHOP, validMoves);
-                    tryPawnAttackLeft(board, myPosition, row, col, PieceType.KNIGHT, validMoves);
-                    tryPawnAttackLeft(board, myPosition, row, col, PieceType.ROOK, validMoves);
+                    tryPawnAttack(board, myPosition, row, col, PieceType.QUEEN, validMoves);
+                    tryPawnAttack(board, myPosition, row, col, PieceType.BISHOP, validMoves);
+                    tryPawnAttack(board, myPosition, row, col, PieceType.KNIGHT, validMoves);
+                    tryPawnAttack(board, myPosition, row, col, PieceType.ROOK, validMoves);
                 }
             } else {
                 tryPawnForwardOne(board, myPosition, row, col, null, validMoves);
                 col++;
                 if (col <= 8) {
-                    tryPawnAttackRight(board, myPosition, row, col, null, validMoves);
+                    tryPawnAttack(board, myPosition, row, col, null, validMoves);
                 }
                 col -= 2;
                 if (col >= 1) {
-                    tryPawnAttackLeft(board, myPosition, row, col, null, validMoves);
+                    tryPawnAttack(board, myPosition, row, col, null, validMoves);
                 }
             }
         }
