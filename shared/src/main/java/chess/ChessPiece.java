@@ -4,12 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Objects;
 
-/**
- * Represents a single chess piece
- * <p>
- * Note: You can add to this class, but you may not alter
- * signature of the existing methods.
- */
+
 public class ChessPiece {
 
     private final ChessGame.TeamColor pieceColor;
@@ -19,7 +14,6 @@ public class ChessPiece {
         this.pieceColor = pieceColor;
         this.type = type;
     }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) {return true;}
@@ -27,12 +21,10 @@ public class ChessPiece {
         ChessPiece that=(ChessPiece) o;
         return pieceColor == that.pieceColor && type == that.type;
     }
-
     @Override
     public int hashCode() {
         return Objects.hash(pieceColor, type);
     }
-
     @Override
     public String toString() {
         return "ChessPiece{" +
@@ -42,9 +34,6 @@ public class ChessPiece {
 
     }
 
-    /**
-     * The various different chess piece options
-     */
     public enum PieceType {
         KING,
         QUEEN,
@@ -54,27 +43,14 @@ public class ChessPiece {
         PAWN
     }
 
-    /**
-     * @return Which team this chess piece belongs to
-     */
     public ChessGame.TeamColor getTeamColor() {
         return pieceColor;
     }
 
-    /**
-     * @return which type of chess piece this piece is
-     */
     public PieceType getPieceType() {
         return type;
     }
 
-    /**
-     * Calculates all the positions a chess piece can move to
-     * Does not take into account moves that are illegal due to leaving the king in
-     * danger
-     *
-     * @return Collection of valid moves
-     */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
         //The array of valid moves that will be returned
         Collection<ChessMove> validMoves=new ArrayList<>();
@@ -101,7 +77,6 @@ public class ChessPiece {
         
         return validMoves;
     }
-
     public Boolean progressPieceOrStop(ChessBoard board, ChessPosition newPosition, ChessPosition myPosition, Collection<ChessMove> validMoves) {
         ChessPiece piece = board.getPiece(newPosition);
         if(piece != null) {
@@ -120,7 +95,6 @@ public class ChessPiece {
             //continue the while loop until we find another piece or hit a boundary
         }
     }
-
     public Collection<ChessMove> getPawnPositions(ChessBoard board, ChessPosition myPosition) {
         Collection<ChessMove> validMoves=new ArrayList<>();
         if (getTeamColor() == ChessGame.TeamColor.WHITE) {
@@ -128,9 +102,7 @@ public class ChessPiece {
         }
         else {
             blackPawnMoves(board, myPosition, validMoves);
-
         }
-
         return validMoves;
     }
     public Boolean tryPawnForwardOne(ChessBoard board, ChessPosition myPosition,
@@ -164,7 +136,6 @@ public class ChessPiece {
         tryPawnAttack(board, myPosition, row, col, PieceType.KNIGHT, validMoves);
         tryPawnAttack(board, myPosition, row, col, PieceType.ROOK, validMoves);
     }
-
     public Collection<ChessMove> blackPawnMoves(ChessBoard board, ChessPosition myPosition, Collection<ChessMove> validMoves) {
         int row=myPosition.getRow();
         int col=myPosition.getColumn();
@@ -177,21 +148,17 @@ public class ChessPiece {
                 row --;
                 tryPawnForwardOne(board, myPosition, row, col, null, validMoves);
             };
-
             //reset
             row = myPosition.getRow();
-
             //try attacking right
             row --;
             col --;
             if(col >= 1){
                 tryPawnAttack(board, myPosition, row, col, null, validMoves);
             }
-
             //reset
             row = myPosition.getRow();
             col = myPosition.getColumn();
-
             //try attacking left
             row --;
             col ++;
@@ -202,8 +169,6 @@ public class ChessPiece {
             row = myPosition.getRow();
             col =myPosition.getColumn();
         }
-
-
         else{
             //if not first move
             //check if it can move forward 1
@@ -218,7 +183,6 @@ public class ChessPiece {
                 if (col >= 1) {
                     doPawnAttacks(board, myPosition, row, col, validMoves);
                     }
-
                 col += 2;
                 if (col <= 8) {
                     doPawnAttacks(board, myPosition, row, col, validMoves);
@@ -250,22 +214,17 @@ public class ChessPiece {
                 row++;
                 tryPawnForwardOne(board, myPosition, row, col, null, validMoves);
             }
-            ;
-
             //reset
             row = myPosition.getRow();
-
             //try attacking right
             row++;
             col++;
             if (row <= 8 && col <= 8) {
                 tryPawnAttack(board, myPosition, row, col, null, validMoves);
             }
-
             //reset
             row = myPosition.getRow();
             col = myPosition.getColumn();
-
             //try attacking left
             row++;
             col--;
@@ -276,12 +235,10 @@ public class ChessPiece {
             row = myPosition.getRow();
             col = myPosition.getColumn();
         }
-
         else{
             //if not first move
             //check if it can move forward 1
             row++;
-
             if (row == 8) {
                 tryPawnForwardOne(board, myPosition, row, col, PieceType.QUEEN, validMoves);
                 tryPawnForwardOne(board, myPosition, row, col, PieceType.BISHOP, validMoves);
@@ -309,14 +266,10 @@ public class ChessPiece {
         }
         return validMoves;
     }
-
-
     public Collection<ChessMove> getKnightPositions(ChessBoard board, ChessPosition myPosition) {
         Collection<ChessMove> validMoves=new ArrayList<>();
         int row=myPosition.getRow();
         int col=myPosition.getColumn();
-
-
         //check up and right
         row +=2;
         col ++;
@@ -327,7 +280,6 @@ public class ChessPiece {
         //reset
         row=myPosition.getRow();
         col=myPosition.getColumn();
-
         //check up and left
         row +=2;
         col --;
@@ -338,7 +290,6 @@ public class ChessPiece {
         //reset
         row=myPosition.getRow();
         col=myPosition.getColumn();
-
         //check left and up
         row ++;
         col -=2;
@@ -349,7 +300,6 @@ public class ChessPiece {
         //reset
         row=myPosition.getRow();
         col=myPosition.getColumn();
-
         //check left and down
         col -=2;
         row --;
@@ -360,7 +310,6 @@ public class ChessPiece {
         //reset
         row=myPosition.getRow();
         col=myPosition.getColumn();
-
         //check right and up
         col +=2;
         row ++;
@@ -371,7 +320,6 @@ public class ChessPiece {
         //reset
         row=myPosition.getRow();
         col=myPosition.getColumn();
-
         //check right and down
         col +=2;
         row --;
@@ -382,110 +330,80 @@ public class ChessPiece {
         //reset
         row=myPosition.getRow();
         col=myPosition.getColumn();
-
-        //check down and right
-        row -=2;
+        row -=2;        //check down and right
         col ++;
         if(row >= 1 && col <= 8){
             ChessPosition newPosition = new ChessPosition(row,col);
             progressPieceOrStop(board, newPosition, myPosition, validMoves);
         }
-        //reset
-        row=myPosition.getRow();
+        row=myPosition.getRow();        //reset
         col=myPosition.getColumn();
-
-        //check down and left
-        row -=2;
+        row -=2;        //check down and left
         col --;
         if(row >= 1 && col >= 1){
             ChessPosition newPosition = new ChessPosition(row,col);
             progressPieceOrStop(board, newPosition, myPosition, validMoves);
         }
-
         return validMoves;
     }
     public Collection<ChessMove> getKingPositions(ChessBoard board, ChessPosition myPosition){
         Collection<ChessMove> validMoves=new ArrayList<>();
         int row = myPosition.getRow();
         int col = myPosition.getColumn();
-
-        // forward
-        if(row < 8){
+        if(row < 8){        // forward
             row ++;
             ChessPosition newPosition = new ChessPosition(row,col);
             progressPieceOrStop(board, newPosition, myPosition, validMoves);
         }
-        //reset
-        row = myPosition.getRow();
-
-        // backward
-        if(row > 1){
+        row = myPosition.getRow();        //reset
+        if(row > 1){        // backward
             row --;
             ChessPosition newPosition = new ChessPosition(row,col);
             progressPieceOrStop(board, newPosition, myPosition, validMoves);
         }
-        //reset
-        row = myPosition.getRow();
-
-        // right
-        if(col < 8){
+        row = myPosition.getRow();        //reset
+        if(col < 8){        // right
             col ++;
             ChessPosition newPosition = new ChessPosition(row,col);
             progressPieceOrStop(board, newPosition, myPosition, validMoves);
         }
-        //reset
-        col = myPosition.getColumn();
-
-        // left
-        if(col > 1){
+        col = myPosition.getColumn();        //reset
+        if(col > 1){        // left
             col --;
             ChessPosition newPosition = new ChessPosition(row,col);
             progressPieceOrStop(board, newPosition, myPosition, validMoves);
         }
-        //reset
-        col = myPosition.getColumn();
-
-        // diagonal right and up
-        if(col < 8 && row < 8){
+        col = myPosition.getColumn();        //reset
+        if(col < 8 && row < 8){        // diagonal right and up
             row ++;
             col ++;
             ChessPosition newPosition = new ChessPosition(row,col);
             progressPieceOrStop(board, newPosition, myPosition, validMoves);
         }
-        //reset
-        row = myPosition.getRow();
+        row = myPosition.getRow();        //reset
         col = myPosition.getColumn();
-
-        //diagonal right and down
-        if(col < 8 && row > 1){
+        if(col < 8 && row > 1){        //diagonal right and down
             col ++;
             row --;
             ChessPosition newPosition = new ChessPosition(row,col);
             progressPieceOrStop(board, newPosition, myPosition, validMoves);
         }
-        //reset
-        row = myPosition.getRow();
+        row = myPosition.getRow();        //reset
         col = myPosition.getColumn();
-
-        //diagonal left and up
-        if(col > 1 && row < 8){
+        if(col > 1 && row < 8){        //diagonal left and up
             col --;
             row ++;
             ChessPosition newPosition = new ChessPosition(row,col);
             progressPieceOrStop(board, newPosition, myPosition, validMoves);
         }
-        //reset
-        row = myPosition.getRow();
+        row = myPosition.getRow();        //reset
         col = myPosition.getColumn();
-
-        //diagonal left and down
-        if(col > 1 && row > 1){
+        if(col > 1 && row > 1){        //diagonal left and down
             col --;
             row --;
             ChessPosition newPosition = new ChessPosition(row,col);
             progressPieceOrStop(board, newPosition, myPosition, validMoves);
         }
-
         return validMoves;
     }
     public Collection<ChessMove> getQueenPositions(ChessBoard board, ChessPosition myPosition){
@@ -498,20 +416,16 @@ public class ChessPiece {
         Collection<ChessMove> validMoves=new ArrayList<>();
         int row = myPosition.getRow();
         int col = myPosition.getColumn();
-
-        //check forward
-        while(row < 8){
+        while(row < 8){        //check forward
             row ++;
             ChessPosition newPosition = new ChessPosition(row,col);
             if(!progressPieceOrStop(board, newPosition, myPosition, validMoves)){
                 break;
             }
         }
-
         row = myPosition.getRow();
         col = myPosition.getColumn();
-        //check backward
-        while(row > 1){
+        while(row > 1){        //check backward
             row --;
             ChessPosition newPosition = new ChessPosition(row,col);
             if(!progressPieceOrStop(board, newPosition, myPosition, validMoves)){
@@ -520,19 +434,16 @@ public class ChessPiece {
         }
         row = myPosition.getRow();
         col = myPosition.getColumn();
-        //check right
-        while(col < 8){
+        while(col < 8){        //check right
             col ++;
             ChessPosition newPosition = new ChessPosition(row,col);
             if(!progressPieceOrStop(board, newPosition, myPosition, validMoves)){
                 break;
             }
         }
-
         row = myPosition.getRow();
         col = myPosition.getColumn();
-        //check left
-        while(col > 1){
+        while(col > 1){        //check left
             col --;
             ChessPosition newPosition = new ChessPosition(row,col);
             if(!progressPieceOrStop(board, newPosition, myPosition, validMoves)){
@@ -545,10 +456,7 @@ public class ChessPiece {
         Collection<ChessMove> validMoves=new ArrayList<>();
         int row = myPosition.getRow();
         int col = myPosition.getColumn();
-
-    //check upper right
-        //check bounds
-            while(row < 8 && col < 8){
+            while(row < 8 && col < 8){        //check upper right - check bounds
                 row ++;
                 col ++;
                 ChessPosition newPosition = new ChessPosition(row,col);
@@ -556,12 +464,9 @@ public class ChessPiece {
                     break;
                 }
             }
-
         row = myPosition.getRow();
         col = myPosition.getColumn();
-
-        // check upper left
-            while(row < 8 && col > 1){
+            while(row < 8 && col > 1){         // check upper left
                 row ++;
                 col --;
                 ChessPosition newPosition = new ChessPosition(row,col);
@@ -569,12 +474,9 @@ public class ChessPiece {
                     break;
                 }
             }
-
         row = myPosition.getRow();
         col = myPosition.getColumn();
-
-        //check lower right
-            while(row > 1 && col < 8){
+            while(row > 1 && col < 8){        //check lower right
                 row --;
                 col ++;
                 ChessPosition newPosition = new ChessPosition(row,col);
@@ -582,12 +484,9 @@ public class ChessPiece {
                     break;
                 }
             }
-
         row = myPosition.getRow();
         col = myPosition.getColumn();
-
-        //check lower left
-            while(row > 1 && col > 1){
+            while(row > 1 && col > 1){        //check lower left
                 row --;
                 col --;
                 ChessPosition newPosition = new ChessPosition(row,col);
@@ -595,8 +494,6 @@ public class ChessPiece {
                     break;
                 }
             }
-        
         return validMoves;
     }
-
 }
