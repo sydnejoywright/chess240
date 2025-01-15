@@ -157,6 +157,13 @@ public class ChessPiece {
             }
         }
     }
+    public void doPawnAttacks(ChessBoard board, ChessPosition myPosition, int row, int col,
+                              Collection<ChessMove> validMoves){
+        tryPawnAttack(board, myPosition, row, col, PieceType.QUEEN, validMoves);
+        tryPawnAttack(board, myPosition, row, col, PieceType.BISHOP, validMoves);
+        tryPawnAttack(board, myPosition, row, col, PieceType.KNIGHT, validMoves);
+        tryPawnAttack(board, myPosition, row, col, PieceType.ROOK, validMoves);
+    }
 
     public Collection<ChessMove> blackPawnMoves(ChessBoard board, ChessPosition myPosition, Collection<ChessMove> validMoves) {
         int row=myPosition.getRow();
@@ -209,19 +216,15 @@ public class ChessPiece {
 
                 col--;
                 if (col >= 1) {
-                    tryPawnAttack(board, myPosition, row, col, PieceType.QUEEN, validMoves);
-                    tryPawnAttack(board, myPosition, row, col, PieceType.BISHOP, validMoves);
-                    tryPawnAttack(board, myPosition, row, col, PieceType.KNIGHT, validMoves);
-                    tryPawnAttack(board, myPosition, row, col, PieceType.ROOK, validMoves);
-                }
+                    doPawnAttacks(board, myPosition, row, col, validMoves);
+                    }
+
                 col += 2;
                 if (col <= 8) {
-                    tryPawnAttack(board, myPosition, row, col, PieceType.QUEEN, validMoves);
-                    tryPawnAttack(board, myPosition, row, col, PieceType.BISHOP, validMoves);
-                    tryPawnAttack(board, myPosition, row, col, PieceType.KNIGHT, validMoves);
-                    tryPawnAttack(board, myPosition, row, col, PieceType.ROOK, validMoves);
+                    doPawnAttacks(board, myPosition, row, col, validMoves);
                 }
-            } else {
+            }
+            else {
                 tryPawnForwardOne(board, myPosition, row, col, null, validMoves);
                 col--;
                 if (col >= 1) {
@@ -286,17 +289,11 @@ public class ChessPiece {
                 tryPawnForwardOne(board, myPosition, row, col, PieceType.ROOK, validMoves);
                 col++;
                 if (col <= 8) {
-                    tryPawnAttack(board, myPosition, row, col, PieceType.QUEEN, validMoves);
-                    tryPawnAttack(board, myPosition, row, col, PieceType.BISHOP, validMoves);
-                    tryPawnAttack(board, myPosition, row, col, PieceType.KNIGHT, validMoves);
-                    tryPawnAttack(board, myPosition, row, col, PieceType.ROOK, validMoves);
+                    doPawnAttacks(board, myPosition, row, col, validMoves);
                 }
                 col -= 2;
                 if (col >= 1) {
-                    tryPawnAttack(board, myPosition, row, col, PieceType.QUEEN, validMoves);
-                    tryPawnAttack(board, myPosition, row, col, PieceType.BISHOP, validMoves);
-                    tryPawnAttack(board, myPosition, row, col, PieceType.KNIGHT, validMoves);
-                    tryPawnAttack(board, myPosition, row, col, PieceType.ROOK, validMoves);
+                    doPawnAttacks(board, myPosition, row, col, validMoves);
                 }
             } else {
                 tryPawnForwardOne(board, myPosition, row, col, null, validMoves);
