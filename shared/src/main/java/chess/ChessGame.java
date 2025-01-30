@@ -83,18 +83,21 @@ public class ChessGame {
         //find out where the king is on the board and save his position
         ChessPosition kingsPosition = findKing(teamColor);
 //        //run valid moves for all the pieces and see if the kings position is in the list for any of them. if so, he is in check.
-//        for(int i=0; i<8; i ++) {
-//            for (int j = 0; j < 8; j++) {
-//                ChessPosition position = new ChessPosition(i, j);
-//                ChessPiece piece = gameBoard.getPiece(position);
-//
-////                if(piece != null && piece.getTeamColor() != teamColor){
-//                    Collection<ChessMove> moves = validMoves(position);
-//                        }
-//                    }
-////                }
-//            }
-//        }
+        for(int i=0; i<8; i ++) {
+            for (int j = 0; j < 8; j++) {
+                ChessPosition position = new ChessPosition(i, j);
+                ChessPiece piece = gameBoard.getPiece(position);
+
+                if (piece != null && piece.getTeamColor() != teamColor) {
+                    Collection<ChessMove> moves = validMoves(position);
+                    for (int k = 0; k < moves.size(); k++) {
+                        if (moves.contains(kingsPosition)) {
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
         return false;
     }
 
