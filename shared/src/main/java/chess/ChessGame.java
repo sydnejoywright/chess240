@@ -2,6 +2,7 @@ package chess;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Objects;
 
 
 /**
@@ -17,6 +18,7 @@ public class ChessGame {
     public ChessGame() {
         this.teamTurn = TeamColor.WHITE;
         this.gameBoard = new ChessBoard();
+        this.gameBoard.resetBoard();
     }
 
     /**
@@ -82,18 +84,18 @@ public class ChessGame {
     public boolean isInCheck(TeamColor teamColor) {
         //find out where the king is on the board and save his position
         ChessPosition kingsPosition = findKing(teamColor);
-//        //run valid moves for all the pieces and see if the kings position is in the list for any of them. if so, he is in check.
-        for(int i=0; i<8; i ++) {
-            for (int j = 0; j < 8; j++) {
+        //run valid moves for all the pieces and see if the kings position is in the list for any of them. if so, he is in check.
+        for(int i=1; i < 8; i++) {
+            for (int j = 1; j < 8; j++) {
                 ChessPosition position = new ChessPosition(i, j);
                 ChessPiece piece = gameBoard.getPiece(position);
 
                 if (piece != null && piece.getTeamColor() != teamColor) {
                     Collection<ChessMove> moves = validMoves(position);
-                    for (int k = 0; k < moves.size(); k++) {
-                        if (moves.contains(kingsPosition)) {
-                            return true;
-                        }
+                    //create a move that would capture the king from the current position of the piece
+                    ChessMove checkKing = new ChessMove(position,kingsPosition,null);
+                    if (moves.contains(checkKing)) {
+                        return true;
                     }
                 }
             }
@@ -108,21 +110,16 @@ public class ChessGame {
      * @return True if the specified team is in checkmate
      */
     public boolean isInCheckmate(TeamColor teamColor) {
-        //if is in check
-        if(isInCheck(teamColor)){
-            if((validMoves(findKing(teamColor)).isEmpty())){//if king has no valid moves it's array of possible moves will be empty
-                //go through all the other pieces that are this team's and see if they can block
-//                if(){                                                               //if other pieces have no valid moves that can block check.
-
-            }
-
-
-            //then the king is in checkmate
-                return true;
-        }
-        else{ //if the king is not in check it cannot be checkmate
+        if(!isInCheck(teamColor)){  //if the king is not in check then it cannot be checkmate
             return false;
         }
+        else {
+            if ((validMoves(findKing(teamColor)).isEmpty())) {//if king has no valid moves it's array of possible moves will be empty
+                //go through all the other pieces that are this team's and see if they can block
+//                if(){                                                               //if other pieces have no valid moves that can block check.
+            }
+        }
+        return true;
     }
 
     /**
@@ -136,7 +133,11 @@ public class ChessGame {
         if(isInCheck(teamColor)){ //cannot be a stalemate if the king is not in check
             return false;
         }
-        return true;
+        ChessPosition kingPosition = findKing(teamColor);
+        if(validMoves(kingPosition).isEmpty()){
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -157,14 +158,42 @@ public class ChessGame {
         return gameBoard;
     }
 
+    @Override
+    public String toString() {
+        return "ChessGame{" +
+                "teamTurn=" + teamTurn +
+                ", gameBoard=" + gameBoard +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        ChessGame chessGame = (ChessGame) o;
+        return teamTurn == chessGame.teamTurn && Objects.equals(gameBoard, chessGame.gameBoard);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(teamTurn, gameBoard);
+    }
+
     public ChessPosition findKing(TeamColor team){
         //team tells me which color king I am looking for
-        for(int i=0; i<8; i ++) {
-            for (int j = 0; j < 8; j++) {
+        ChessBoard game = getBoard();
+        for(int i=1; i < 8; i++) {
+            for (int j = 1; j < 8; j++) {
                 ChessPosition position = new ChessPosition(i, j);
-                if ((gameBoard.getPiece(position).getPieceType() == ChessPiece.PieceType.KING) &&     //checks the board at the current positions. if it is a king
-                        gameBoard.getPiece(position).getTeamColor() == team) {                        //and checks if it is the king for the team that we are looking for.
-                    return position;
+                if(game.getPiece(position) != null){
+                    if ((game.getPiece(position).getPieceType() == ChessPiece.PieceType.KING) &&     //checks the board at the current positions. if it is a king
+                            game.getPiece(position).getTeamColor() == team) {                        //and checks if it is the king for the team that we are looking for.
+                        return position;
+                    }
                 }
             }
         }
