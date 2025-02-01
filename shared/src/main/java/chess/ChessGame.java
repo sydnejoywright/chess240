@@ -132,16 +132,6 @@ public class ChessGame {
         }
     }
 
-    public TeamColor otherTeam(TeamColor team){
-        if(team == TeamColor.BLACK){         //after the move is done, it is the other team's turn
-            return TeamColor.WHITE;
-        }
-        else{
-            return TeamColor.BLACK;
-        }
-    }
-
-
     /**
      * Determines if the given team is in check
      *
@@ -262,7 +252,8 @@ public class ChessGame {
         if (threatType == ChessPiece.PieceType.KNIGHT) {      //knights can't be blocked so this must be checkmate
             return true;
         }
-        else {            //loop through all of the possible moves for my team, try to make the move and see if it gets you out of check. if it does, you are not in checkmate.
+        else {            //loop through all of the possible moves for my team, try to make the move
+            // and see if it gets you out of check. if it does, you are not in checkmate.
             for (int l = 1; l <= 8; l++) {
                 for (int n = 1; n <= 8; n++) {
                     ChessPosition position = new ChessPosition(l, n);
