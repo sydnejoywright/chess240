@@ -55,12 +55,13 @@ public class ChessGame {
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
         Collection<ChessMove> validMovesAfterChecks = new ArrayList<>();
         //if no piece at startPosition, return null
-        if(gameBoard.getPiece(startPosition) == null ){
+        ChessPiece piece = gameBoard.getPiece(startPosition);
+        if(piece == null ){
             return null;
         }
         else{
             //these are the valid moves at the start position before we verify the rules
-            Collection<ChessMove> validMovesBeforeChecks = gameBoard.getPiece(startPosition).pieceMoves(gameBoard,startPosition);
+            Collection<ChessMove> validMovesBeforeChecks = piece.pieceMoves(gameBoard,startPosition);
         }
         return validMovesAfterChecks;
     }
@@ -91,7 +92,7 @@ public class ChessGame {
                 ChessPiece piece = gameBoard.getPiece(position);
 
                 if (piece != null && piece.getTeamColor() != teamColor) {
-                    Collection<ChessMove> moves = validMoves(position);
+                    Collection<ChessMove> moves = piece.pieceMoves(gameBoard,position);
                     //create a move that would capture the king from the current position of the piece
                     ChessMove checkKing = new ChessMove(position,kingsPosition,null);
                     if (moves.contains(checkKing)) {
@@ -146,7 +147,7 @@ public class ChessGame {
      * @param board the new board to use
      */
     public void setBoard(ChessBoard board) {
-        gameBoard.resetBoard();
+        gameBoard = board;
     }
 
     /**
