@@ -73,7 +73,20 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
-        throw new RuntimeException("Not implemented");
+        ChessPosition start = move.getStartPosition();          //separating out the class variables from Move so they can be more easily used.
+        ChessPosition end = move.getEndPosition();
+
+        ChessPiece piece = gameBoard.getPiece(start);
+        ChessPiece.PieceType promotionPieceType = move.getPromotionPiece();
+        ChessPiece promoPiece = new ChessPiece(teamTurn, promotionPieceType);
+        if(end.getRow() == 1 || end.getRow() == 8){             //if we need to promote:
+            gameBoard.addPiece(end, piece);
+            gameBoard.addPiece(start, promoPiece);
+        }
+        else {              //if we aren't promoting the promotion piece is null
+            gameBoard.addPiece(end, piece);
+            gameBoard.addPiece(start, null);
+        }
     }
 
     /**
@@ -134,6 +147,8 @@ public class ChessGame {
         if(isInCheck(teamColor)){ //cannot be a stalemate if the king is not in check
             return false;
         }
+        //if the king is not in check a stalemate mean that one of the kings potential moves would result in placing himself in check.
+        //this will not work until valid moves is written.
         ChessPosition kingPosition = findKing(teamColor);
         if(validMoves(kingPosition).isEmpty()){
             return true;
@@ -187,11 +202,12 @@ public class ChessGame {
     public ChessPosition findKing(TeamColor team){
         //team tells me which color king I am looking for
         ChessBoard game = getBoard();
-        for(int i=1; i < 8; i++) {
-            for (int j = 1; j < 8; j++) {
+        for(int i=1; i <= 8; i++) {
+            for (int j = 1; j <= 8; j++) {
                 ChessPosition position = new ChessPosition(i, j);
-                if(game.getPiece(position) != null){
-                    if ((game.getPiece(position).getPieceType() == ChessPiece.PieceType.KING) &&     //checks the board at the current positions. if it is a king
+                ChessPiece piece = game.getPiece(position);
+                if(piece != null){
+                    if ((piece.getPieceType() == ChessPiece.PieceType.KING) &&     //checks the board at the current positions. if it is a king
                             game.getPiece(position).getTeamColor() == team) {                        //and checks if it is the king for the team that we are looking for.
                         return position;
                     }
