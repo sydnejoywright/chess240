@@ -90,7 +90,8 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
-        ChessPosition start = move.getStartPosition();          //separating out the class variables from Move so they can be more easily used.
+        //separating out the class variables from Move so they can be more easily used.
+        ChessPosition start = move.getStartPosition();
         ChessPosition end = move.getEndPosition();
         ChessPiece piece = gameBoard.getPiece(start);
         ChessPiece.PieceType promotionPieceType = move.getPromotionPiece();
@@ -192,11 +193,11 @@ public class ChessGame {
                         ChessMove checkKingpromoteQueen = new ChessMove(position,kingsPosition, ChessPiece.PieceType.QUEEN);
                         ChessMove checkKingpromoteNull = new ChessMove(position,kingsPosition, null);
                         if (
-                                moves.contains(checkKingpromoteBishop)||
-                                        moves.contains(checkKingpromoteRook)||
-                                        moves.contains(checkKingpromoteKnight)||
-                                        moves.contains(checkKingpromoteQueen)||
-                                        moves.contains(checkKingpromoteNull)) {
+                            moves.contains(checkKingpromoteBishop)||
+                            moves.contains(checkKingpromoteRook)||
+                            moves.contains(checkKingpromoteKnight)||
+                            moves.contains(checkKingpromoteQueen)||
+                            moves.contains(checkKingpromoteNull)) {
                             return position;
                         }
                     }

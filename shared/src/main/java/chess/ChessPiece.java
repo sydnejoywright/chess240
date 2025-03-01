@@ -147,7 +147,7 @@ public class ChessPiece {
                 //check two spaces ahead, only if one space ahead is valid;
                 row --;
                 tryPawnForwardOne(board, myPosition, row, col, null, validMoves);
-            };
+            }
             //reset
             row = myPosition.getRow();
             //try attacking right
