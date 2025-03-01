@@ -1,6 +1,6 @@
 package dataaccess;
 
-public class UserMethods {
+public class UserDAO {
 
     //Create a new user.
     public void createUser(){}

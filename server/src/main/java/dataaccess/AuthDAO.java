@@ -1,6 +1,6 @@
 package dataaccess;
 
-public class AuthMethods {
+public class AuthDAO {
 
     //Create a new authorization.
     public void createAuth(){}
