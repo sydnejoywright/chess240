@@ -8,7 +8,7 @@ import java.util.HashMap;
 public class GameDAO {
     List<GameData> currentGames = new ArrayList<>();
     HashMap<Integer, GameData> gameIds = new HashMap<>();
-    private int counter = 0;
+    private int counter = 1;
 
     //Updates a chess game. It should replace the chess game string corresponding to a given gameID. This is used when players join a game or when a move is made.
     public void updateGame(){}

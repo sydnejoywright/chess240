@@ -1,8 +1,10 @@
 package dataaccess;
 
+import exception.ResponseException;
 import model.AuthtokenData;
 import model.UserData;
 
+import java.lang.module.ResolutionException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -21,7 +23,7 @@ public class AuthDAO {
     //Retrieve an authorization given an authToken.
     public AuthtokenData getAuth(AuthtokenData authToken){
         for(AuthtokenData token: currentAuths){
-            if(token == authToken){
+            if(token.authToken.equals(authToken.authToken)){
                 return token;
             }
         }
@@ -29,12 +31,15 @@ public class AuthDAO {
     }
 
     //Delete an authorization so that it is no longer valid.
-    public void deleteAuth(AuthtokenData authtokenData){
+    public void deleteAuth(AuthtokenData authtokenData) throws ResponseException {
         for(AuthtokenData tokenData: currentAuths){
-            if(tokenData == authtokenData){
+            if(tokenData.authToken.equals(authtokenData.authToken)){
                 currentAuths.remove(tokenData);
+                return;
             }
         }
+        throw new ResponseException("Error: unauthorized");
+
     }
 
     public void clearData(){

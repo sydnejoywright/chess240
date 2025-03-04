@@ -1,5 +1,6 @@
 package dataaccess;
 
+import exception.ResponseException;
 import model.UserData;
 
 import java.awt.image.AreaAveragingScaleFilter;
@@ -13,7 +14,7 @@ public class UserDAO {
     //Retrieve a user with the given username.
     public UserData getUser(String username){
         for(UserData user : currentUsers){
-            if(user.username == username){
+            if(username.equals(user.username)){
                 return user;
             }
         }
@@ -27,5 +28,15 @@ public class UserDAO {
     public void clearData(){
         currentUsers.clear();
     }
+
+//    public void removeUser(String username) throws ResponseException {
+//        for(UserData user : currentUsers){
+//            if(username.equals(user.username)){
+//                currentUsers.remove(user);
+//                return;
+//            }
+//        }
+//        throw new ResponseException("Error: unauthorized");
+//    }
 
 }

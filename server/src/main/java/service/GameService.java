@@ -50,20 +50,27 @@ public class GameService {
     }
 
 
-    public void joinGame(JoinGameRequest gameRequest) throws ResponseException{
-        if(gameRequest.authToken() == null || gameRequest.playerColor() == null){
+    public void joinGame(JoinGameRequest gameRequest, AuthtokenData authToken) throws ResponseException{
+        if(authToken.authToken == null || gameRequest.playerColor() == null){
             throw new ResponseException("Error: bad request");
         }
 
-        AuthtokenData buildAuth = new AuthtokenData(null, gameRequest.authToken());
-        AuthtokenData foundAuth = authDao.getAuth(buildAuth);
+        AuthtokenData foundAuth = authDao.getAuth(authToken);
         if(foundAuth == null){
             throw new ResponseException("Error: unauthorized");
         }
         else{
             GameData gameData = gameDao.getGame(gameRequest.gameID());
-
+            if (gameRequest.playerColor() == "WHITE"){
+                if(gameData.getWhiteUsername() == null){
+                    gameData.setWhiteUsername(authToken.username);
+                }
+            }
+            else{
+                if(gameData.getBlackUsername() == null){
+                    gameData.setBlackUsername(authToken.username);
+                }
+            }
         }
-
     }
 }

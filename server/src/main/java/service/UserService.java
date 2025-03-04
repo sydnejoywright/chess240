@@ -17,29 +17,45 @@ public class UserService {
     }
     public AuthtokenData registerUser(UserData userData) throws ResponseException {
         UserData findUserDataByUsername = userDao.getUser(userData.username);
+        if (userData.username == null || userData.password == null || userData.email == null){
+            throw new ResponseException("Error: bad request");
+        }
         if(findUserDataByUsername == null){
             userDao.createUser(userData);
             AuthtokenData ret = authDao.createAuth(userData.username);
             return ret;
         }
         else{
-            throw new ResponseException("User already exists: " + userData.username);
+            throw new ResponseException("Error: already taken");
         }
     }
 
     public AuthtokenData loginUser(UserData userData) throws ResponseException {
         UserData findUserDataByUsername = userDao.getUser(userData.username);
-        if (findUserDataByUsername.password == userData.password){
+        if (findUserDataByUsername == null){
+            throw new ResponseException("Error: unauthorized");
+        }
+        if (findUserDataByUsername.password.equals(userData.password)){
             AuthtokenData ret = authDao.createAuth(userData.username);
             return ret;
         }
         else{
-            throw new ResponseException("Incorrect Password");
+            throw new ResponseException("Error: unauthorized");
         }
     }
 
     public void logoutUser(AuthtokenData authToken) throws ResponseException {
-        authDao.deleteAuth(authToken);
+
+        if(authToken != null){
+//            AuthtokenData findUserDataByAuthToken = authDao.getAuth(authToken);
+//            String username = authToken.username;
+//            userDao.removeUser(username);
+            authDao.deleteAuth(authToken);
+        }
+        else{
+            throw new ResponseException("Error: unauthorized");
+        }
+
     }
 
 
