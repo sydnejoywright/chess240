@@ -3,8 +3,7 @@ import dataaccess.AuthDAO;
 import dataaccess.UserDAO;
 import dataaccess.GameDAO;
 import exception.ResponseException;
-import model.AuthtokenData;
-import model.GameData;
+import model.*;
 import org.eclipse.jetty.server.Authentication;
 
 import java.util.List;
@@ -30,6 +29,41 @@ public class GameService {
             throw new ResponseException("Error: unauthorized");
         }
     }
-//    public Object createGame(){}
-//    public Object joinGame(){}
+
+    public CreateGameResult createGame(CreateGameRequest gameRequest) throws ResponseException {
+        if(gameRequest.gameName() == null || gameRequest.authToken() == null){
+            throw new ResponseException("Error: bad request");
+        }
+
+        AuthtokenData buildAuth = new AuthtokenData(null, gameRequest.authToken());
+        AuthtokenData foundAuth = authDao.getAuth(buildAuth);
+
+        if(foundAuth != null){
+            GameData newGame = new GameData();
+            newGame.setGameName(gameRequest.gameName());
+            int gameID = gameDao.createGame(newGame);
+            return new CreateGameResult(gameID);
+        }
+        else{
+            throw new ResponseException("Error: unauthorized");
+        }
+    }
+
+
+    public Object joinGame(JoinGameRequest gameRequest) throws ResponseException{
+        if(gameRequest.authToken() == null || gameRequest.playerColor() == null || gameRequest.gameID() == null){
+            throw new ResponseException("Error: bad request");
+        }
+
+        AuthtokenData buildAuth = new AuthtokenData(null, gameRequest.authToken());
+        AuthtokenData foundAuth = authDao.getAuth(buildAuth);
+        if(foundAuth == null){
+            throw new ResponseException("Error: unauthorized");
+        }
+        else{
+            GameData gameData = gameDao.getGame(gameRequest.gameID());
+
+        }
+
+    }
 }

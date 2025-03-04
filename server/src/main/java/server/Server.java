@@ -4,8 +4,7 @@ import com.google.gson.Gson;
 import dataaccess.AuthDAO;
 import dataaccess.GameDAO;
 import dataaccess.UserDAO;
-import model.AuthtokenData;
-import model.UserData;
+import model.*;
 import service.ClearDataService;
 import service.GameService;
 import service.UserService;
@@ -67,14 +66,14 @@ public class Server {
 
 //CREATE GAME............................................................................................................
         Spark.post("/game", ((request, response) -> {
-            //handle create game
-            return "game";
+            CreateGameRequest newGameRequest = new Gson().fromJson(request.body(), CreateGameRequest.class);
+            return gameService.createGame(newGameRequest);
         }));
 
-
+//JOIN GAME..............................................................................................................
         Spark.put("/game", ((request, response) -> {
-            //handle join game;
-            return "Game joined";
+            JoinGameRequest joinGameRequest = new Gson().fromJson(request.body(), JoinGameRequest.class);
+            return gameService.joinGame(joinGameRequest);
         }));
 
 
