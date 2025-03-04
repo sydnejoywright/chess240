@@ -5,13 +5,9 @@ import dataaccess.AuthDAO;
 import dataaccess.GameDAO;
 import dataaccess.UserDAO;
 import model.*;
-import service.ClearDataService;
 import service.GameService;
 import service.UserService;
 import spark.*;
-
-import java.util.List;
-import java.util.UUID;
 
 public class Server {
     UserDAO userDao = new UserDAO();
@@ -43,7 +39,7 @@ public class Server {
             return result;
         });
 
-//LOG IN USER ...........................................................................................................
+//LOGIN USER ...........................................................................................................
 
         Spark.post("/session", (request, response) -> {
             var newUser = new Gson().fromJson(request.body(), UserData.class);
@@ -73,9 +69,9 @@ public class Server {
 //JOIN GAME..............................................................................................................
         Spark.put("/game", ((request, response) -> {
             JoinGameRequest joinGameRequest = new Gson().fromJson(request.body(), JoinGameRequest.class);
-            return gameService.joinGame(joinGameRequest);
+            gameService.joinGame(joinGameRequest);
+            return "success response";
         }));
-
 
 
         //This line initializes the server and can be removed once you have a functioning endpoint 

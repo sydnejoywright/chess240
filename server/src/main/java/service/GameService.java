@@ -50,8 +50,8 @@ public class GameService {
     }
 
 
-    public Object joinGame(JoinGameRequest gameRequest) throws ResponseException{
-        if(gameRequest.authToken() == null || gameRequest.playerColor() == null || gameRequest.gameID() == null){
+    public void joinGame(JoinGameRequest gameRequest) throws ResponseException{
+        if(gameRequest.authToken() == null || gameRequest.playerColor() == null){
             throw new ResponseException("Error: bad request");
         }
 
