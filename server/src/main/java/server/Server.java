@@ -1,16 +1,22 @@
 package server;
 
 import com.google.gson.Gson;
+import dataaccess.AuthDAO;
+import dataaccess.GameDAO;
 import dataaccess.UserDAO;
 import model.AuthtokenData;
 import model.UserData;
+import service.ClearDataService;
 import service.UserService;
 import spark.*;
 import java.util.UUID;
 
 public class Server {
     UserDAO userDao = new UserDAO();
-    UserService userService = new UserService(userDao);
+    AuthDAO authDao = new AuthDAO();
+    GameDAO gameDao = new GameDAO();
+
+    UserService userService = new UserService(userDao, authDao);
 
     public int run(int desiredPort) {
         Spark.port(desiredPort);
@@ -18,29 +24,35 @@ public class Server {
         Spark.staticFiles.location("web");
 
         // Register your endpoints and handle exceptions here.
-        Spark.delete("/db", (request, response) -> {
 
-            //handle delete request
-            return "Database deleted";
+//DELETE DATABASE........................................................................................................
+        Spark.delete("/db", (request, response) -> {
+            userDao.clearData();
+            authDao.clearData();
+            gameDao.clearData();
+            return null;
         });
 
-
+//REGISTER NEW USER......................................................................................................
         Spark.post("/user", (request, response) -> {
             var newUser = new Gson().fromJson(request.body(), UserData.class);
-            AuthtokenData registeredUser = (AuthtokenData) userService.registerUser(newUser, userDao);
-            return registeredUser;
+            AuthtokenData result = (AuthtokenData) userService.registerUser(newUser);
+            return result;
         });
 
+//LOG IN USER ...........................................................................................................
 
         Spark.post("/session", (request, response) -> {
-            //handle
-            return "User Logged in";
+            var newUser = new Gson().fromJson(request.body(), UserData.class);
+            AuthtokenData result = userService.loginUser(newUser);
+            return result;
         });
 
-
+//LOGOUT USER............................................................................................................
         Spark.delete("/session", ((request, response) -> {
-            //handle logout
-            return "User logged out";
+            var newUser = new Gson().fromJson(request.body(), AuthtokenData.class);
+            userService.logoutUser(newUser);
+            return "success response";
         }));
 
         Spark.get("/game", ((request, response) -> {

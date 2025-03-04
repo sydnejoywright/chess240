@@ -10,9 +10,6 @@ import java.util.UUID;
 public class UserDAO {
     List<UserData> currentUsers = new ArrayList<>();
 
-    //Create a new user.
-    public void createUser(){}
-
     //Retrieve a user with the given username.
     public UserData getUser(String username){
         for(UserData user : currentUsers){
@@ -24,13 +21,11 @@ public class UserDAO {
     }
 
     public void createUser(UserData userData){
-
-        currentUsers.add()
-    }
-    public String createAuth(){
-        String newAuthToken = UUID.randomUUID().toString();
-        return newAuthToken;
+        currentUsers.add(userData);
     }
 
+    public void clearData(){
+        currentUsers.clear();
+    }
 
 }
