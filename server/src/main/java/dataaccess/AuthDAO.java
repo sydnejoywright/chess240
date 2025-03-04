@@ -1,7 +1,13 @@
 package dataaccess;
 
-public class AuthDAO {
+import model.AuthtokenData;
+import model.UserData;
 
+import java.util.ArrayList;
+import java.util.List;
+
+public class AuthDAO {
+    List<AuthtokenDataData> currentAuths = new ArrayList<>();
     //Create a new authorization.
     public void createAuth(){}
 

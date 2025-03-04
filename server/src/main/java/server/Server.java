@@ -1,10 +1,16 @@
 package server;
 
-import service.ClearDataService;
+import com.google.gson.Gson;
+import dataaccess.UserDAO;
+import model.AuthtokenData;
+import model.UserData;
 import service.UserService;
 import spark.*;
+import java.util.UUID;
 
 public class Server {
+    UserDAO userDao = new UserDAO();
+    UserService userService = new UserService(userDao);
 
     public int run(int desiredPort) {
         Spark.port(desiredPort);
@@ -20,8 +26,9 @@ public class Server {
 
 
         Spark.post("/user", (request, response) -> {
-            //handle user creation
-            return "User Registered";
+            var newUser = new Gson().fromJson(request.body(), UserData.class);
+            AuthtokenData registeredUser = (AuthtokenData) userService.registerUser(newUser, userDao);
+            return registeredUser;
         });
 
 
