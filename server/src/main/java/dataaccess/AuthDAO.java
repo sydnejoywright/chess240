@@ -19,7 +19,14 @@ public class AuthDAO {
     }
 
     //Retrieve an authorization given an authToken.
-    public void getAuth(){}
+    public AuthtokenData getAuth(AuthtokenData authToken){
+        for(AuthtokenData token: currentAuths){
+            if(token == authToken){
+                return token;
+            }
+        }
+        return null;
+    }
 
     //Delete an authorization so that it is no longer valid.
     public void deleteAuth(AuthtokenData authtokenData){

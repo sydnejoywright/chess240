@@ -16,7 +16,9 @@ public class GameDAO {
     public void getGame(){}
 
     //Retrieve all games.
-    public void listGames(){}
+    public List<GameData> listAllGames(){
+        return currentGames;
+    }
 
     public void clearData(){
         currentGames.clear();
