@@ -17,22 +17,15 @@ public class Server {
     GameDAO gameDao = new GameDAO();
     UserService userService = new UserService(userDao, authDao);
     GameService gameService = new GameService(userDao, authDao, gameDao);
-    public int run(int desiredPort) {
-        Spark.port(desiredPort);
-        Spark.staticFiles.location("web");
+    public int run(int desiredPort) {Spark.port(desiredPort);Spark.staticFiles.location("web");
 //DELETE DATABASE........................................................................................................
         Spark.delete("/db", (request, response) -> {
-            response.status(200);
-            userDao.clearData();
-            authDao.clearData();
-            gameDao.clearData();
-            return "";
+            response.status(200);userDao.clearData();authDao.clearData();gameDao.clearData();return "";
         });
 //REGISTER NEW USER......................................................................................................
         Spark.post("/user", (request, response) -> {
             UserData newUser = new Gson().fromJson(request.body(), UserData.class);
-            try {AuthtokenData result = (AuthtokenData) userService.registerUser(newUser);
-                response.status(200);
+            try {AuthtokenData result = (AuthtokenData) userService.registerUser(newUser);response.status(200);
                 return new Gson().toJson(result);
             } catch (ResponseException e) {
                 if(e.getMessage().equals("Error: already taken")){response.status(403);

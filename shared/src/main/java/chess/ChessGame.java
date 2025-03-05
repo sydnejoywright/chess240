@@ -181,36 +181,41 @@ public class ChessGame {
         }
         return false;
     }
-
+    public ChessPosition throaty(ChessPiece piece, ChessPosition position, ChessPosition kingsPosition, TeamColor teamColor){
+        if (piece != null && piece.getTeamColor() != teamColor) {
+            Collection<ChessMove> moves = piece.pieceMoves(gameBoard,position);
+            //create a move that would capture the king from the current position of the piece
+            if(piece.getPieceType() == ChessPiece.PieceType.PAWN){
+                ChessMove checkKingpromoteBishop = new ChessMove(position,kingsPosition,ChessPiece.PieceType.BISHOP);
+                ChessMove checkKingpromoteRook = new ChessMove(position,kingsPosition,ChessPiece.PieceType.ROOK);
+                ChessMove checkKingpromoteKnight = new ChessMove(position,kingsPosition,ChessPiece.PieceType.KNIGHT);
+                ChessMove checkKingpromoteQueen = new ChessMove(position,kingsPosition, ChessPiece.PieceType.QUEEN);
+                ChessMove checkKingpromoteNull = new ChessMove(position,kingsPosition, null);
+                if (
+                        moves.contains(checkKingpromoteBishop)||
+                        moves.contains(checkKingpromoteRook)||
+                        moves.contains(checkKingpromoteKnight)||
+                        moves.contains(checkKingpromoteQueen)||
+                        moves.contains(checkKingpromoteNull)) {
+                    return position;
+                }
+            }
+            ChessMove checkKing = new ChessMove(position,kingsPosition,null);
+            if (moves.contains(checkKing)) {
+                return position;
+            }
+        }
+        return null;
+    }
     public ChessPosition findThreat(TeamColor teamColor){
         ChessPosition kingsPosition = findKing(teamColor);
         for(int i=1; i <= 8; i++) {
             for (int j = 1; j <= 8; j++) {
                 ChessPosition position = new ChessPosition(i, j);
                 ChessPiece piece = gameBoard.getPiece(position);
-
-                if (piece != null && piece.getTeamColor() != teamColor) {
-                    Collection<ChessMove> moves = piece.pieceMoves(gameBoard,position);
-                    //create a move that would capture the king from the current position of the piece
-                    if(piece.getPieceType() == ChessPiece.PieceType.PAWN){
-                        ChessMove checkKingpromoteBishop = new ChessMove(position,kingsPosition,ChessPiece.PieceType.BISHOP);
-                        ChessMove checkKingpromoteRook = new ChessMove(position,kingsPosition,ChessPiece.PieceType.ROOK);
-                        ChessMove checkKingpromoteKnight = new ChessMove(position,kingsPosition,ChessPiece.PieceType.KNIGHT);
-                        ChessMove checkKingpromoteQueen = new ChessMove(position,kingsPosition, ChessPiece.PieceType.QUEEN);
-                        ChessMove checkKingpromoteNull = new ChessMove(position,kingsPosition, null);
-                        if (
-                            moves.contains(checkKingpromoteBishop)||
-                            moves.contains(checkKingpromoteRook)||
-                            moves.contains(checkKingpromoteKnight)||
-                            moves.contains(checkKingpromoteQueen)||
-                            moves.contains(checkKingpromoteNull)) {
-                            return position;
-                        }
-                    }
-                    ChessMove checkKing = new ChessMove(position,kingsPosition,null);
-                    if (moves.contains(checkKing)) {
-                        return position;
-                    }
+                ChessPosition threatPosition = throaty(piece, position, kingsPosition, teamColor);
+                if(threatPosition != null){
+                    return threatPosition;
                 }
             }
         }
@@ -239,27 +244,18 @@ public class ChessGame {
             for (int j = 1; j <= 8; j++) {
                 ChessPosition position = new ChessPosition(i, j);
                 ChessPiece piece = gameBoard.getPiece(position);
-
                 if (piece != null && piece.getTeamColor() == teamColor) {
                     Collection<ChessMove> moves = piece.pieceMoves(gameBoard, position);
                     //create a move that would capture the king from the current position of the piece
                     ChessMove killThreat = new ChessMove(position, threateningPiece, null);
                     if (moves.contains(killThreat)) {
-                        if(isInCheck(teamColor)){        //capturing the peice results in check
-                            return true;
-                        }
-                    else{
-                        return false;
+                        return (isInCheck(teamColor));
                     }
-                    }
-
             }
         }
         // can we block the piece that is putting us in check?
-        if (threatType == ChessPiece.PieceType.KNIGHT) {      //knights can't be blocked so this must be checkmate
-            return true;
-        }
-        else {            //loop through all of the possible moves for my team, try to make the move
+        if (threatType != ChessPiece.PieceType.KNIGHT) {      //knights can't be blocked so this must be checkmate
+            // loop through all of the possible moves for my team, try to make the move
             // and see if it gets you out of check. if it does, you are not in checkmate.
             for (int l = 1; l <= 8; l++) {
                 for (int n = 1; n <= 8; n++) {
