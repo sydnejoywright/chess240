@@ -156,14 +156,14 @@ public class ChessGame {
                         ChessMove checkKingpromoteKnight = new ChessMove(position,kingsPosition,ChessPiece.PieceType.KNIGHT);
                         ChessMove checkKingpromoteQueen = new ChessMove(position,kingsPosition, ChessPiece.PieceType.QUEEN);
                         ChessMove checkKingpromoteNull = new ChessMove(position,kingsPosition, null);
-                        if (
-                            moves.contains(checkKingpromoteBishop)||
-                            moves.contains(checkKingpromoteRook)||
-                            moves.contains(checkKingpromoteKnight)||
-                            moves.contains(checkKingpromoteQueen)||
-                            moves.contains(checkKingpromoteNull)){
-                            return true;
-                        }
+                    if (
+                        moves.contains(checkKingpromoteBishop)||
+                        moves.contains(checkKingpromoteRook)||
+                        moves.contains(checkKingpromoteKnight)||
+                        moves.contains(checkKingpromoteQueen)||
+                        moves.contains(checkKingpromoteNull)){
+                        return true;
+                    }
                     }
                     //create a move that would capture the king from the current position of the piece
                     ChessMove checkKing = new ChessMove(position,kingsPosition,null);
@@ -192,14 +192,14 @@ public class ChessGame {
                         ChessMove checkKingpromoteKnight = new ChessMove(position,kingsPosition,ChessPiece.PieceType.KNIGHT);
                         ChessMove checkKingpromoteQueen = new ChessMove(position,kingsPosition, ChessPiece.PieceType.QUEEN);
                         ChessMove checkKingpromoteNull = new ChessMove(position,kingsPosition, null);
-                        if (
-                            moves.contains(checkKingpromoteBishop)||
-                            moves.contains(checkKingpromoteRook)||
-                            moves.contains(checkKingpromoteKnight)||
-                            moves.contains(checkKingpromoteQueen)||
-                            moves.contains(checkKingpromoteNull)) {
-                            return position;
-                        }
+                    if (
+                        moves.contains(checkKingpromoteBishop)||
+                        moves.contains(checkKingpromoteRook)||
+                        moves.contains(checkKingpromoteKnight)||
+                        moves.contains(checkKingpromoteQueen)||
+                        moves.contains(checkKingpromoteNull)) {
+                        return position;
+                    }
                     }
                     ChessMove checkKing = new ChessMove(position,kingsPosition,null);
                     if (moves.contains(checkKing)) {
@@ -239,12 +239,12 @@ public class ChessGame {
                     //create a move that would capture the king from the current position of the piece
                     ChessMove killThreat = new ChessMove(position, threateningPiece, null);
                     if (moves.contains(killThreat)) {
-                        if(isInCheck(teamColor)){        //capturing the peice results in check
-                            return true;
-                        }
-                        else{
-                            return false;
-                        }
+                    if(isInCheck(teamColor)){        //capturing the peice results in check
+                        return true;
+                    }
+                    else{
+                        return false;
+                    }
                     }
 
             }
@@ -268,9 +268,9 @@ public class ChessGame {
 
                             gameBoard.addPiece(end, piece);
                             gameBoard.addPiece(position, null);
-                            if (!isInCheck(piece.getTeamColor())) {
-                                return false; //can't do the move
-                            }
+                        if (!isInCheck(piece.getTeamColor())) {
+                            return false; //can't do the move
+                        }
                             //even if it's not in check i still need to reset the board.
                             gameBoard.addPiece(position, piece);
                             gameBoard.addPiece(end, captured);
@@ -300,9 +300,9 @@ public class ChessGame {
                 ChessPosition position = new ChessPosition(i, j);
                 ChessPiece piece = gameBoard.getPiece(position);
                 if(piece != null && piece.getTeamColor() == teamColor){
-                    if(!validMoves(position).isEmpty()){
-                        return false;
-                    }
+                if(!validMoves(position).isEmpty()){
+                    return false;
+                }
                 }
             }
         }
@@ -360,10 +360,12 @@ public class ChessGame {
                 ChessPosition position = new ChessPosition(i, j);
                 ChessPiece piece = game.getPiece(position);
                 if(piece != null){
-                    if ((piece.getPieceType() == ChessPiece.PieceType.KING) &&     //checks the board at the current positions. if it is a king
-                            game.getPiece(position).getTeamColor() == team) {                        //and checks if it is the king for the team that we are looking for.
-                        return position;
-                    }
+                if ((piece.getPieceType() ==
+                        ChessPiece.PieceType.KING)
+                        && game.getPiece(position).getTeamColor() == team) {
+//and checks if it is the king for the team that we are looking for.
+                    return position;
+                }
                 }
             }
         }

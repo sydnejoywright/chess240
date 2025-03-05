@@ -29,14 +29,4 @@ public class UserDAO {
         currentUsers.clear();
     }
 
-//    public void removeUser(String username) throws ResponseException {
-//        for(UserData user : currentUsers){
-//            if(username.equals(user.username)){
-//                currentUsers.remove(user);
-//                return;
-//            }
-//        }
-//        throw new ResponseException("Error: unauthorized");
-//    }
-
 }

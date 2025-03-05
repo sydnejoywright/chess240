@@ -1,5 +1,6 @@
 package service;
-//each service method receives a request object containing the info it needs to do its work and it returns a result obejct containing the output of the method.
+//each service method receives a request object containing the info it needs
+// to do its work and it returns a result obejct containing the output of the method.
 
 import dataaccess.AuthDAO;
 import dataaccess.UserDAO;
@@ -47,9 +48,6 @@ public class UserService {
     public void logoutUser(AuthtokenData authToken) throws ResponseException {
 
         if(authToken != null){
-//            AuthtokenData findUserDataByAuthToken = authDao.getAuth(authToken);
-//            String username = authToken.username;
-//            userDao.removeUser(username);
             authDao.deleteAuth(authToken);
         }
         else{
