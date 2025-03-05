@@ -32,7 +32,7 @@ public class GameDAO {
 
     //Retrieve a specified game with the given game ID.
     public GameData getGame(int gameID){
-        return gameIds.get(gameID-1);
+        return gameIds.get(gameID);
     }
 
     //Retrieve all games.

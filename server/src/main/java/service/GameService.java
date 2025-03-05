@@ -76,7 +76,7 @@ public class GameService {
             }
             else{
                 if(gameData.getBlackUsername() == null){
-                    gameData.setBlackUsername(authToken.username);
+                    gameData.setBlackUsername(foundAuth.username);
                     gameDao.updateGame(gameData);
                 }
                 else{
