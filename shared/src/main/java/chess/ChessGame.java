@@ -228,6 +228,36 @@ public class ChessGame {
      * @param teamColor which team to check for checkmate
      * @return True if the specified team is in checkmate
      */
+    public boolean chodey(ChessPiece.PieceType threatType, TeamColor teamColor){
+        if (threatType != ChessPiece.PieceType.KNIGHT) {      //knights can't be blocked so this must be checkmate
+            // loop through all of the possible moves for my team, try to make the move
+            // and see if it gets you out of check. if it does, you are not in checkmate.
+            for (int l = 1; l <= 8; l++) {
+                for (int n = 1; n <= 8; n++) {
+                    ChessPosition position = new ChessPosition(l, n);
+                    ChessPiece piece = gameBoard.getPiece(position);
+
+                    if (piece != null && piece.getTeamColor() == teamColor) {
+                        Collection<ChessMove> moves = piece.pieceMoves(gameBoard, position);
+                        for (ChessMove move : moves) {
+                            ChessPosition end = move.getEndPosition();
+                            ChessPiece captured = gameBoard.getPiece(end);
+
+                            gameBoard.addPiece(end, piece);
+                            gameBoard.addPiece(position, null);
+                            if (!isInCheck(piece.getTeamColor())) {
+                                return false; //can't do the move
+                            }
+                            //even if it's not in check i still need to reset the board.
+                            gameBoard.addPiece(position, piece);
+                            gameBoard.addPiece(end, captured);
+                        }
+                    }
+                }
+            }
+        }
+        return true;
+    }
     public boolean isInCheckmate(TeamColor teamColor) {
         if(!isInCheck(teamColor)){  //if the king is not in check then it cannot be checkmate
             return false;
@@ -253,34 +283,12 @@ public class ChessGame {
                     }
             }
         }
-        // can we block the piece that is putting us in check?
-        if (threatType != ChessPiece.PieceType.KNIGHT) {      //knights can't be blocked so this must be checkmate
-            // loop through all of the possible moves for my team, try to make the move
-            // and see if it gets you out of check. if it does, you are not in checkmate.
-            for (int l = 1; l <= 8; l++) {
-                for (int n = 1; n <= 8; n++) {
-                    ChessPosition position = new ChessPosition(l, n);
-                    ChessPiece piece = gameBoard.getPiece(position);
-
-                    if (piece != null && piece.getTeamColor() == teamColor) {
-                        Collection<ChessMove> moves = piece.pieceMoves(gameBoard, position);
-                        for (ChessMove move : moves) {
-                            ChessPosition end = move.getEndPosition();
-                            ChessPiece captured = gameBoard.getPiece(end);
-
-                            gameBoard.addPiece(end, piece);
-                            gameBoard.addPiece(position, null);
-                            if (!isInCheck(piece.getTeamColor())) {
-                                return false; //can't do the move
-                        }
-                            //even if it's not in check i still need to reset the board.
-                            gameBoard.addPiece(position, piece);
-                            gameBoard.addPiece(end, captured);
-                        }
-                    }
-                }
-            }
+        if(!chodey(threatType, teamColor)){
+            return false;
         }
+
+        // can we block the piece that is putting us in check?
+
     }
     return true;
     }
