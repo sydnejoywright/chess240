@@ -3,7 +3,7 @@ package model;
 import chess.ChessGame;
 
 public class GameData {
-    private int GameID;
+    private int gameID;
     private String whiteUsername;
     private String blackUsername;
     private String gameName;
@@ -19,11 +19,11 @@ public class GameData {
     }
 
     public void setGameID(int number){
-        this.GameID = number;
+        this.gameID = number;
     }
 
     public int getGameID(){
-        return GameID;
+        return gameID;
     }
 
     public void setWhiteUsername(String name){
@@ -47,7 +47,14 @@ public class GameData {
         return game;
     }
 
-
-
-
+    @Override
+    public String toString() {
+        return "GameData{" +
+                "gameID=" + gameID +
+                ", whiteUsername='" + whiteUsername + '\'' +
+                ", blackUsername='" + blackUsername + '\'' +
+                ", gameName='" + gameName + '\'' +
+                ", game=" + game +
+                '}';
+    }
 }

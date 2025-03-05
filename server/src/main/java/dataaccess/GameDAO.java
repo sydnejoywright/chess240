@@ -24,6 +24,7 @@ public class GameDAO {
 
     //Create a new game.
     public int createGame(GameData gameData){
+        gameData.setGameID(counter);
         currentGames.add(gameData);
         gameIds.put(counter, gameData);
         counter +=1;

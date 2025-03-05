@@ -108,8 +108,11 @@ public class Server {
             try {
                 response.status(200);
                 var temp = gameService.listGames(newAuth);
+                System.out.println("HERE");
+                System.out.println(temp);
                 HashMap<String, Object> jsonResponse = new HashMap<>();
                 jsonResponse.put("games", temp);
+                System.out.println(jsonResponse);
                 return new Gson().toJson(jsonResponse);
             }
             catch (ResponseException e){
@@ -127,7 +130,8 @@ public class Server {
 //CREATE GAME............................................................................................................
         Spark.post("/game", ((request, response) -> {
             String paramAuth = request.headers("authorization");
-            String gameName = request.body();
+            String gameName = new Gson().fromJson(request.body(), GameName.class).gameName();
+
 //            GameName gameName = new Gson().toJson(request.body(), GameName.class);
             try{
                 CreateGameRequest newGameRequest = new CreateGameRequest(gameName, paramAuth);
