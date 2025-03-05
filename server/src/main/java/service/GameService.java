@@ -51,7 +51,7 @@ public class GameService {
 
 
     public void joinGame(JoinGameRequest gameRequest, AuthtokenData authToken) throws ResponseException{
-        if(authToken.authToken == null || gameRequest.playerColor() == null){
+        if(authToken.authToken == null || gameRequest.playerColor() == null || gameRequest.gameID() == null){
             throw new ResponseException("Error: bad request");
         }
 
@@ -59,16 +59,28 @@ public class GameService {
         if(foundAuth == null){
             throw new ResponseException("Error: unauthorized");
         }
+        if(!gameRequest.playerColor().equals("WHITE") && !gameRequest.playerColor().equals("BLACK")){
+            throw new ResponseException("Error: bad request");
+        }
+
         else{
             GameData gameData = gameDao.getGame(gameRequest.gameID());
-            if (gameRequest.playerColor() == "WHITE"){
+            if (gameRequest.playerColor().equals("WHITE")){
                 if(gameData.getWhiteUsername() == null){
-                    gameData.setWhiteUsername(authToken.username);
+                    gameData.setWhiteUsername(foundAuth.username);
+                    gameDao.updateGame(gameData);
+                }
+                else{
+                    throw new ResponseException("Error: already taken");
                 }
             }
             else{
                 if(gameData.getBlackUsername() == null){
                     gameData.setBlackUsername(authToken.username);
+                    gameDao.updateGame(gameData);
+                }
+                else{
+                    throw new ResponseException("Error: already taken");
                 }
             }
         }

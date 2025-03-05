@@ -9,6 +9,7 @@ import model.*;
 import service.GameService;
 import service.UserService;
 import spark.*;
+import java.util.HashMap;
 
 public class Server {
     UserDAO userDao = new UserDAO();
@@ -104,8 +105,23 @@ public class Server {
             String paramAuth = request.headers("authorization");
             AuthtokenData newAuth = new AuthtokenData(null, paramAuth);
 
-            response.status(200);
-            return new Gson().toJson(gameService.listGames(newAuth));
+            try {
+                response.status(200);
+                var temp = gameService.listGames(newAuth);
+                HashMap<String, Object> jsonResponse = new HashMap<>();
+                jsonResponse.put("games", temp);
+                return new Gson().toJson(jsonResponse);
+            }
+            catch (ResponseException e){
+                if(e.getMessage().equals("Error: unauthorized")){
+                    response.status(401);
+                    return new Gson().toJson(new ErrorResponse(e.getMessage()));
+                }
+                else{
+                    response.status(500);
+                    return new Gson().toJson(new ErrorResponse(e.getMessage()));
+                }
+            }
         }));
 
 //CREATE GAME............................................................................................................
@@ -140,11 +156,31 @@ public class Server {
         Spark.put("/game", ((request, response) -> {
             JoinGameRequest joinGameRequest = new Gson().fromJson(request.body(), JoinGameRequest.class);
             String paramAuth = request.headers("authorization");
-            AuthtokenData authToken = new AuthtokenData(null, paramAuth);
-            gameService.joinGame(joinGameRequest, authToken);
 
-            response.status(200);
-            return "";
+            try {
+                AuthtokenData authToken = new AuthtokenData(null, paramAuth);
+                gameService.joinGame(joinGameRequest, authToken);
+                response.status(200);
+                return "";
+            }
+            catch(ResponseException e){
+                if(e.getMessage().equals("Error: bad request")){
+                    response.status(400);
+                    return new Gson().toJson(new ErrorResponse(e.getMessage()));
+                }
+                if(e.getMessage().equals("Error: unauthorized")){
+                    response.status(401);
+                    return new Gson().toJson(new ErrorResponse(e.getMessage()));
+                }
+                if(e.getMessage().equals("Error: already taken")){
+                    response.status(403);
+                    return new Gson().toJson(new ErrorResponse(e.getMessage()));
+                }
+                else{
+                    response.status(500);
+                    return new Gson().toJson(new ErrorResponse(e.getMessage()));
+                }
+            }
         }));
 
 

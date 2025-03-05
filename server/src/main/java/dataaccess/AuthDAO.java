@@ -43,6 +43,7 @@ public class AuthDAO {
     }
 
     public void clearData(){
+
         currentAuths.clear();
     }
 
