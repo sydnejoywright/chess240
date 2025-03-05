@@ -228,6 +228,25 @@ public class ChessGame {
      * @param teamColor which team to check for checkmate
      * @return True if the specified team is in checkmate
      */
+    public boolean chodestroker(ChessPosition position, ChessPiece piece, TeamColor teamColor){
+        if (piece != null && piece.getTeamColor() == teamColor) {
+            Collection<ChessMove> moves = piece.pieceMoves(gameBoard, position);
+            for (ChessMove move : moves) {
+                ChessPosition end = move.getEndPosition();
+                ChessPiece captured = gameBoard.getPiece(end);
+
+                gameBoard.addPiece(end, piece);
+                gameBoard.addPiece(position, null);
+                if (!isInCheck(piece.getTeamColor())) {
+                    return false; //can't do the move
+                }
+                //even if it's not in check i still need to reset the board.
+                gameBoard.addPiece(position, piece);
+                gameBoard.addPiece(end, captured);
+            }
+        }
+        return true;
+    }
     public boolean chodey(ChessPiece.PieceType threatType, TeamColor teamColor){
         if (threatType != ChessPiece.PieceType.KNIGHT) {      //knights can't be blocked so this must be checkmate
             // loop through all of the possible moves for my team, try to make the move
@@ -236,22 +255,8 @@ public class ChessGame {
                 for (int n = 1; n <= 8; n++) {
                     ChessPosition position = new ChessPosition(l, n);
                     ChessPiece piece = gameBoard.getPiece(position);
-
-                    if (piece != null && piece.getTeamColor() == teamColor) {
-                        Collection<ChessMove> moves = piece.pieceMoves(gameBoard, position);
-                        for (ChessMove move : moves) {
-                            ChessPosition end = move.getEndPosition();
-                            ChessPiece captured = gameBoard.getPiece(end);
-
-                            gameBoard.addPiece(end, piece);
-                            gameBoard.addPiece(position, null);
-                            if (!isInCheck(piece.getTeamColor())) {
-                                return false; //can't do the move
-                            }
-                            //even if it's not in check i still need to reset the board.
-                            gameBoard.addPiece(position, piece);
-                            gameBoard.addPiece(end, captured);
-                        }
+                    if(!chodestroker(position, piece, teamColor)){
+                        return false;
                     }
                 }
             }
