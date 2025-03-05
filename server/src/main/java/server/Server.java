@@ -87,14 +87,14 @@ public class Server {
                 userService.logoutUser(newAuth);
                 response.status(200);
                 return "";
-            } catch (ResponseException e) {
-                if(e.getMessage().equals("Error: unauthorized")){
+            } catch (ResponseException f) {
+                if(f.getMessage().equals("Error: unauthorized")){
                     response.status(401);
-                    return new Gson().toJson(new ErrorResponse(e.getMessage()));
+                    return new Gson().toJson(new ErrorResponse(f.getMessage()));
                 }
                 else{
                     response.status(500);
-                    return new Gson().toJson(new ErrorResponse(e.getMessage()));
+                    return new Gson().toJson(new ErrorResponse(f.getMessage()));
                 }
             }
 
