@@ -8,6 +8,7 @@ import exception.ResponseException;
 import model.AuthtokenData;
 import model.UserData;
 
+
 public class UserService {
     private final UserDAO userDao;
     private final AuthDAO authDao;

@@ -20,7 +20,7 @@ public class Server {
     public int run(int desiredPort) {Spark.port(desiredPort);Spark.staticFiles.location("web");
 //DELETE DATABASE........................................................................................................
         Spark.delete("/db", (request, response) -> {
-            response.status(200);userDao.clearData();authDao.clearData();gameDao.clearData();return "";
+            response.status(200); gameService.clearData(); return "";
         });
 //REGISTER NEW USER......................................................................................................
         Spark.post("/user", (request, response) -> {

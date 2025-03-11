@@ -49,6 +49,13 @@ public class GameService {
         }
     }
 
+    public void clearData(){
+        userDao.clearData();
+        authDao.clearData();
+        gameDao.clearData();
+    }
+
+
 
     public void joinGame(JoinGameRequest gameRequest, AuthtokenData authToken) throws ResponseException{
         if(authToken.authToken == null || gameRequest.playerColor() == null || gameRequest.gameID() == null){
