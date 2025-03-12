@@ -2,13 +2,9 @@ package dataaccess;
 
 import exception.ResponseException;
 import model.AuthtokenData;
-import model.GameData;
-import model.UserData;
-
-import java.sql.*;
 
 
-public class AuthSqlDataAccess implements AuthDAO {
+public class SqlAuthDAO implements AuthDAO {
     //Create a new authorization.
     @Override
     public AuthtokenData createAuth(String username){

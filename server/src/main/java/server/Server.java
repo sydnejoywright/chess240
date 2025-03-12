@@ -1,10 +1,7 @@
 package server;
 
 import com.google.gson.Gson;
-import dataaccess.AuthDAO;
-import dataaccess.GameDAO;
-import dataaccess.MemoryAuthDAO;
-import dataaccess.MemoryUserDao;
+import dataaccess.*;
 import exception.ResponseException;
 import model.*;
 import service.GameService;
@@ -14,8 +11,8 @@ import java.util.HashMap;
 
 public class Server {
     MemoryUserDao memoryUserDao = new MemoryUserDao();
-    AuthDAO authDao = new MemoryAuthDAO();
-    GameDAO gameDao = new GameDAO();
+    AuthDAO authDao = new MemoryAuthDao();
+    GameDAO gameDao = new MemoryGameDao();
     UserService userService = new UserService(memoryUserDao, authDao);
     GameService gameService = new GameService(memoryUserDao, authDao, gameDao);
     public int run(int desiredPort) {Spark.port(desiredPort);Spark.staticFiles.location("web");

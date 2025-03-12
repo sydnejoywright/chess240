@@ -25,8 +25,8 @@ public class TestService {
         Server server = new Server();
 
         memoryUserDao = new MemoryUserDao();
-        authDao = new MemoryAuthDAO();
-        gameDao = new GameDAO();
+        authDao = new MemoryAuthDao();
+        gameDao = new MemoryGameDao();
 
         userService = new UserService(memoryUserDao, authDao);
         gameService = new GameService(memoryUserDao,authDao,gameDao);

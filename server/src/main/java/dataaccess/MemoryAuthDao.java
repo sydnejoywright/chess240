@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-public class MemoryAuthDAO implements AuthDAO{
+public class MemoryAuthDao implements AuthDAO{
     List<AuthtokenData> currentAuths = new ArrayList<>();
 
     //Create a new authorization.
