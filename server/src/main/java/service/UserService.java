@@ -3,27 +3,27 @@ package service;
 // to do its work and it returns a result obejct containing the output of the method.
 
 import dataaccess.AuthDAO;
-import dataaccess.UserDAO;
+import dataaccess.MemoryUserDao;
 import exception.ResponseException;
 import model.AuthtokenData;
 import model.UserData;
 
 
 public class UserService {
-    private final UserDAO userDao;
+    private final MemoryUserDao memoryUserDao;
     private final AuthDAO authDao;
 
-    public UserService(UserDAO userDao, AuthDAO authDao){
-        this.userDao = userDao;
+    public UserService(MemoryUserDao memoryUserDao, AuthDAO authDao){
+        this.memoryUserDao = memoryUserDao;
         this.authDao = authDao;
     }
     public AuthtokenData registerUser(UserData userData) throws ResponseException {
-        UserData findUserDataByUsername = userDao.getUser(userData.username);
+        UserData findUserDataByUsername = memoryUserDao.getUser(userData.username);
         if (userData.username == null || userData.password == null || userData.email == null){
             throw new ResponseException("Error: bad request");
         }
         if(findUserDataByUsername == null){
-            userDao.createUser(userData);
+            memoryUserDao.createUser(userData);
             AuthtokenData ret = authDao.createAuth(userData.username);
             return ret;
         }
@@ -33,7 +33,7 @@ public class UserService {
     }
 
     public AuthtokenData loginUser(UserData userData) throws ResponseException {
-        UserData findUserDataByUsername = userDao.getUser(userData.username);
+        UserData findUserDataByUsername = memoryUserDao.getUser(userData.username);
         if (findUserDataByUsername == null){
             throw new ResponseException("Error: unauthorized");
         }

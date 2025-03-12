@@ -9,42 +9,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-public class AuthDAO {
-    List<AuthtokenData> currentAuths = new ArrayList<>();
+public interface  AuthDAO {
 
     //Create a new authorization.
-    public AuthtokenData createAuth(String username){
-        String authToken = UUID.randomUUID().toString();
-        AuthtokenData authData = new AuthtokenData(username, authToken);
-        currentAuths.add(authData);
-        return authData;
-    }
+    AuthtokenData createAuth(String username);
 
     //Retrieve an authorization given an authToken.
-    public AuthtokenData getAuth(AuthtokenData authToken){
-        for(AuthtokenData token: currentAuths){
-            if(token.authToken.equals(authToken.authToken)){
-                return token;
-            }
-        }
-        return null;
-    }
+    AuthtokenData getAuth(AuthtokenData authToken);
 
     //Delete an authorization so that it is no longer valid.
-    public void deleteAuth(AuthtokenData authtokenData) throws ResponseException {
-        for(AuthtokenData tokenData: currentAuths){
-            if(tokenData.authToken.equals(authtokenData.authToken)){
-                currentAuths.remove(tokenData);
-                return;
-            }
-        }
-        throw new ResponseException("Error: unauthorized");
+    void deleteAuth(AuthtokenData authtokenData) throws ResponseException;
 
-    }
-
-    public void clearData(){
-
-        currentAuths.clear();
-    }
+    void clearData();
 
 }

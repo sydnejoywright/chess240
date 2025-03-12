@@ -1,18 +1,22 @@
 package dataaccess;
 
 import exception.ResponseException;
-import model.Pet;
+import model.*;
 
 import java.util.Collection;
 
 public interface DataAccess {
-    Pet addPet(Pet pet) throws ResponseException;
+    UserData addUser(UserData user) throws ResponseException;
+    UserData getUser(UserData user) throws ResponseException;
+    UserData deleteUser(UserData user) throws ResponseException;
 
-    Collection<Pet> listPets() throws ResponseException;
+    AuthtokenData addAuth(AuthtokenData auth) throws ResponseException;
+    AuthtokenData getAuth(AuthtokenData auth) throws ResponseException;
+    AuthtokenData deleteAuth(AuthtokenData auth) throws ResponseException;
 
-    Pet getPet(int id) throws ResponseException;
+    GameData addGame(GameData game) throws ResponseException;
+    GameData getGame(GameData game) throws ResponseException;
+    GameData deleteGame(GameData game) throws ResponseException;
+    GameData listGames(GameData game) throws ResponseException;
 
-    void deletePet(Integer id) throws ResponseException;
-
-    void deleteAllPets() throws ResponseException;
 }

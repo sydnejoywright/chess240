@@ -1,23 +1,16 @@
 package dataaccess;
 
-import chess.ChessGame;
-import com.google.gson.Gson;
 import exception.ResponseException;
 import model.AuthtokenData;
 import model.GameData;
 import model.UserData;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.sql.*;
-
-import static java.sql.Statement.RETURN_GENERATED_KEYS;
-import static java.sql.Types.NULL;
+import java.sql.SQLException;
 
 
-public class MySqlDataAccess implements DataAccess {
+public class GameSqlDataAccess implements DataAccess {
 
-    public MySqlDataAccess() throws ResponseException, DataAccessException {
+    public GameSqlDataAccess() throws ResponseException, DataAccessException {
         configureDatabase();
     }
 

@@ -1,14 +1,11 @@
 package dataaccess;
 
-import exception.ResponseException;
 import model.UserData;
 
-import java.awt.image.AreaAveragingScaleFilter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
-public class UserDAO {
+public class MemoryUserDao {
     List<UserData> currentUsers = new ArrayList<>();
 
     //Retrieve a user with the given username.

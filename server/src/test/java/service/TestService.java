@@ -1,24 +1,13 @@
 //I KNOW THESE TESTS ARE NOT IMPLEMENTED, NOT TRYING TO CHEAT, DOCK MY GRADE IF NEEDED, IMPLEMENTING AS SOON AS I HAVE TIME!
 
 package service;
-import model.GameData;
-import chess.ChessGame;
 import dataaccess.*;
 import exception.ResponseException;
 import model.*;
-import org.eclipse.jetty.server.Authentication;
 import org.junit.jupiter.api.*;
 import server.Server;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.UUID;
-
 import static org.junit.jupiter.api.Assertions.*;
-import java.util.ArrayList;
-import java.util.List;
-import org.junit.jupiter.api.*;
 
 
 public class TestService {
@@ -28,19 +17,19 @@ public class TestService {
     private static AuthtokenData authToken;
     private static GameDAO gameDao;
     private static AuthDAO authDao;
-    private static UserDAO userDao;
+    private static MemoryUserDao memoryUserDao;
 
 
     @BeforeAll
     public static void init() throws DataAccessException {
         Server server = new Server();
 
-        userDao = new UserDAO();
-        authDao = new AuthDAO();
+        memoryUserDao = new MemoryUserDao();
+        authDao = new MemoryAuthDAO();
         gameDao = new GameDAO();
 
-        userService = new UserService(userDao, authDao);
-        gameService = new GameService(userDao,authDao,gameDao);
+        userService = new UserService(memoryUserDao, authDao);
+        gameService = new GameService(memoryUserDao,authDao,gameDao);
 
 
         firstUser = new UserData();

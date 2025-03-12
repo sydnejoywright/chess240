@@ -3,7 +3,8 @@ package server;
 import com.google.gson.Gson;
 import dataaccess.AuthDAO;
 import dataaccess.GameDAO;
-import dataaccess.UserDAO;
+import dataaccess.MemoryAuthDAO;
+import dataaccess.MemoryUserDao;
 import exception.ResponseException;
 import model.*;
 import service.GameService;
@@ -12,11 +13,11 @@ import spark.*;
 import java.util.HashMap;
 
 public class Server {
-    UserDAO userDao = new UserDAO();
-    AuthDAO authDao = new AuthDAO();
+    MemoryUserDao memoryUserDao = new MemoryUserDao();
+    AuthDAO authDao = new MemoryAuthDAO();
     GameDAO gameDao = new GameDAO();
-    UserService userService = new UserService(userDao, authDao);
-    GameService gameService = new GameService(userDao, authDao, gameDao);
+    UserService userService = new UserService(memoryUserDao, authDao);
+    GameService gameService = new GameService(memoryUserDao, authDao, gameDao);
     public int run(int desiredPort) {Spark.port(desiredPort);Spark.staticFiles.location("web");
 //DELETE DATABASE........................................................................................................
         Spark.delete("/db", (request, response) -> {

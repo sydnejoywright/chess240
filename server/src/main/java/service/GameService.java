@@ -1,21 +1,20 @@
 package service;
 import dataaccess.AuthDAO;
-import dataaccess.UserDAO;
+import dataaccess.MemoryUserDao;
 import dataaccess.GameDAO;
 import exception.ResponseException;
 import model.*;
-import org.eclipse.jetty.server.Authentication;
 
 import java.util.List;
 
 
 public class GameService {
-    private final UserDAO userDao;
+    private final MemoryUserDao memoryUserDao;
     private final AuthDAO authDao;
     private final GameDAO gameDao;
 
-    public GameService(UserDAO userDao, AuthDAO authDao, GameDAO gameDao){
-        this.userDao = userDao;
+    public GameService(MemoryUserDao memoryUserDao, AuthDAO authDao, GameDAO gameDao){
+        this.memoryUserDao = memoryUserDao;
         this.authDao = authDao;
         this.gameDao = gameDao;
     }
@@ -50,7 +49,7 @@ public class GameService {
     }
 
     public void clearData(){
-        userDao.clearData();
+        memoryUserDao.clearData();
         authDao.clearData();
         gameDao.clearData();
     }
