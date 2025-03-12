@@ -15,7 +15,7 @@ public interface  AuthDAO {
     AuthtokenData createAuth(String username);
 
     //Retrieve an authorization given an authToken.
-    AuthtokenData getAuth(AuthtokenData authToken);
+    AuthtokenData getAuth(AuthtokenData authToken) throws DataAccessException;
 
     //Delete an authorization so that it is no longer valid.
     void deleteAuth(AuthtokenData authtokenData) throws ResponseException;
