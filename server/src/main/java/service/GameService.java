@@ -1,8 +1,5 @@
 package service;
-import dataaccess.AuthDAO;
-import dataaccess.DataAccessException;
-import dataaccess.MemoryUserDao;
-import dataaccess.GameDAO;
+import dataaccess.*;
 import exception.ResponseException;
 import model.*;
 
@@ -11,12 +8,12 @@ import java.util.List;
 
 
 public class GameService {
-    private final MemoryUserDao memoryUserDao;
+    private final UserDAO userDao;
     private final AuthDAO authDao;
     private final GameDAO gameDao;
 
-    public GameService(MemoryUserDao memoryUserDao, AuthDAO authDao, GameDAO gameDao){
-        this.memoryUserDao = memoryUserDao;
+    public GameService(UserDAO userDao, AuthDAO authDao, GameDAO gameDao){
+        this.userDao = userDao;
         this.authDao = authDao;
         this.gameDao = gameDao;
     }
@@ -60,7 +57,7 @@ public class GameService {
 
     public void clearData(){
         try {
-            memoryUserDao.clearData();
+            userDao.clearData();
             authDao.clearData();
             gameDao.clearData();
         } catch(ResponseException e){
@@ -75,7 +72,6 @@ public class GameService {
         }
 
         try {
-
             AuthtokenData foundAuth = authDao.getAuth(authToken);
             if (foundAuth == null) {
                 throw new ResponseException("Error: unauthorized");
@@ -84,6 +80,11 @@ public class GameService {
                 throw new ResponseException("Error: bad request");
             } else {
                 GameData gameData = gameDao.getGame(gameRequest.gameID());
+                System.out.println("poopoo doodoo " + gameData);
+
+                if(gameData == null){
+                    throw new ResponseException("Error: bad request");
+                }
                 if (gameRequest.playerColor().equals("WHITE")) {
                     if (gameData.getWhiteUsername() == null) {
                         gameData.setWhiteUsername(foundAuth.username);

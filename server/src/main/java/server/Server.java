@@ -12,18 +12,15 @@ import java.util.HashMap;
 public class Server {
     AuthDAO authDao;
     UserDAO userDao;
+    GameDAO gameDao;
 
     {try{
         authDao = new SqlAuthDAO();
+        userDao = new SqlUserDao();
+        gameDao = new SqlGameDao();
     }catch(ResponseException | DataAccessException e)
     {throw new RuntimeException(e);}}
 
-    {try{
-        userDao = new SqlUserDao();
-    }catch(ResponseException | DataAccessException e){
-        throw new RuntimeException();}}
-
-    GameDAO gameDao = new MemoryGameDao();
     UserService userService = new UserService(userDao, authDao);
     GameService gameService = new GameService(userDao, authDao, gameDao);
     public int run(int desiredPort) {Spark.port(desiredPort);Spark.staticFiles.location("web");

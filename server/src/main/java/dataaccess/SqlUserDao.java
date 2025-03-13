@@ -15,7 +15,7 @@ public class SqlUserDao implements UserDAO {
     //Retrieve a user with the given username.
     public UserData getUser(String username) throws DataAccessException {
         try (var conn = DatabaseManager.getConnection()) {
-            var statement = "SELECT authToken FROM users WHERE username=?";
+            var statement = "SELECT * FROM users WHERE username=?";
             try (var ps = conn.prepareStatement(statement)) {
                 ps.setString(1, username);
                 try (var rs = ps.executeQuery()) {
@@ -32,13 +32,13 @@ public class SqlUserDao implements UserDAO {
 
     public void createUser(UserData userData) throws DataAccessException {
         try(var conn = DatabaseManager.getConnection()) {
-            var statement = "INSERT INTO users (username, password, email) VALUES (?, ?)";
+            var statement = "INSERT INTO users (username, password, email) VALUES (?, ?, ?)";
             var ps = conn.prepareStatement(statement);
 
-            String authToken = UUID.randomUUID().toString();
             ps.setString(1, userData.username);
             ps.setString(2, userData.password);
             ps.setString(3, userData.email);
+            ps.executeUpdate();
 
         }catch (SQLException | DataAccessException e) {
             throw new DataAccessException(e.getMessage());
@@ -47,7 +47,7 @@ public class SqlUserDao implements UserDAO {
 
     public void clearData() throws ResponseException {
         try(var conn = DatabaseManager.getConnection();){
-            var statement = "TRUNCATE auths";
+            var statement = "TRUNCATE users";
             var ps = conn.prepareStatement(statement);
             ps.executeUpdate();
         }catch (SQLException | DataAccessException e){
@@ -61,7 +61,7 @@ public class SqlUserDao implements UserDAO {
               `username` varchar(256) NOT NULL,
               `password` varchar(256) NOT NULL,
               `email` varchar(256) NOT NULL,
-              PRIMARY KEY (`authToken`),
+              PRIMARY KEY (`username`),
               INDEX(username)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
             """

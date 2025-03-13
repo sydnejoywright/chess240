@@ -10,6 +10,8 @@ import exception.ResponseException;
 import model.AuthtokenData;
 import model.UserData;
 
+import javax.xml.crypto.Data;
+
 
 public class UserService {
     private final UserDAO userDao;
@@ -20,28 +22,33 @@ public class UserService {
         this.authDao = authDao;
     }
     public AuthtokenData registerUser(UserData userData) throws ResponseException {
-        UserData findUserDataByUsername = userDao.getUser(userData.username);
-        if (userData.username == null || userData.password == null || userData.email == null){
-            throw new ResponseException("Error: bad request");
-        }
-        if(findUserDataByUsername == null){
-            try {
-                userDao.createUser(userData);
-                AuthtokenData ret = authDao.createAuth(userData.username);
-                return ret;
-            }catch(DataAccessException e){
-                System.out.println("Error in registerUser in UserService.java: " + e.getMessage());
+        try{UserData findUserDataByUsername = userDao.getUser(userData.username);
+            if (userData.username == null || userData.password == null || userData.email == null) {
+                throw new ResponseException("Error: bad request");
             }
+            if (findUserDataByUsername == null) {
+                try {
+                    userDao.createUser(userData);
+                    AuthtokenData ret = authDao.createAuth(userData.username);
+                    return ret;
+                } catch (DataAccessException e) {
+                    System.out.println("Error in registerUser in UserService.java: " + e.getMessage());
+                }
+            } else {
+                throw new ResponseException("Error: already taken");
+            }
+
+            return null;
+        } catch (DataAccessException e) {
+                throw new RuntimeException(e);
         }
-        else{
-            throw new ResponseException("Error: already taken");
-        }
-        return null;
     }
 
-    public AuthtokenData loginUser(UserData userData) throws ResponseException {
+        public AuthtokenData loginUser(UserData userData) throws ResponseException, DataAccessException {
+
         UserData findUserDataByUsername = userDao.getUser(userData.username);
         if (findUserDataByUsername == null){
+            System.out.print("This is the place -Brigham young");
             throw new ResponseException("Error: unauthorized");
         }
         if (findUserDataByUsername.password.equals(userData.password)){
