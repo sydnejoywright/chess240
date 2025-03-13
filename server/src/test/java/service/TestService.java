@@ -23,18 +23,6 @@ public class TestService {
 
     @BeforeAll
     public static void init() throws DataAccessException {
-//        Server server = new Server();
-//
-//        userDao = new MemoryUserDao();
-//        authDao = new MemoryAuthDao();
-//        gameDao = new MemoryGameDao();
-//
-//        userService = new UserService(userDao, authDao);
-//        gameService = new GameService(memoryUserDao,authDao,gameDao);
-//
-//
-//        firstUser = new UserData("sydnebrilliant", "sydneisawesome", "sydne@byu.edu");
-//        authToken = new AuthtokenData(firstUser.username, "hehehehe");
 
     }
 
