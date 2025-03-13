@@ -1,10 +1,12 @@
 package service;
 import dataaccess.AuthDAO;
+import dataaccess.DataAccessException;
 import dataaccess.MemoryUserDao;
 import dataaccess.GameDAO;
 import exception.ResponseException;
 import model.*;
 
+import javax.xml.crypto.Data;
 import java.util.List;
 
 
@@ -20,13 +22,17 @@ public class GameService {
     }
 
     public List<GameData> listGames(AuthtokenData authToken) throws ResponseException {
-        AuthtokenData findAuth = authDao.getAuth(authToken);
-        if(findAuth != null){
-            return gameDao.listAllGames();
+        try {
+            AuthtokenData findAuth = authDao.getAuth(authToken);
+            if (findAuth != null) {
+                return gameDao.listAllGames();
+            } else {
+                throw new ResponseException("Error: unauthorized");
+            }
+        }catch(DataAccessException e){
+            System.out.println("Error in listGames in GameService.java: " + e.getMessage());
         }
-        else{
-            throw new ResponseException("Error: unauthorized");
-        }
+        return null;
     }
 
     public CreateGameResult createGame(CreateGameRequest gameRequest) throws ResponseException {
@@ -35,60 +41,68 @@ public class GameService {
         }
 
         AuthtokenData buildAuth = new AuthtokenData(null, gameRequest.authToken());
-        AuthtokenData foundAuth = authDao.getAuth(buildAuth);
-
-        if(foundAuth != null){
-            GameData newGame = new GameData();
-            newGame.setGameName(gameRequest.gameName());
-            int gameID = gameDao.createGame(newGame);
-            return new CreateGameResult(gameID);
+        try {
+            AuthtokenData foundAuth = authDao.getAuth(buildAuth);
+            if(foundAuth != null){
+                GameData newGame = new GameData();
+                newGame.setGameName(gameRequest.gameName());
+                int gameID = gameDao.createGame(newGame);
+                return new CreateGameResult(gameID);
+            }
+            else{
+                throw new ResponseException("Error: unauthorized");
+            }
+        }catch(DataAccessException e){
+            System.out.println("Error in createGame in GameService.java: " + e.getMessage());
         }
-        else{
-            throw new ResponseException("Error: unauthorized");
-        }
+        return null;
     }
 
     public void clearData(){
-        memoryUserDao.clearData();
-        authDao.clearData();
-        gameDao.clearData();
+        try {
+            memoryUserDao.clearData();
+            authDao.clearData();
+            gameDao.clearData();
+        } catch(ResponseException e){
+            System.out.println("Error in clearData in GameService.java: " + e.getMessage());
+
+        }
     }
 
-
-
-    public void joinGame(JoinGameRequest gameRequest, AuthtokenData authToken) throws ResponseException{
-        if(authToken.authToken == null || gameRequest.playerColor() == null || gameRequest.gameID() == null){
+    public void joinGame(JoinGameRequest gameRequest, AuthtokenData authToken) throws ResponseException {
+        if (authToken.authToken == null || gameRequest.playerColor() == null || gameRequest.gameID() == null) {
             throw new ResponseException("Error: bad request");
         }
 
-        AuthtokenData foundAuth = authDao.getAuth(authToken);
-        if(foundAuth == null){
-            throw new ResponseException("Error: unauthorized");
-        }
-        if(!gameRequest.playerColor().equals("WHITE") && !gameRequest.playerColor().equals("BLACK")){
-            throw new ResponseException("Error: bad request");
+        try {
+
+            AuthtokenData foundAuth = authDao.getAuth(authToken);
+            if (foundAuth == null) {
+                throw new ResponseException("Error: unauthorized");
+            }
+            if (!gameRequest.playerColor().equals("WHITE") && !gameRequest.playerColor().equals("BLACK")) {
+                throw new ResponseException("Error: bad request");
+            } else {
+                GameData gameData = gameDao.getGame(gameRequest.gameID());
+                if (gameRequest.playerColor().equals("WHITE")) {
+                    if (gameData.getWhiteUsername() == null) {
+                        gameData.setWhiteUsername(foundAuth.username);
+                        gameDao.updateGame(gameData);
+                    } else {
+                        throw new ResponseException("Error: already taken");
+                    }
+                } else {
+                    if (gameData.getBlackUsername() == null) {
+                        gameData.setBlackUsername(foundAuth.username);
+                        gameDao.updateGame(gameData);
+                    } else {
+                        throw new ResponseException("Error: already taken");
+                    }
+                }
+            }
+        }catch(DataAccessException e){
+            System.out.println("Error in joinGame in GameService.java: " + e.getMessage());
         }
 
-        else{
-            GameData gameData = gameDao.getGame(gameRequest.gameID());
-            if (gameRequest.playerColor().equals("WHITE")){
-                if(gameData.getWhiteUsername() == null){
-                    gameData.setWhiteUsername(foundAuth.username);
-                    gameDao.updateGame(gameData);
-                }
-                else{
-                    throw new ResponseException("Error: already taken");
-                }
-            }
-            else{
-                if(gameData.getBlackUsername() == null){
-                    gameData.setBlackUsername(foundAuth.username);
-                    gameDao.updateGame(gameData);
-                }
-                else{
-                    throw new ResponseException("Error: already taken");
-                }
-            }
-        }
     }
 }

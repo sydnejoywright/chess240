@@ -10,11 +10,22 @@ import spark.*;
 import java.util.HashMap;
 
 public class Server {
-    MemoryUserDao memoryUserDao = new MemoryUserDao();
-    AuthDAO authDao = new MemoryAuthDao();
+    AuthDAO authDao;
+    UserDAO userDao;
+
+    {try{
+        authDao = new SqlAuthDAO();
+    }catch(ResponseException | DataAccessException e)
+    {throw new RuntimeException(e);}}
+
+    {try{
+        userDao = new SqlUserDao();
+    }catch(ResponseException | DataAccessException e){
+        throw new RuntimeException();}}
+
     GameDAO gameDao = new MemoryGameDao();
-    UserService userService = new UserService(memoryUserDao, authDao);
-    GameService gameService = new GameService(memoryUserDao, authDao, gameDao);
+    UserService userService = new UserService(userDao, authDao);
+    GameService gameService = new GameService(userDao, authDao, gameDao);
     public int run(int desiredPort) {Spark.port(desiredPort);Spark.staticFiles.location("web");
 //DELETE DATABASE........................................................................................................
         Spark.delete("/db", (request, response) -> {
@@ -52,6 +63,7 @@ public class Server {
             try{userService.logoutUser(newAuth);response.status(200); return "";
             } catch (ResponseException f) {
                 if(f.getMessage().equals("Error: unauthorized")){response.status(401);
+                    System.out.print(f.getMessage());
                     return new Gson().toJson(new ErrorResponse(f.getMessage()));}
                 else{response.status(500);
                     return new Gson().toJson(new ErrorResponse(f.getMessage()));}}

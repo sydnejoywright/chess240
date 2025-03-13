@@ -20,6 +20,6 @@ public interface  AuthDAO {
     //Delete an authorization so that it is no longer valid.
     void deleteAuth(AuthtokenData authtokenData) throws ResponseException;
 
-    void clearData();
+    void clearData() throws ResponseException;
 
 }

@@ -1,5 +1,6 @@
 package dataaccess;
 
+import exception.ResponseException;
 import model.UserData;
 
 import java.util.ArrayList;
@@ -9,10 +10,10 @@ public interface UserDAO {
     List<UserData> currentUsers = new ArrayList<>();
 
     //Retrieve a user with the given username.
-    UserData getUser(String username);
+    UserData getUser(String username) throws DataAccessException;
 
-    void createUser(UserData userData);
+    void createUser(UserData userData) throws DataAccessException;
 
-    void clearData();
+    void clearData() throws ResponseException;
 
 }
