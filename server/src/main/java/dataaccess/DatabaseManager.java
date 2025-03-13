@@ -1,5 +1,7 @@
 package dataaccess;
 
+import exception.ResponseException;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -69,6 +71,49 @@ public class DatabaseManager {
             return conn;
         } catch (SQLException e) {
             throw new DataAccessException(e.getMessage());
+        }
+    }
+
+
+    private static final String[] createStatements = {
+            """
+            CREATE TABLE IF NOT EXISTS  auths (
+              `authToken` varchar(256) NOT NULL,
+              `username` varchar(256) NOT NULL,
+              PRIMARY KEY (`authToken`),
+              INDEX(username)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
+            """,
+
+            """
+            CREATE TABLE IF NOT EXISTS  users (
+              `username` varchar(256) NOT NULL,
+              `password` varchar(256) NOT NULL,
+              `email` varchar(256) NOT NULL,
+              PRIMARY KEY (`username`),
+              INDEX(username)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
+            """,
+
+            """
+            CREATE TABLE IF NOT EXISTS  games (
+              `gameID` int NOT NULL AUTO_INCREMENT,
+              `json` TEXT DEFAULT NULL,
+              INDEX(gameID)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
+            """
+    };
+
+    public static void configureDatabase() throws ResponseException, DataAccessException {
+        DatabaseManager.createDatabase();
+        try (var conn = DatabaseManager.getConnection()) {
+            for (var statement : createStatements) {
+                try (var preparedStatement = conn.prepareStatement(statement)) {
+                    preparedStatement.executeUpdate();
+                }
+            }
+        } catch (SQLException ex) {
+            throw new ResponseException(String.format("Unable to configure database: %s", ex.getMessage()));
         }
     }
 }
