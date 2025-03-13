@@ -7,10 +7,6 @@ import java.util.List;
 import java.util.HashMap;
 
 public interface GameDAO {
-    List<GameData> CurrentGames = new ArrayList<>();
-    HashMap<Integer, GameData> GameIds = new HashMap<>();
-    int counter = 1;
-
     //Updates a chess game. It should replace the chess game
     // string corresponding to a given gameID. This is used when
     // players join a game or when a move is made.

@@ -45,25 +45,13 @@ public class TestService {
 
     @Test
     public void testClearData() throws ResponseException {
-//        gameService.clearData();
-//        assertTrue((gameService.listGames(authToken)));
+
         assertEquals(true, true);
     }
 
     @Test
     public void testListGamesPositive() throws ResponseException {
-//        CreateGameRequest newGameRequest = new CreateGameRequest("testGame", "hehehehe");
-//        gameService.createGame(newGameRequest);
-//
-//        List<GameData> gameList = new ArrayList<>();
-//        AuthtokenData authToken = new AuthtokenData(firstUser.username, "hehehehe");
-//        GameData gameData = new GameData();
-//        gameData.setGameName("testGame");
-//
-//
-//
-//        Object outList = gameService.listGames(authToken);
-//        assertEquals(outList, gameList);
+
         assertEquals(true, true);
 
 
@@ -71,20 +59,7 @@ public class TestService {
 
     @Test
     public void testListGamesNegative () throws ResponseException {
-//        CreateGameRequest newGameRequest = new CreateGameRequest("testGame", "hehehehe");
-//        CreateGameResult result = gameService.createGame(newGameRequest);
-//
-//        List<GameData> gameData = new ArrayList<>();
-//        GameData newGameData = new GameData();
-//        newGameData.setGameName("testytest");
-//        gameData.add(newGameData);
-//
-//        String fakeToken = UUID.randomUUID().toString();
-//        AuthtokenData fakeAuth = new AuthtokenData("sydne", fakeToken);
-//
-//        Object list = gameService.listGames(fakeAuth);
-//        ResponseException errorResult = assertInstanceOf(ResponseException.class, list);
-//        assertEquals("Error: unauthorized", errorResult.getMessage());
+
         assertEquals(true, true);
     }
 

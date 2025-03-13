@@ -10,7 +10,7 @@ import java.sql.*;
 import java.util.List;
 
 public class SqlGameDao implements GameDAO{
-    private int Counter = 1;
+    private int counter = 1;
     public SqlGameDao() throws ResponseException, DataAccessException {
         DatabaseManager.configureDatabase();
     }
@@ -43,8 +43,8 @@ public class SqlGameDao implements GameDAO{
         if (getGame(gameData.getGameID()) != null) {
             throw new DataAccessException("This game already exists");
         }
-        gameData.setGameID(Counter);
-        Counter += 1;
+        gameData.setGameID(counter);
+        counter += 1;
         String game = new Gson().toJson(gameData);
         try(var conn = DatabaseManager.getConnection()) {
             var statement = "INSERT INTO games (gameID, json) VALUES (?,?)";
@@ -101,7 +101,7 @@ public class SqlGameDao implements GameDAO{
     }
 
     public void clearData() throws ResponseException {
-        Counter = 1;
+        counter = 1;
         try(var conn = DatabaseManager.getConnection();){
             var statement = "TRUNCATE games";
             var ps = conn.prepareStatement(statement);
