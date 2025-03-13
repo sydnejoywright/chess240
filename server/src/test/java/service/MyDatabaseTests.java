@@ -30,81 +30,76 @@ public class MyDatabaseTests {
 
 
     @Test
-    public void testClearSQLData() throws ResponseException {
-
-        assertEquals(true, true);
-    }
-
-
-    @Test
-    public void testListSQLGamesPositive() throws ResponseException {
-
-        assertEquals(true, true);
-
-
-    }
-
-    @Test
-    public void testListSQLGamesNegative () throws ResponseException {
+    public void testClearData() throws ResponseException {
 
         assertEquals(true, true);
     }
 
     @Test
-    public void testCreateSQLGamePositive(){
+    public void testListGamesPositive() throws ResponseException {
+
+        assertEquals(true, true);
+
+
+    }
+
+    @Test
+    public void testListGamesNegative () throws ResponseException {
+
         assertEquals(true, true);
     }
 
     @Test
-    public void testCreateSQLGameNegative(){
+    public void testCreateGamePositive(){
         assertEquals(true, true);
     }
 
     @Test
-    public void testJoinSQLGamePositive(){
+    public void testCreateGameNegative(){
         assertEquals(true, true);
     }
 
     @Test
-    public void testJoinSQLGameNegative(){
+    public void testJoinGamePositive(){
+        assertEquals(true, true);
+    }
+
+    @Test
+    public void testJoinGameNegative(){
         assertEquals(true, true);
     }
 
     //...............................................................
 
     @Test
-    public void testRegisterSQLUserPositive(){
+    public void testRegisterUserPositive(){
         assertEquals(true, true);
     }
 
     @Test
-    public void testRegisterSQLUserNegative(){
+    public void testRegisterUserNegative(){
         assertEquals(true, true);
     }
 
     @Test
-    public void testloginSQLUserPositive(){
+    public void testloginUserPositive(){
         assertEquals(true, true);
     }
 
     @Test
-    public void testLoginSQLUserNegative(){
+    public void testLoginUserNegative(){
         assertEquals(true, true);
     }
 
     @Test
-    public void testLogoutSQLUserPositive(){
+    public void testLogoutUserPositive(){
         assertEquals(true, true);
     }
 
     @Test
-    public void testLogoutSQLUserNegative(){
+    public void testLogoutUserNegative(){
         assertEquals(true, true);
     }
-
-
-
-
 
 
 }
