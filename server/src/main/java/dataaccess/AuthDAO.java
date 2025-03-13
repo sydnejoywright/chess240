@@ -12,7 +12,7 @@ import java.util.UUID;
 public interface  AuthDAO {
 
     //Create a new authorization.
-    AuthtokenData createAuth(String username);
+    AuthtokenData createAuth(String username) throws DataAccessException;
 
     //Retrieve an authorization given an authToken.
     AuthtokenData getAuth(AuthtokenData authToken) throws DataAccessException;
