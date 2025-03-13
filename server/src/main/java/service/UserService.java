@@ -10,8 +10,7 @@ import exception.ResponseException;
 import model.AuthtokenData;
 import model.UserData;
 
-import javax.xml.crypto.Data;
-
+import org.mindrot.jbcrypt.BCrypt;
 
 public class UserService {
     private final UserDAO userDao;
@@ -28,7 +27,7 @@ public class UserService {
             }
             if (findUserDataByUsername == null) {
                 try {
-                    userDao.createUser(userData);
+                    userDao.createUser(new UserData (userData.username, BCrypt.hashpw(userData.password, BCrypt.gensalt()), userData.email));
                     AuthtokenData ret = authDao.createAuth(userData.username);
                     return ret;
                 } catch (DataAccessException e) {
@@ -51,7 +50,7 @@ public class UserService {
             System.out.print("This is the place -Brigham young");
             throw new ResponseException("Error: unauthorized");
         }
-        if (findUserDataByUsername.password.equals(userData.password)){
+        if(BCrypt.checkpw(userData.password,findUserDataByUsername.password)){
             try {
                 AuthtokenData ret = authDao.createAuth(userData.username);
                 return ret;
