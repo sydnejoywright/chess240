@@ -31,7 +31,14 @@ public class SqlGameDao implements GameDAO{
             var ps = conn.prepareStatement(statement);
             ps.setInt(1, gameData.getGameID());
             ps.executeUpdate();
-            createGame(gameData);
+
+            statement = "INSERT INTO games (gameID, json) VALUES (?,?)";
+            ps = conn.prepareStatement(statement);
+
+            ps.setInt(1, gameData.getGameID());
+            ps.setString(2, new Gson().toJson(gameData));
+            ps.executeUpdate();
+            //createGame(gameData);
 
         }catch (SQLException | DataAccessException e) {
             throw new DataAccessException(e.getMessage());
@@ -101,6 +108,7 @@ public class SqlGameDao implements GameDAO{
     }
 
     public void clearData() throws ResponseException {
+        counter = 1;
         try(var conn = DatabaseManager.getConnection();){
             var statement = "TRUNCATE games";
             var ps = conn.prepareStatement(statement);
