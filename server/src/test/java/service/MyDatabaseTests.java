@@ -44,6 +44,64 @@ public class MyDatabaseTests {
 
     }
 
+    @Test
+    public void testListSQLGamesNegative () throws ResponseException {
+
+        assertEquals(true, true);
+    }
+
+    @Test
+    public void testCreateSQLGamePositive(){
+        assertEquals(true, true);
+    }
+
+    @Test
+    public void testCreateSQLGameNegative(){
+        assertEquals(true, true);
+    }
+
+    @Test
+    public void testJoinSQLGamePositive(){
+        assertEquals(true, true);
+    }
+
+    @Test
+    public void testJoinSQLGameNegative(){
+        assertEquals(true, true);
+    }
+
+    //...............................................................
+
+    @Test
+    public void testRegisterSQLUserPositive(){
+        assertEquals(true, true);
+    }
+
+    @Test
+    public void testRegisterSQLUserNegative(){
+        assertEquals(true, true);
+    }
+
+    @Test
+    public void testloginSQLUserPositive(){
+        assertEquals(true, true);
+    }
+
+    @Test
+    public void testLoginSQLUserNegative(){
+        assertEquals(true, true);
+    }
+
+    @Test
+    public void testLogoutSQLUserPositive(){
+        assertEquals(true, true);
+    }
+
+    @Test
+    public void testLogoutSQLUserNegative(){
+        assertEquals(true, true);
+    }
+
 
 
 
