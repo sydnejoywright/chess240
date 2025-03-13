@@ -4,6 +4,8 @@ import exception.ResponseException;
 import model.*;
 
 import com.google.gson.Gson;
+
+import javax.xml.crypto.Data;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.sql.*;
@@ -21,9 +23,13 @@ public class SqlAuthDAO implements AuthDAO {
 
     public AuthtokenData createAuth(String username) throws DataAccessException{
         try(var conn = DatabaseManager.getConnection()) {
-            var statement = conn.prepareStatement("INSERT INTO auths (authToken, username) VALUES (?, ?)");
+            var statement = "INSERT INTO auths (authToken, username) VALUES (?, ?)";
+            var ps = conn.prepareStatement(statement);
+
             String authToken = UUID.randomUUID().toString();
-            var id = executeUpdate(statement, username, authToken);
+            ps.setString(1, username);
+            ps.setString(2, authToken);
+
             return new AuthtokenData(username, authToken);
         }catch (SQLException e) {
             throw new DataAccessException(e.getMessage());
@@ -53,12 +59,21 @@ public class SqlAuthDAO implements AuthDAO {
     //Delete an authorization so that it is no longer valid.
 
     public void deleteAuth(AuthtokenData authtokenData) throws ResponseException{
+        try(var conn = DatabaseManager.getConnection();){
         var statement = "DELETE FROM auths WHERE username=?";
+
+        var ps = conn.prepareStatement(statement);
+        ps.setString(1, authtokenData.username);
+
         executeUpdate(statement, authtokenData.username);
+    }catch (Exception e){
+            throw new ResponseException(e.getMessage());
+        }
     }
 
     public void clearData(){
-
+        var statement = "TRUNCATE auths";
+        executeUpdate(statement);
     }
 
     private int executeUpdate(String statement, Object... params) throws ResponseException {
