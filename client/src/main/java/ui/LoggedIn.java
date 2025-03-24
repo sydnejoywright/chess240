@@ -1,12 +1,15 @@
 package ui;
 
 import java.util.Arrays;
+import java.util.Scanner;
 
 import chess.ChessGame;
 import ui.ServerFacade.ServerFacade;
 import com.google.gson.Gson;
 import model.*;
 import exception.ResponseException;
+
+import static ui.EscapeSequences.GREEN;
 //import server.ServerFacade;
 
 public class LoggedIn {
@@ -15,10 +18,36 @@ public class LoggedIn {
     private final String serverUrl;
 //    private WebSocketFacade ws;
     private State state = State.LOGGEDIN;
+    private String authToken;
 
-    public LoggedIn(String serverUrl) {
+    public LoggedIn(String serverUrl, String authToken) {
         server = new ServerFacade(serverUrl);
         this.serverUrl = serverUrl;
+        this.authToken = authToken;
+    }
+
+    public String run() {
+        System.out.print(help());
+
+        Scanner scanner = new Scanner(System.in);
+        var result = "";
+        while (!result.equals("quit")) {
+            printPrompt();
+            String line = scanner.nextLine();
+
+            try {
+                result = eval(line);
+                System.out.print(EscapeSequences.BLUE + result);
+            } catch (Throwable e) {
+                var msg = e.toString();
+                System.out.print(msg);
+            }
+        }
+        System.out.println();
+    }
+
+    private void printPrompt() {
+        System.out.print("\n" + EscapeSequences.RESET_TEXT_COLOR + "[LOGGED IN] >>> " + GREEN);
     }
 
     public String eval(String input) {

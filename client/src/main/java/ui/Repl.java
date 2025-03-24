@@ -1,20 +1,22 @@
 package ui;
 
 
+import ui.ServerFacade.ServerFacade;
+
 import java.util.Scanner;
 
 import static ui.EscapeSequences.*;
 
-public class Repl implements NotificationHandler {
-    private final ChessClient client;
+public class Repl {
+    private final ServerFacade server;
 
     public Repl(String serverUrl) {
-        client = new ChessClient(serverUrl, this);
+        server = new ServerFacade(serverUrl);
     }
 
     public void run() {
         System.out.println("\uD83D\uDC36 Welcome to 240 chess. Type Help to get started.");
-        System.out.print(client.help());
+        System.out.print(server.help());
 
         Scanner scanner = new Scanner(System.in);
         var result = "";
@@ -23,7 +25,7 @@ public class Repl implements NotificationHandler {
             String line = scanner.nextLine();
 
             try {
-                result = client.eval(line);
+                result = server.eval(line);
                 System.out.print(EscapeSequences.BLUE + result);
             } catch (Throwable e) {
                 var msg = e.toString();
@@ -41,3 +43,4 @@ public class Repl implements NotificationHandler {
     private void printPrompt() {
         System.out.print("\n" + EscapeSequences.RESET + ">>> " + GREEN);
     }
+}

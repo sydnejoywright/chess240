@@ -17,12 +17,12 @@ public class ServerFacade {
         serverUrl = url;
     }
 
-    public Object login(String username, String password) throws ResponseException {
+    public AuthtokenData login(String username, String password) throws ResponseException {
         var path = "/session";
         return this.makeRequest("POST", path, new UserData(username, password, null), AuthtokenData.class);
     }
 
-    public Object register(String username, String password, String email) throws ResponseException {
+    public RegisterResult register(String username, String password, String email) throws ResponseException {
         var path = "/user";
         return this.makeRequest("POST", path, new UserData(username, password,email), RegisterResult.class);
     }
@@ -47,7 +47,6 @@ public class ServerFacade {
         return this.makeRequest("PUT", path, new JoinGameRequest(playerColor, gameID), null);
     }
 
-    public Object
 
 
     private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass) throws ResponseException {
