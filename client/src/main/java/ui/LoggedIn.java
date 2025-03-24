@@ -114,7 +114,7 @@ public class LoggedIn {
             try {
                 assertSignedIn();
                 //SOMEHOW MY CLIENT NEEDS TO KEEP TRACK OF THE NUMBER OF THE GAMES FROM THE LAST TIME IT LISTED THE GAMES
-                server.joinGame(params[0], params[1]);
+                server.joinGame(Integer.parseInt(params[0]), params[1]);
                 return EscapeSequences.GREEN + "Successfully joined game" + EscapeSequences.RESET_TEXT_COLOR;
 
             } catch (ResponseException e) {
@@ -148,7 +148,8 @@ public class LoggedIn {
         try {
             assertSignedIn();
             server.logout();
-            return EscapeSequences.GREEN + "Successfully logged out" + EscapeSequences.RESET_TEXT_COLOR;
+            System.out.println(EscapeSequences.GREEN + "Successfully logged out" + EscapeSequences.RESET_TEXT_COLOR);
+            return new LoggedOut(serverUrl).run();
 
         }catch(ResponseException e){
             if(e.getMessage().equals("Error: unauthorized")){

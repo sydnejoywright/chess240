@@ -21,7 +21,7 @@ public class LoggedOut {
         this.serverUrl = serverUrl;
     }
 
-    public void run() {
+    public String run() {
         System.out.println("\uD83D\uDC36 Welcome to 240 chess. Type Help to get started.");
         System.out.print(help());
 
