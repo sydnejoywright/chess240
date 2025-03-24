@@ -41,7 +41,7 @@ public class LoggedIn {
     }
 
     public String createGame(String... params) throws ResponseException {
-        if(params.length == 2) {
+        if(params.length == 1) {
             try {
                 assertSignedIn();
                 server.createGame(params[0]);
@@ -60,7 +60,7 @@ public class LoggedIn {
                 }
             }
         }
-        return EscapeSequences.RED + "Expected <gameID> [WHITE][BLACK]" + EscapeSequences.RESET_TEXT_COLOR;
+        return EscapeSequences.RED + "Expected <gameID>" + EscapeSequences.RESET_TEXT_COLOR;
     }
 
     public String listGames() throws ResponseException {
@@ -80,36 +80,39 @@ public class LoggedIn {
         }
     }
 
+    public String playGame(String... params) throws ResponseException {
+        if(params.length == 2) {
+            try {
+                assertSignedIn();
+                //SOMEHOW MY CLIENT NEEDS TO KEEP TRACK OF THE NUMBER OF THE GAMES FROM THE LAST TIME IT LISTED THE GAMES
+                server.joinGame(params[0], params[1]);
+                return EscapeSequences.GREEN + "Successfully joined game" + EscapeSequences.RESET_TEXT_COLOR;
 
-    public String playGame(String teamColor, Integer gameID) throws ResponseException {
-        try {
-            assertSignedIn();
-            //SOMEHOW MY CLIENT NEEDS TO KEEP TRACK OF THE NUMBER OF THE GAMES FROM THE LAST TIME IT LISTED THE GAMES
-            server.joinGame(gameID, teamColor);
-            return EscapeSequences.GREEN + "Successfully joined game" + EscapeSequences.RESET_TEXT_COLOR;
-
-        }catch (ResponseException e){
-            if(e.getMessage().equals("User is not logged in")){
-                return EscapeSequences.RED + "You must log in in order to perform this action" + EscapeSequences.RESET_TEXT_COLOR;
-            }
-            else if(e.getMessage().equals("Error: unauthorized")){
-                return EscapeSequences.RED + "This action is not authorized" + EscapeSequences.RESET_TEXT_COLOR;
-            }
-            else{
-                return EscapeSequences.RED + "Cannot log out due to internal server error" + EscapeSequences.RESET_TEXT_COLOR;
+            } catch (ResponseException e) {
+                if (e.getMessage().equals("User is not logged in")) {
+                    return EscapeSequences.RED + "You must log in in order to perform this action" + EscapeSequences.RESET_TEXT_COLOR;
+                } else if (e.getMessage().equals("Error: unauthorized")) {
+                    return EscapeSequences.RED + "This action is not authorized" + EscapeSequences.RESET_TEXT_COLOR;
+                } else {
+                    return EscapeSequences.RED + "Cannot log out due to internal server error" + EscapeSequences.RESET_TEXT_COLOR;
+                }
             }
         }
+        return EscapeSequences.RED + "Expected <gameID> [WHITE][BLACK]" + EscapeSequences.RESET_TEXT_COLOR;
     }
 
-    public String observeGame() throws ResponseException {
-        assertSignedIn();
-        var pets = server.listPets();
-        var result = new StringBuilder();
-        var gson = new Gson();
-        for (var pet : pets) {
-            result.append(gson.toJson(pet)).append('\n');
+    public String observeGame(String... params) throws ResponseException {
+        if(params.length == 1) {
+            try {
+                assertSignedIn();
+
+            } catch (ResponseException e) {
+                if (e.getMessage().equals("User is not logged in")) {
+                    return EscapeSequences.RED + "You must log in in order to perform this action" + EscapeSequences.RESET_TEXT_COLOR;
+                }
+            }
         }
-        return result.toString();
+        return EscapeSequences.RED + "Expected <gameID>" + EscapeSequences.RESET_TEXT_COLOR;
     }
 
     public String logout() throws ResponseException {

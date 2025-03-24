@@ -47,6 +47,8 @@ public class ServerFacade {
         return this.makeRequest("PUT", path, new JoinGameRequest(playerColor, gameID), null);
     }
 
+    public Object
+
 
     private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass) throws ResponseException {
         try {
