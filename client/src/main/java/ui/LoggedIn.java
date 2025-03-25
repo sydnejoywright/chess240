@@ -19,16 +19,17 @@ public class LoggedIn {
 //    private WebSocketFacade ws;
     private State state = State.LOGGEDIN;
     private String authToken;
+    private String username;
 
-    public LoggedIn(String serverUrl, String authToken) {
+    public LoggedIn(String serverUrl, String authToken, String username) {
         server = new ServerFacade(serverUrl);
         this.serverUrl = serverUrl;
         this.authToken = authToken;
+        this.username = username;
     }
 
     public String run() {
         System.out.print(help());
-
         Scanner scanner = new Scanner(System.in);
         var result = "";
         while (!result.equals("quit")) {
@@ -44,10 +45,11 @@ public class LoggedIn {
             }
         }
         System.out.println();
+        return result;
     }
 
     private void printPrompt() {
-        System.out.print("\n" + EscapeSequences.RESET_TEXT_COLOR + "[LOGGED IN] >>> " + GREEN);
+        System.out.print("\n" + EscapeSequences.RESET_TEXT_COLOR + "[LOGGED IN] " + username +" >>> " + GREEN);
     }
 
     public String eval(String input) {
@@ -57,7 +59,7 @@ public class LoggedIn {
             var params = Arrays.copyOfRange(tokens, 1, tokens.length);
             return switch (cmd) {
                 case "create" -> createGame(params);
-                case "list" -> listGames();
+//                case "list" -> listGames();
                 case "join" -> playGame(params);
                 case "observe" -> observeGame(params);
                 case "logout" -> logout();
@@ -75,8 +77,8 @@ public class LoggedIn {
                 assertSignedIn();
                 server.createGame(params[0], authToken);
                 System.out.println(EscapeSequences.GREEN + "Successfully created game" + EscapeSequences.RESET_TEXT_COLOR);
-                return listGames();
-
+                return "";
+                //                return listGames();
             } catch (ResponseException e) {
                 if (e.getMessage().equals("User is not logged in")) {
                     return EscapeSequences.RED + "You must log in in order to perform this action" + EscapeSequences.RESET_TEXT_COLOR;
@@ -146,23 +148,23 @@ public class LoggedIn {
 
     public String logout() throws ResponseException {
         try {
-            assertSignedIn();
             server.logout(authToken);
             System.out.println(EscapeSequences.GREEN + "Successfully logged out" + EscapeSequences.RESET_TEXT_COLOR);
             return new LoggedOut(serverUrl).run();
 
         }catch(ResponseException e){
-            if(e.getMessage().equals("Error: unauthorized")){
+            if(e.getMessage().contains("401")){
                 return EscapeSequences.RED + "Logout unauthorized" + EscapeSequences.RESET_TEXT_COLOR;
             }
-            else if(e.getMessage().equals("User is not logged in")){
-                return EscapeSequences.RED + "You must log in in order to perform this action" + EscapeSequences.RESET_TEXT_COLOR;
-            }
+//            else if(e.getMessage().equals("User is not logged in")){
+//                return EscapeSequences.RED + "You must log in in order to perform this action" + EscapeSequences.RESET_TEXT_COLOR;
+//            }
             else{
                 return EscapeSequences.RED + "Cannot log out due to internal server error" + EscapeSequences.RESET_TEXT_COLOR;
             }
         }
     }
+
 
     public String help() {
         return """

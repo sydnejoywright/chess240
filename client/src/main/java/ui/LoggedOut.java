@@ -40,6 +40,7 @@ public class LoggedOut {
             }
         }
         System.out.println();
+        return result;
     }
 
     private void printPrompt() {
@@ -69,11 +70,13 @@ public class LoggedOut {
                 state = State.LOGGEDIN;
                 System.out.println(EscapeSequences.GREEN + "Logged in as " + authtokenData.username + EscapeSequences.RESET_TEXT_COLOR);
                 String authToken = authtokenData.authToken;
-                return new LoggedIn(serverUrl, authToken).run();
+                return new LoggedIn(serverUrl, authToken, authtokenData.username).run();
             }catch(ResponseException e){
-
-                if(e.getMessage().equals("Error: unauthorized")){
-                    return EscapeSequences.RED + "Cannot log in due to invalid credentials" + EscapeSequences.RESET_TEXT_COLOR;
+//                if(e.getMessage().equals("Error: unauthorized")){
+//                    return EscapeSequences.RED + "Password is not correct" + EscapeSequences.RESET_TEXT_COLOR;
+//                }
+                if(e.getMessage().contains("401")){
+                    return EscapeSequences.RED + "Cannot log in, check your credentials or register a new user." + EscapeSequences.RESET_TEXT_COLOR;
                 }
                 else{
                     return EscapeSequences.RED + "Cannot log in due to internal service error." + EscapeSequences.RESET_TEXT_COLOR;
@@ -88,16 +91,17 @@ public class LoggedOut {
             try {
                 RegisterResult registerResult = server.register(params[0], params[1], params[2]);
                 System.out.println(EscapeSequences.GREEN + "Successfully Registered User" + EscapeSequences.RESET_TEXT_COLOR);
-                return new LoggedIn(serverUrl, registerResult.authToken()).run();
+                return new LoggedIn(serverUrl, registerResult.authToken(), registerResult.username()).run();
             }catch(ResponseException e){
-                if(e.getMessage().equals("Error: already taken")){
+                if(e.getMessage().contains("403")){
                     return EscapeSequences.RED + "Sorry, that username is already taken." + EscapeSequences.RESET_TEXT_COLOR;
                 }
-                else if(e.getMessage().equals("Error: bad request")){
+                else if(e.getMessage().contains("400")){
                     return EscapeSequences.RED + "Bad request" + EscapeSequences.RESET_TEXT_COLOR;
                 }
                 else{
-                    return EscapeSequences.RED + "Cannot log in due to internal service error." + EscapeSequences.RESET_TEXT_COLOR;
+                    System.out.println(e.getMessage());
+                    return EscapeSequences.RED + "Cannot register user due to internal service error." + EscapeSequences.RESET_TEXT_COLOR;
                 }
             }
         }

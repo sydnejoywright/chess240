@@ -47,8 +47,7 @@ public class UserService {
 
         UserData findUserDataByUsername = userDao.getUser(userData.username);
         if (findUserDataByUsername == null){
-            System.out.print("This is the place -Brigham young");
-            throw new ResponseException("Error: unauthorized");
+            throw new ResponseException("Error: user not found");
         }
         if(BCrypt.checkpw(userData.password,findUserDataByUsername.password)){
             try {
@@ -65,8 +64,8 @@ public class UserService {
     }
 
     public void logoutUser(AuthtokenData authToken) throws ResponseException {
-
         if(authToken != null){
+            System.out.println(authToken);
             authDao.deleteAuth(authToken);
         }
         else{

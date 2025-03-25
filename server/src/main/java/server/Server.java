@@ -39,16 +39,21 @@ public class Server {
                 if(e.getMessage().equals("Error: bad request")){response.status(400);
                     return new Gson().toJson(new ErrorResponse(e.getMessage()));}
                 else{response.status(500);
+                    System.out.println(e.getMessage());
                     return new Gson().toJson(new ErrorResponse(e.getMessage()));}}
         });
 //LOGIN USER ...........................................................................................................
         Spark.post("/session", (request, response) -> {
             UserData newUser = new Gson().fromJson(request.body(), UserData.class);
+            System.out.println("This happened");
             try {AuthtokenData result = userService.loginUser(newUser);
                 response.status(200);
                 return new Gson().toJson(result);}
             catch (ResponseException e){
+                System.out.println(e.getMessage());
                 if(e.getMessage().equals("Error: unauthorized")){response.status(401);
+                    return new Gson().toJson(new ErrorResponse(e.getMessage()));}
+                else if(e.getMessage().equals("Error: user not found")){response.status(401);
                     return new Gson().toJson(new ErrorResponse(e.getMessage()));}
                 else {response.status(500);
                     return new Gson().toJson(new ErrorResponse(e.getMessage()));}}
@@ -56,11 +61,11 @@ public class Server {
 //LOGOUT USER............................................................................................................
         Spark.delete("/session", ((request, response) -> {
             String paramAuth = request.headers("authorization");
+            System.out.println(paramAuth);
             AuthtokenData newAuth = new AuthtokenData(null, paramAuth);
             try{userService.logoutUser(newAuth);response.status(200); return "";
             } catch (ResponseException f) {
                 if(f.getMessage().equals("Error: unauthorized")){response.status(401);
-                    System.out.print(f.getMessage());
                     return new Gson().toJson(new ErrorResponse(f.getMessage()));}
                 else{response.status(500);
                     return new Gson().toJson(new ErrorResponse(f.getMessage()));}}
