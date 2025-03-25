@@ -73,7 +73,7 @@ public class LoggedIn {
         if(params.length == 1) {
             try {
                 assertSignedIn();
-                server.createGame(params[0]);
+                server.createGame(params[0], authToken);
                 System.out.println(EscapeSequences.GREEN + "Successfully created game" + EscapeSequences.RESET_TEXT_COLOR);
                 return listGames();
 
@@ -95,7 +95,7 @@ public class LoggedIn {
     public String listGames() throws ResponseException {
         try {
             assertSignedIn();
-            return server.listGames();
+            return server.listGames(authToken);
         }catch (ResponseException e){
             if(e.getMessage().equals("User is not logged in")){
                 return EscapeSequences.RED + "You must log in in order to perform this action" + EscapeSequences.RESET_TEXT_COLOR;
@@ -147,7 +147,7 @@ public class LoggedIn {
     public String logout() throws ResponseException {
         try {
             assertSignedIn();
-            server.logout();
+            server.logout(authToken);
             System.out.println(EscapeSequences.GREEN + "Successfully logged out" + EscapeSequences.RESET_TEXT_COLOR);
             return new LoggedOut(serverUrl).run();
 

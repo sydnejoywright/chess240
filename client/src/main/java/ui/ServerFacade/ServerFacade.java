@@ -1,10 +1,10 @@
 package ui.ServerFacade;
 
 import com.google.gson.Gson;
-import exception.ErrorResponse;
 import exception.ResponseException;
 import model.*;
 import model.ErrorResponse;
+import com.google.gson.Gson;
 
 import java.io.*;
 import java.net.*;
@@ -27,19 +27,19 @@ public class ServerFacade {
         return this.makeRequest("POST", path, new UserData(username, password,email), RegisterResult.class);
     }
 
-    public Object logout() throws ResponseException {
+    public Object logout(String authToken) throws ResponseException {
         var path = "/session";
         return this.makeRequest("DELETE", path, authToken, model.ErrorResponse.class);
     }
 
-    public Object createGame(String gameName) throws ResponseException{
+    public Object createGame(String gameName, String authToken) throws ResponseException{
         var path = "/game";
         return this.makeRequest("POST", path, new CreateGameRequest(gameName, authToken), CreateGameResult.class);
     }
 
-    public String listGames()throws ResponseException{
+    public String listGames(String authToken)throws ResponseException{
         var path ="/game";
-        return this.makeRequest("GET", path, authToken, idk<weird> );
+        return this.makeRequest("GET", path, authToken, [IDK] );
     }
 
     public Object joinGame(Integer gameID, String playerColor) throws ResponseException{
@@ -63,7 +63,7 @@ public class ServerFacade {
         } catch (ResponseException ex) {
             throw ex;
         } catch (Exception ex) {
-            throw new ResponseException(500, ex.getMessage());
+            throw new ResponseException(ex.getMessage());
         }
     }
 
@@ -86,8 +86,7 @@ public class ServerFacade {
                     throw ResponseException.fromJson(respErr);
                 }
             }
-
-            throw new ResponseException(status, "other failure: " + status);
+            throw new ResponseException("other failure: " + status);
         }
     }
 
