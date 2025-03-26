@@ -2,6 +2,7 @@ package ui;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Scanner;
 
 import chess.ChessGame;
@@ -28,6 +29,7 @@ public class LoggedIn {
         this.serverUrl = serverUrl;
         this.authToken = authToken;
         this.username = username;
+        this.gameRefs = new HashMap<>();
     }
 
     public String run() {
@@ -89,17 +91,26 @@ public class LoggedIn {
                 } else if (e.getMessage().equals("Error: unauthorized")) {
                     return EscapeSequences.RED + "This action is not authorized" + EscapeSequences.RESET_TEXT_COLOR;
                 } else {
-                    return EscapeSequences.RED + "Cannot log out due to internal server error" + EscapeSequences.RESET_TEXT_COLOR;
+                    return EscapeSequences.RED + "Cannot create game due to internal server error" + EscapeSequences.RESET_TEXT_COLOR;
                 }
             }
         }
-        return EscapeSequences.RED + "Expected <gameID>" + EscapeSequences.RESET_TEXT_COLOR;
+        return EscapeSequences.RED + "Expected <gameID>. Check your number of parameters" + EscapeSequences.RESET_TEXT_COLOR;
     }
 
     public String listGames() throws ResponseException {
         try {
             assertSignedIn();
-            return server.listGames(authToken).toString();
+            GamesList games = (GamesList) server.listGames(authToken);
+            int counter = 1;
+            String prettyList = "";
+            for(GameData game: games.games()){
+                prettyList = prettyList.concat(counter +". "+ game.getGameName() + "\n");
+                gameRefs.put(counter, game.getGameID());
+                counter++;
+            }
+            return prettyList;
+
         }catch (ResponseException e){
             if(e.getMessage().contains("401")){
                 return EscapeSequences.RED + "You aren't authorized to list games" + EscapeSequences.RESET_TEXT_COLOR;
