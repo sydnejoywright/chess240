@@ -2,24 +2,19 @@ package ui;
 
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Scanner;
 
-import chess.ChessGame;
-import ui.ServerFacade.ServerFacade;
-import com.google.gson.Gson;
+import ui.serverfacade.ServerFacade;
 import model.*;
 import exception.ResponseException;
 
 import static ui.EscapeSequences.GREEN;
-//import server.ServerFacade;
 
 public class LoggedIn {
     private String visitorName = null;
     private final ServerFacade server;
     private final String serverUrl;
     private HashMap<Integer, Integer> gameRefs;
-//    private WebSocketFacade ws;
     private State state = State.LOGGEDIN;
     private String authToken;
     private String username;
@@ -43,8 +38,8 @@ public class LoggedIn {
             try {
                 result = eval(line);
                 System.out.print(EscapeSequences.BLUE + result);
-            } catch (Throwable e) {
-                var msg = e.toString();
+            } catch (Throwable f) {
+                var msg = f.toString();
                 System.out.print(msg);
             }
         }
@@ -82,7 +77,6 @@ public class LoggedIn {
                 server.createGame(params[0], authToken);
                 System.out.println(EscapeSequences.GREEN + "Successfully created game" + EscapeSequences.RESET_TEXT_COLOR);
                 return "";
-                //                return listGames();
             } catch (ResponseException e) {
                 if (e.getMessage().equals("User is not logged in")) {
                     return EscapeSequences.RED + "You must log in in order to perform this action" + EscapeSequences.RESET_TEXT_COLOR;
@@ -182,9 +176,6 @@ public class LoggedIn {
             if(e.getMessage().contains("401")){
                 return EscapeSequences.RED + "Logout unauthorized" + EscapeSequences.RESET_TEXT_COLOR;
             }
-//            else if(e.getMessage().equals("User is not logged in")){
-//                return EscapeSequences.RED + "You must log in in order to perform this action" + EscapeSequences.RESET_TEXT_COLOR;
-//            }
             else{
                 return EscapeSequences.RED + "Cannot log out due to internal server error" + EscapeSequences.RESET_TEXT_COLOR;
             }

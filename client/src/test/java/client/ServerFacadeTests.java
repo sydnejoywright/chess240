@@ -2,12 +2,9 @@ package client;
 
 import exception.ResponseException;
 import model.AuthtokenData;
-import model.GamesList;
-import model.UserData;
 import org.junit.jupiter.api.*;
 import server.Server;
-import ui.LoggedOut;
-import ui.ServerFacade.ServerFacade;
+import ui.serverfacade.ServerFacade;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;

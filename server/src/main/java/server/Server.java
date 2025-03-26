@@ -13,14 +13,12 @@ public class Server {
     AuthDAO authDao;
     UserDAO userDao;
     GameDAO gameDao;
-
     {try{
         authDao = new SqlAuthDAO();
         userDao = new SqlUserDao();
         gameDao = new SqlGameDao();
     }catch(ResponseException | DataAccessException e)
     {throw new RuntimeException(e);}}
-
     UserService userService = new UserService(userDao, authDao);
     GameService gameService = new GameService(userDao, authDao, gameDao);
     public int run(int desiredPort) {Spark.port(desiredPort);Spark.staticFiles.location("web");
@@ -39,18 +37,15 @@ public class Server {
                 if(e.getMessage().equals("Error: bad request")){response.status(400);
                     return new Gson().toJson(new ErrorResponse(e.getMessage()));}
                 else{response.status(500);
-                    System.out.println(e.getMessage());
                     return new Gson().toJson(new ErrorResponse(e.getMessage()));}}
         });
 //LOGIN USER ...........................................................................................................
         Spark.post("/session", (request, response) -> {
             UserData newUser = new Gson().fromJson(request.body(), UserData.class);
-            System.out.println("This happened");
             try {AuthtokenData result = userService.loginUser(newUser);
                 response.status(200);
                 return new Gson().toJson(result);}
             catch (ResponseException e){
-                System.out.println(e.getMessage());
                 if(e.getMessage().equals("Error: unauthorized")){response.status(401);
                     return new Gson().toJson(new ErrorResponse(e.getMessage()));}
                 else if(e.getMessage().equals("Error: user not found")){response.status(401);
@@ -61,7 +56,6 @@ public class Server {
 //LOGOUT USER............................................................................................................
         Spark.delete("/session", ((request, response) -> {
             String paramAuth = request.headers("authorization");
-            System.out.println(paramAuth);
             AuthtokenData newAuth = new AuthtokenData(null, paramAuth);
             try{userService.logoutUser(newAuth);response.status(200); return "";
             } catch (ResponseException f) {
@@ -73,17 +67,11 @@ public class Server {
 //LIST GAMES.............................................................................................................
         Spark.get("/game", ((request, response) -> {
             String paramAuth = request.headers("authorization");
-            System.out.println(paramAuth);
             AuthtokenData newAuth = new AuthtokenData(null, paramAuth);
             try {
                 response.status(200);
                 var temp = gameService.listGames(newAuth);
                 GamesList gamesList = new GamesList(temp);
-//                System.out.println("HERE");
-//                System.out.println(temp);
-//                HashMap<String, Object> jsonResponse = new HashMap<>();
-//                jsonResponse.put("games", temp);
-//                System.out.println(jsonResponse);
                 return new Gson().toJson(gamesList);
                 }
             catch (ResponseException g){
@@ -110,10 +98,8 @@ public class Server {
         }));
 //JOIN GAME..............................................................................................................
         Spark.put("/game", ((request, response) -> {
-            System.out.print("Jamba juice");
             JoinGameRequest joinGameRequest = new Gson().fromJson(request.body(), JoinGameRequest.class);
             String paramAuth = request.headers("authorization");
-            System.out.println(paramAuth);
             try {
                 AuthtokenData authToken = new AuthtokenData(null, paramAuth);
                 gameService.joinGame(joinGameRequest, authToken);
@@ -126,16 +112,11 @@ public class Server {
                 if(e.getMessage().equals("Error: already taken")){response.status(403);
                     return new Gson().toJson(new ErrorResponse(e.getMessage()));}
                 else{ response.status(500);
-                    System.out.println("here you goon");
-                    System.out.println(e.getMessage());
-                    return new Gson().toJson(new ErrorResponse(e.getMessage()));}}
-        }));
+                    return new Gson().toJson(new ErrorResponse(e.getMessage()));}}}));
         Spark.init();
         Spark.awaitInitialization();
-        return Spark.port();
-    }
+        return Spark.port();}
     public void stop() {
         Spark.stop();
-        Spark.awaitStop();
-    }
+        Spark.awaitStop();}
 }

@@ -1,10 +1,8 @@
-package ui.ServerFacade;
+package ui.serverfacade;
 
 import com.google.gson.Gson;
 import exception.ResponseException;
 import model.*;
-import model.ErrorResponse;
-import com.google.gson.Gson;
 
 import java.io.*;
 import java.net.*;

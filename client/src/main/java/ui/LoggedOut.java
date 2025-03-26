@@ -1,13 +1,12 @@
 package ui;
 
-import com.google.gson.Gson;
 import exception.ResponseException;
 
 import java.util.Arrays;
 import java.util.Scanner;
 
 import model.*;
-import ui.ServerFacade.ServerFacade;
+import ui.serverfacade.ServerFacade;
 
 import static ui.EscapeSequences.GREEN;
 
@@ -73,9 +72,6 @@ public class LoggedOut {
                 String authToken = authtokenData.authToken;
                 return new LoggedIn(serverUrl, authToken, authtokenData.username).run();
             }catch(ResponseException e){
-//                if(e.getMessage().equals("Error: unauthorized")){
-//                    return EscapeSequences.RED + "Password is not correct" + EscapeSequences.RESET_TEXT_COLOR;
-//                }
                 if(e.getMessage().contains("401")){
                     return EscapeSequences.RED + "Cannot log in, check your credentials or register a new user." + EscapeSequences.RESET_TEXT_COLOR;
                 }
