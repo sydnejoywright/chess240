@@ -10,9 +10,16 @@ import java.sql.*;
 import java.util.List;
 
 public class SqlGameDao implements GameDAO{
-    private int counter = 1;
+    private int max = 1;
+
     public SqlGameDao() throws ResponseException, DataAccessException {
         DatabaseManager.configureDatabase();
+        List<GameData> gameList = listAllGames();
+        for(GameData game : gameList){
+            if(game.getGameID() > max){
+                max = game.getGameID();
+            }
+        }
     }
 
     //Updates a chess game. It should replace the chess game
@@ -43,8 +50,8 @@ public class SqlGameDao implements GameDAO{
         if (getGame(gameData.getGameID()) != null) {
             throw new DataAccessException("This game already exists");
         }
-        gameData.setGameID(counter);
-        counter += 1;
+        gameData.setGameID(max + 1);
+        max ++;
         String game = new Gson().toJson(gameData);
         try(var conn = DatabaseManager.getConnection()) {
             var statement = "INSERT INTO games (gameID, json) VALUES (?,?)";
@@ -101,7 +108,7 @@ public class SqlGameDao implements GameDAO{
     }
 
     public void clearData() throws ResponseException {
-        counter = 1;
+        max = 1;
         try(var conn = DatabaseManager.getConnection();){
             var statement = "TRUNCATE games";
             var ps = conn.prepareStatement(statement);

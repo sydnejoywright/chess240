@@ -1,6 +1,7 @@
 package ui;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Scanner;
 
 import chess.ChessGame;
@@ -16,6 +17,7 @@ public class LoggedIn {
     private String visitorName = null;
     private final ServerFacade server;
     private final String serverUrl;
+    private HashMap<Integer, Integer> gameRefs;
 //    private WebSocketFacade ws;
     private State state = State.LOGGEDIN;
     private String authToken;
@@ -59,7 +61,7 @@ public class LoggedIn {
             var params = Arrays.copyOfRange(tokens, 1, tokens.length);
             return switch (cmd) {
                 case "create" -> createGame(params);
-//                case "list" -> listGames();
+                case "list" -> listGames();
                 case "join" -> playGame(params);
                 case "observe" -> observeGame(params);
                 case "logout" -> logout();
@@ -97,16 +99,14 @@ public class LoggedIn {
     public String listGames() throws ResponseException {
         try {
             assertSignedIn();
-            return server.listGames(authToken);
+            return server.listGames(authToken).toString();
         }catch (ResponseException e){
-            if(e.getMessage().equals("User is not logged in")){
-                return EscapeSequences.RED + "You must log in in order to perform this action" + EscapeSequences.RESET_TEXT_COLOR;
-            }
-            else if(e.getMessage().equals("Error: unauthorized")){
-                return EscapeSequences.RED + "This action is not authorized" + EscapeSequences.RESET_TEXT_COLOR;
+            if(e.getMessage().contains("401")){
+                return EscapeSequences.RED + "You aren't authorized to list games" + EscapeSequences.RESET_TEXT_COLOR;
             }
             else{
-                return EscapeSequences.RED + "Cannot log out due to internal server error" + EscapeSequences.RESET_TEXT_COLOR;
+                System.out.println(e.getMessage());
+                return EscapeSequences.RED + "Cannot list due to internal server error" + EscapeSequences.RESET_TEXT_COLOR;
             }
         }
     }

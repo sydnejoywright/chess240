@@ -73,16 +73,19 @@ public class Server {
 //LIST GAMES.............................................................................................................
         Spark.get("/game", ((request, response) -> {
             String paramAuth = request.headers("authorization");
+            System.out.println(paramAuth);
             AuthtokenData newAuth = new AuthtokenData(null, paramAuth);
             try {
                 response.status(200);
                 var temp = gameService.listGames(newAuth);
-                System.out.println("HERE");
-                System.out.println(temp);
-                HashMap<String, Object> jsonResponse = new HashMap<>();
-                jsonResponse.put("games", temp);
-                System.out.println(jsonResponse);
-                return new Gson().toJson(jsonResponse);}
+                GamesList gamesList = new GamesList(temp);
+//                System.out.println("HERE");
+//                System.out.println(temp);
+//                HashMap<String, Object> jsonResponse = new HashMap<>();
+//                jsonResponse.put("games", temp);
+//                System.out.println(jsonResponse);
+                return new Gson().toJson(gamesList);
+                }
             catch (ResponseException g){
                 if(g.getMessage().equals("Error: unauthorized")){response.status(401);
                     return new Gson().toJson(new ErrorResponse(g.getMessage()));}

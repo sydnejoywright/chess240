@@ -40,9 +40,9 @@ public class ServerFacade {
         return this.makeRequest("POST", path, new CreateGameRequest(gameName, authToken), CreateGameResult.class, authToken);
     }
 
-    public String listGames(String authToken)throws ResponseException{
+    public Object listGames(String authToken)throws ResponseException{
         var path ="/game";
-        return this.makeRequest("GET", path, authToken, String.class, authToken);
+        return this.makeRequest("GET", path, null, GamesList.class, authToken);
     }
 
     public Object joinGame(Integer gameID, String playerColor) throws ResponseException{
