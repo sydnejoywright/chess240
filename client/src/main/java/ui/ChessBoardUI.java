@@ -18,7 +18,7 @@ public class ChessBoardUI {
     private static final String BLACK_TILE = SET_BG_COLOR_BLACK;
     private static final String WHITE_TEAM = RED;
     private static final String BLACK_TEAM = BLUE;
-    private static final List<String> letters = Arrays.asList("a", "b", "c", "d", "e", "f", "g", "h");
+    private static final List<String> LETTERS = Arrays.asList("a", "b", "c", "d", "e", "f", "g", "h");
 
     public static void displayGame(ChessGame game, ChessGame.TeamColor asTeam) {
         horizontalBorder(asTeam);
@@ -41,11 +41,11 @@ public class ChessBoardUI {
         borderSquares += makeSquare(BORDER_COLOR, " ");
         if(team == ChessGame.TeamColor.WHITE){
             for(int i=7; i>=0; i--){
-                borderSquares+= makeSquare(BORDER_COLOR, letters.get(i));
+                borderSquares+= makeSquare(BORDER_COLOR, LETTERS.get(i));
             }
         }else{
             for(int i=0; i<8; i++){
-                borderSquares+= makeSquare(BORDER_COLOR, letters.get(i));
+                borderSquares+= makeSquare(BORDER_COLOR, LETTERS.get(i));
             }
         }
         borderSquares += makeSquare(BORDER_COLOR, " ");
