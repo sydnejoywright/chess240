@@ -162,7 +162,7 @@ public class LoggedIn {
         if(params.length == 1) {
             try{
                 Integer gameID = gameRefs.get(Integer.parseInt(params[0]));
-                ChessBoardUI.displayGame(new ChessGame(), ChessGame.TeamColor.WHITE);
+                ChessBoardUI.displayGame(new ChessGame(), ChessGame.TeamColor.BLACK);
                 return EscapeSequences.GREEN + "Observing game " + params[0] + EscapeSequences.RESET_TEXT_COLOR;
 
 
