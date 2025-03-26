@@ -133,8 +133,12 @@ public class LoggedIn {
                 //SOMEHOW MY CLIENT NEEDS TO KEEP TRACK OF THE NUMBER OF THE GAMES FROM THE LAST TIME IT LISTED THE GAMES
                 Integer gameID = gameRefs.get(Integer.parseInt(params[0]));
                 server.joinGame(gameID, params[1], authToken);
-                ChessBoardUI.displayGame(new ChessGame(), ChessGame.TeamColor.WHITE);
-                ChessBoardUI.displayGame(new ChessGame(), ChessGame.TeamColor.BLACK);
+
+                if(params[1].equalsIgnoreCase("white")){
+                    ChessBoardUI.displayGame(new ChessGame(), ChessGame.TeamColor.BLACK);
+                }else{
+                    ChessBoardUI.displayGame(new ChessGame(), ChessGame.TeamColor.WHITE);
+                }
 
                 return EscapeSequences.GREEN + "Successfully joined game " + params[0] + " as " + params[1] + EscapeSequences.RESET_TEXT_COLOR;
 
@@ -161,7 +165,9 @@ public class LoggedIn {
         if(params.length == 1) {
             try{
                 Integer gameID = gameRefs.get(Integer.parseInt(params[0]));
+                ChessBoardUI.displayGame(new ChessGame(), ChessGame.TeamColor.WHITE);
                 return EscapeSequences.GREEN + "Observing game " + params[0] + EscapeSequences.RESET_TEXT_COLOR;
+
 
             }catch(NumberFormatException n){
                 return EscapeSequences.RED + "The game ID must be a number" + EscapeSequences.RESET_TEXT_COLOR;
