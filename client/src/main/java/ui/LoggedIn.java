@@ -111,7 +111,6 @@ public class LoggedIn {
                 return EscapeSequences.RED + "You aren't authorized to list games" + EscapeSequences.RESET_TEXT_COLOR;
             }
             else{
-                System.out.println(e.getMessage());
                 return EscapeSequences.RED + "Cannot list due to internal server error" + EscapeSequences.RESET_TEXT_COLOR;
             }
         }
@@ -146,14 +145,12 @@ public class LoggedIn {
                 if (e.getMessage().contains("401")) {
                     return EscapeSequences.RED + "You must log in in order to perform this action" + EscapeSequences.RESET_TEXT_COLOR;
                 } else if (e.getMessage().contains("400")) {
-                    System.out.println(authToken);
                     return EscapeSequences.RED + "This action is not authorized you must list first." + EscapeSequences.RESET_TEXT_COLOR;
                 }
                 else if(e.getMessage().contains("403")){
                     return EscapeSequences.RED + "That spot is already full" + EscapeSequences.RESET_TEXT_COLOR;
 
                 }else {
-                    System.out.println(e.getMessage());
                     return EscapeSequences.RED + "Cannot join game due to internal server error" + EscapeSequences.RESET_TEXT_COLOR;
                 }
             }

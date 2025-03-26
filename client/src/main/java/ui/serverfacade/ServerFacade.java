@@ -45,10 +45,6 @@ public class ServerFacade {
 
     public Object joinGame(Integer gameID, String playerColor, String authToken) throws ResponseException{
         var path = "/game";
-        System.out.println("Making request to: " + serverUrl + path);
-        System.out.println("Auth token: " + authToken);
-        System.out.println("Join request: " + playerColor + " " + gameID);
-
         return this.makeRequest("PUT", path, new JoinGameRequest(playerColor, gameID), String.class, authToken);
     }
 
