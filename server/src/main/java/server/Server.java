@@ -110,8 +110,10 @@ public class Server {
         }));
 //JOIN GAME..............................................................................................................
         Spark.put("/game", ((request, response) -> {
+            System.out.print("Jamba juice");
             JoinGameRequest joinGameRequest = new Gson().fromJson(request.body(), JoinGameRequest.class);
             String paramAuth = request.headers("authorization");
+            System.out.println(paramAuth);
             try {
                 AuthtokenData authToken = new AuthtokenData(null, paramAuth);
                 gameService.joinGame(joinGameRequest, authToken);
@@ -124,6 +126,8 @@ public class Server {
                 if(e.getMessage().equals("Error: already taken")){response.status(403);
                     return new Gson().toJson(new ErrorResponse(e.getMessage()));}
                 else{ response.status(500);
+                    System.out.println("here you goon");
+                    System.out.println(e.getMessage());
                     return new Gson().toJson(new ErrorResponse(e.getMessage()));}}
         }));
         Spark.init();

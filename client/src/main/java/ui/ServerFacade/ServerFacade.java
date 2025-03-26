@@ -28,7 +28,7 @@ public class ServerFacade {
         return this.makeRequest("POST", path, new UserData(username, password,email), RegisterResult.class, "");
     }
 
-    public Object logout(String authToken) throws ResponseException {
+    public String logout(String authToken) throws ResponseException {
         var path = "/session";
         HashMap<String, String> request = new HashMap<>();
         request.put("authorization", authToken);
@@ -45,9 +45,17 @@ public class ServerFacade {
         return this.makeRequest("GET", path, null, GamesList.class, authToken);
     }
 
-    public Object joinGame(Integer gameID, String playerColor) throws ResponseException{
+    public Object joinGame(Integer gameID, String playerColor, String authToken) throws ResponseException{
         var path = "/game";
-        return this.makeRequest("PUT", path, new JoinGameRequest(playerColor, gameID), String.class, "");
+        System.out.println("Making request to: " + serverUrl + path);
+        System.out.println("Auth token: " + authToken);
+        System.out.println("Join request: " + playerColor + " " + gameID);
+
+        return this.makeRequest("PUT", path, new JoinGameRequest(playerColor, gameID), String.class, authToken);
+    }
+
+    public void clearDB() throws ResponseException {
+        this.makeRequest("DELETE", "/db", null, null, "");
     }
 
     private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass, String authToken) throws ResponseException {

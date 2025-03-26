@@ -56,7 +56,8 @@ public class LoggedOut {
                 case "quit" -> "quit";
                 case "login" -> login(params);
                 case "register" -> register(params);
-                default -> help();
+                case "help" -> help();
+                default -> "Unrecognized command. Type 'help' for a list of valid commands";
             };
         } catch (ResponseException ex) {
             return ex.getMessage();

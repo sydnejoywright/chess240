@@ -3,6 +3,7 @@ import dataaccess.*;
 import exception.ResponseException;
 import model.*;
 
+import javax.swing.plaf.synth.SynthDesktopIconUI;
 import javax.xml.crypto.Data;
 import java.util.List;
 
@@ -76,16 +77,19 @@ public class GameService {
             if (foundAuth == null) {
                 throw new ResponseException("Error: unauthorized");
             }
-            if (!gameRequest.playerColor().equals("WHITE") && !gameRequest.playerColor().equals("BLACK")) {
+            if (!gameRequest.playerColor().equalsIgnoreCase("WHITE") && !gameRequest.playerColor().equalsIgnoreCase("BLACK")) {
+                System.out.println(gameRequest.playerColor());
+                System.out.print("touched ya");
                 throw new ResponseException("Error: bad request");
             } else {
                 GameData gameData = gameDao.getGame(gameRequest.gameID());
                 System.out.println("poopoo doodoo " + gameData);
 
                 if(gameData == null){
+                    System.out.println("touched here");
                     throw new ResponseException("Error: bad request");
                 }
-                if (gameRequest.playerColor().equals("WHITE")) {
+                if (gameRequest.playerColor().equalsIgnoreCase("WHITE")) {
                     if (gameData.getWhiteUsername() == null) {
                         gameData.setWhiteUsername(foundAuth.username);
                         gameDao.updateGame(gameData);

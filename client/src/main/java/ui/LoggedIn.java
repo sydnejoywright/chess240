@@ -64,7 +64,7 @@ public class LoggedIn {
             return switch (cmd) {
                 case "create" -> createGame(params);
                 case "list" -> listGames();
-                case "join" -> playGame(params);
+                case "join" -> joinGame(params);
                 case "observe" -> observeGame(params);
                 case "logout" -> logout();
                 case "quit" -> "quit";
@@ -122,39 +122,54 @@ public class LoggedIn {
         }
     }
 
-    public String playGame(String... params) throws ResponseException {
+    public String joinGame(String... params) throws ResponseException {
         if(params.length == 2) {
+            try{
+                Integer gameID = Integer.parseInt(params[0]);
+            }catch(NumberFormatException n){
+                return EscapeSequences.RED + "The game ID must be a number" + EscapeSequences.RESET_TEXT_COLOR;
+            }
+            if(     !params[1].equalsIgnoreCase("black") &&
+                    !params[1].equalsIgnoreCase("white")){
+                return EscapeSequences.RED + "Your second parameter 'player color' must be BLACK or WHITE" + EscapeSequences.RESET_TEXT_COLOR;
+            }
             try {
                 assertSignedIn();
                 //SOMEHOW MY CLIENT NEEDS TO KEEP TRACK OF THE NUMBER OF THE GAMES FROM THE LAST TIME IT LISTED THE GAMES
-                server.joinGame(Integer.parseInt(params[0]), params[1]);
-                return EscapeSequences.GREEN + "Successfully joined game" + EscapeSequences.RESET_TEXT_COLOR;
+                Integer gameID = gameRefs.get(Integer.parseInt(params[0]));
+                server.joinGame(gameID, params[1], authToken);
+                return EscapeSequences.GREEN + "Successfully joined game " + params[0] + " as " + params[1] + EscapeSequences.RESET_TEXT_COLOR;
 
             } catch (ResponseException e) {
-                if (e.getMessage().equals("User is not logged in")) {
+                if (e.getMessage().contains("401")) {
                     return EscapeSequences.RED + "You must log in in order to perform this action" + EscapeSequences.RESET_TEXT_COLOR;
-                } else if (e.getMessage().equals("Error: unauthorized")) {
+                } else if (e.getMessage().contains("400")) {
+                    System.out.println(authToken);
                     return EscapeSequences.RED + "This action is not authorized" + EscapeSequences.RESET_TEXT_COLOR;
-                } else {
-                    return EscapeSequences.RED + "Cannot log out due to internal server error" + EscapeSequences.RESET_TEXT_COLOR;
+                }
+                else if(e.getMessage().contains("403")){
+                    return EscapeSequences.RED + "That spot is already full" + EscapeSequences.RESET_TEXT_COLOR;
+
+                }else {
+                    System.out.println(e.getMessage());
+                    return EscapeSequences.RED + "Cannot join game due to internal server error" + EscapeSequences.RESET_TEXT_COLOR;
                 }
             }
         }
-        return EscapeSequences.RED + "Expected <gameID> [WHITE][BLACK]" + EscapeSequences.RESET_TEXT_COLOR;
+        return EscapeSequences.RED + "Check your parameters: Expected <gameID> [WHITE][BLACK]" + EscapeSequences.RESET_TEXT_COLOR;
     }
 
     public String observeGame(String... params) throws ResponseException {
         if(params.length == 1) {
-            try {
-                assertSignedIn();
+            try{
+                Integer gameID = gameRefs.get(Integer.parseInt(params[0]));
+                return EscapeSequences.GREEN + "Observing game " + params[0] + EscapeSequences.RESET_TEXT_COLOR;
 
-            } catch (ResponseException e) {
-                if (e.getMessage().equals("User is not logged in")) {
-                    return EscapeSequences.RED + "You must log in in order to perform this action" + EscapeSequences.RESET_TEXT_COLOR;
-                }
+            }catch(NumberFormatException n){
+                return EscapeSequences.RED + "The game ID must be a number" + EscapeSequences.RESET_TEXT_COLOR;
             }
         }
-        return EscapeSequences.RED + "Expected <gameID>" + EscapeSequences.RESET_TEXT_COLOR;
+        return EscapeSequences.RED + "Check your parameters and try again: Expected <gameID>" + EscapeSequences.RESET_TEXT_COLOR;
     }
 
     public String logout() throws ResponseException {

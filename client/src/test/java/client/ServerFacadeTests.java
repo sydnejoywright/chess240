@@ -2,12 +2,15 @@ package client;
 
 import exception.ResponseException;
 import model.AuthtokenData;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
+import model.GamesList;
+import model.UserData;
+import org.junit.jupiter.api.*;
 import server.Server;
+import ui.LoggedOut;
 import ui.ServerFacade.ServerFacade;
+
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
 public class ServerFacadeTests {
@@ -23,6 +26,11 @@ public class ServerFacadeTests {
         facade = new ServerFacade("http://localhost:" + port);
     }
 
+    @BeforeEach
+    public void clearDatabase() throws Exception {
+        facade.clearDB();
+    }
+
     @AfterAll
     static void stopServer() {
         server.stop();
@@ -33,53 +41,85 @@ public class ServerFacadeTests {
     public void loginPositive() throws ResponseException {
 //        register the user before logging them in
         facade.register("sydne", "hello", "hi@hi.com");
-        AuthtokenData authToken = facade.login("sydne", "hello");
-
+        Assertions.assertNotNull(facade.login("sydne", "hello").authToken);
     }
 
     @Test
-    public void loginNegative() {
+    public void loginNegativeNotReg() {
         Assertions.assertThrows(ResponseException.class, () -> facade.login("sydne", "password"));
     }
+
     @Test
-    public void registerPositive() {
-        Assertions.assertTrue(true);
+    public void loginNegativeBadCred() {
+        Assertions.assertThrows(ResponseException.class, () -> facade.login(null,"password"));
     }
     @Test
-    public void registerNegative() {
-        Assertions.assertTrue(true);
+    public void registerPositive() throws ResponseException {
+        Assertions.assertNotNull(facade.register("sydne","joy", "wright").authToken());
     }
     @Test
-    public void logoutPositive() {
-        Assertions.assertTrue(true);
+    public void registerNegative() throws ResponseException {
+        //try to register the same user twice
+        facade.register("sydne", "hello", "hi@hi.com");
+        Assertions.assertThrows(ResponseException.class, () -> facade.register("sydne", "hello", "hi@hi.com"));
+    }
+    @Test
+    public void logoutPositive() throws ResponseException {
+        facade.register("sydne", "joy", "wright");
+        AuthtokenData authtokenData = facade.login("sydne", "joy");
+        String result = facade.logout(authtokenData.authToken);
+        System.out.println("Logout result: [" + result + "]");
+        Assertions.assertNull(result);
     }
     @Test
     public void logoutNegative() {
-        Assertions.assertTrue(true);
+        Assertions.assertThrows(ResponseException.class, () -> facade.logout("sydne"));
+    }
+
+    @Test
+    public void logoutNegativeBADcRED() {
+        Assertions.assertThrows(ResponseException.class, () -> facade.logout(null));
     }
     @Test
-    public void createGamePositive() {
-        Assertions.assertTrue(true);
+    public void createGamePositive() throws ResponseException {
+        facade.register("sydne", "joy", "wright");
+        AuthtokenData authtokenData = facade.login("sydne", "joy");
+        facade.createGame("hello", authtokenData.authToken);
+        Object list = facade.listGames(authtokenData.authToken);
+        Assertions.assertTrue(list.toString().contains("hello"));
     }
+
     @Test
     public void createGameNegative() {
-        Assertions.assertTrue(true);
+        //try to create a game without authorization
+        Assertions.assertThrows(ResponseException.class, () -> facade.createGame("sydne", null));
     }
+
     @Test
-    public void listGamesPositive() {
-        Assertions.assertTrue(true);
+    public void listGamesPositive() throws ResponseException {
+        facade.register("hehe", "haha", "hoho");
+        AuthtokenData authtokenData = facade.login("hehe", "haha");
+        facade.createGame("hello", authtokenData.authToken);
+        Object list = facade.listGames(authtokenData.authToken);
+        Assertions.assertTrue(list.toString().contains("hello"));
     }
     @Test
     public void listGamesNegative() {
-        Assertions.assertTrue(true);
+        //try listing games without authorization
+        Assertions.assertThrows(ResponseException.class, () -> facade.listGames("hi"));
     }
+
     @Test
-    public void joinGamePositive() {
-        Assertions.assertTrue(true);
+    public void joinGamePositive() throws ResponseException {
+        facade.register("hehe", "haha", "hoho");
+        AuthtokenData authtokenData = facade.login("hehe", "haha");
+        facade.createGame("hello", authtokenData.authToken);
+        Assertions.assertNull(facade.joinGame(2,"white", authtokenData.authToken));
     }
     @Test
     public void joinGameNegative() {
-        Assertions.assertTrue(true);
+        //try joining games without authorization
+        Assertions.assertThrows(ResponseException.class, () -> facade.joinGame(1, "white", "hi"));
     }
 
 }
