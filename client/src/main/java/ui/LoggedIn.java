@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Scanner;
 
+import chess.ChessGame;
 import ui.serverfacade.ServerFacade;
 import model.*;
 import exception.ResponseException;
@@ -132,6 +133,9 @@ public class LoggedIn {
                 //SOMEHOW MY CLIENT NEEDS TO KEEP TRACK OF THE NUMBER OF THE GAMES FROM THE LAST TIME IT LISTED THE GAMES
                 Integer gameID = gameRefs.get(Integer.parseInt(params[0]));
                 server.joinGame(gameID, params[1], authToken);
+                ChessBoardUI.displayGame(new ChessGame(), ChessGame.TeamColor.WHITE);
+                ChessBoardUI.displayGame(new ChessGame(), ChessGame.TeamColor.BLACK);
+
                 return EscapeSequences.GREEN + "Successfully joined game " + params[0] + " as " + params[1] + EscapeSequences.RESET_TEXT_COLOR;
 
             } catch (ResponseException e) {
@@ -139,7 +143,7 @@ public class LoggedIn {
                     return EscapeSequences.RED + "You must log in in order to perform this action" + EscapeSequences.RESET_TEXT_COLOR;
                 } else if (e.getMessage().contains("400")) {
                     System.out.println(authToken);
-                    return EscapeSequences.RED + "This action is not authorized" + EscapeSequences.RESET_TEXT_COLOR;
+                    return EscapeSequences.RED + "This action is not authorized you must list first." + EscapeSequences.RESET_TEXT_COLOR;
                 }
                 else if(e.getMessage().contains("403")){
                     return EscapeSequences.RED + "That spot is already full" + EscapeSequences.RESET_TEXT_COLOR;
