@@ -1,11 +1,12 @@
 package dataaccess;
 
 import model.UserData;
+import org.eclipse.jetty.server.Authentication;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class MemoryUserDao {
+public class MemoryUserDao implements UserDAO {
     List<UserData> currentUsers = new ArrayList<>();
 
     //Retrieve a user with the given username.
