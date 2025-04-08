@@ -24,13 +24,12 @@ public class ChessBoardUI {
         horizontalBorder(asTeam);
         if(asTeam == ChessGame.TeamColor.WHITE) {
             for (int i = 1; i <= 8; i++) {
-                makeRow(i, game);
+                makeRow(i, game, asTeam);
             }
         }
         else{
             for (int i = 8; i >= 1; i--) {
-                makeRow(i, game);
-
+                makeRow(i, game, asTeam);
             }
         }
         horizontalBorder(asTeam);
@@ -56,17 +55,29 @@ public class ChessBoardUI {
         return color + " " + character + " ";
     }
 
-    public static void makeRow(int row, ChessGame game) {
+    public static void makeRow(int row, ChessGame game, ChessGame.TeamColor asTeam) {
         String rowSquares = "";
         rowSquares += makeSquare(BORDER_COLOR, Integer.toString(row));
-        for (int i = 1; i <= 8; i++) {
-            String squareColor;
-            if ((row + i) % 2 == 0) {
-            squareColor = BLACK_TILE;
-            } else {
-                squareColor = WHITE_TILE;
+        if(!asTeam.equals(ChessGame.TeamColor.WHITE)) {
+            for (int i = 1; i <= 8; i++) {
+                String squareColor;
+                if ((row + i) % 2 == 0) {
+                    squareColor = BLACK_TILE;
+                } else {
+                    squareColor = WHITE_TILE;
+                }
+                rowSquares += makeSquare(squareColor, findPiece(row, i, game));
             }
-            rowSquares += makeSquare(squareColor, findPiece(row, i, game));
+        }else{
+            for (int i = 8; i >= 1; i--) {
+                String squareColor;
+                if ((row + i) % 2 == 0) {
+                    squareColor = BLACK_TILE;
+                } else {
+                    squareColor = WHITE_TILE;
+                }
+                rowSquares += makeSquare(squareColor, findPiece(row, i, game));
+            }
         }
         rowSquares += makeSquare(BORDER_COLOR, Integer.toString(row));
         System.out.println(rowSquares + RESET_TEXT_COLOR + RESET_BG_COLOR);
