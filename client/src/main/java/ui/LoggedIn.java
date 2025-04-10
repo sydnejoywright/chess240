@@ -129,17 +129,34 @@ public class LoggedIn {
             }
             try {
                 assertSignedIn();
-                //SOMEHOW MY CLIENT NEEDS TO KEEP TRACK OF THE NUMBER OF THE GAMES FROM THE LAST TIME IT LISTED THE GAMES
-                Integer gameID = gameRefs.get(Integer.parseInt(params[0]));
-                server.joinGame(gameID, params[1], authToken);
 
-                if(params[1].equalsIgnoreCase("white")){
-                    ChessBoardUI.displayGame(new ChessGame(), ChessGame.TeamColor.BLACK);
+                //SOMEHOW MY CLIENT NEEDS TO KEEP TRACK OF THE NUMBER OF THE GAMES FROM THE LAST TIME IT LISTED THE GAMES
+                int gameID = gameRefs.get(Integer.parseInt(params[0]));
+                server.joinGame(gameID, params[1], authToken);
+                GameData theGame = null;
+
+                GamesList games = (GamesList) server.listGames(authToken);
+                for(GameData game: games.games()){
+
+                    if (game.getGameID() == gameID){
+                        theGame = game;
+                    }
+                }
+                boolean isPlayer = true;
+                if(theGame != null) {
+                    if (params[1].equalsIgnoreCase("white")) {
+                        ChessBoardUI.displayGame(theGame.getChessGame(), ChessGame.TeamColor.BLACK);
+                        System.out.println(EscapeSequences.GREEN + "Successfully joined game " + params[0] + " as " + params[1] + EscapeSequences.RESET_TEXT_COLOR);
+                        return new GamePlayUI(username, authToken, theGame, ChessGame.TeamColor.BLACK, isPlayer).run();
+                    } else {
+                        ChessBoardUI.displayGame(theGame.getChessGame(), ChessGame.TeamColor.WHITE);
+                        System.out.println(EscapeSequences.GREEN + "Successfully joined game " + params[0] + " as " + params[1] + EscapeSequences.RESET_TEXT_COLOR);
+                        return new GamePlayUI(username, authToken, theGame, ChessGame.TeamColor.WHITE, isPlayer).run();
+                    }
                 }else{
-                    ChessBoardUI.displayGame(new ChessGame(), ChessGame.TeamColor.WHITE);
+                    System.out.println("the game is null");
                 }
 
-                return EscapeSequences.GREEN + "Successfully joined game " + params[0] + " as " + params[1] + EscapeSequences.RESET_TEXT_COLOR;
 
             } catch (ResponseException e) {
                 if (e.getMessage().contains("401")) {
@@ -159,12 +176,25 @@ public class LoggedIn {
     }
 
     public String observeGame(String... params) throws ResponseException {
+        Boolean isPlayer = false;
         if(params.length == 1) {
             try{
                 Integer gameID = gameRefs.get(Integer.parseInt(params[0]));
-                ChessBoardUI.displayGame(new ChessGame(), ChessGame.TeamColor.BLACK);
-                return EscapeSequences.GREEN + "Observing game " + params[0] + EscapeSequences.RESET_TEXT_COLOR;
+                GameData theGame = null;
 
+                GamesList games = (GamesList) server.listGames(authToken);
+                for(GameData game: games.games()){
+
+                    if (game.getGameID() == gameID){
+                        theGame = game;
+                    }
+                }
+                if(theGame != null) {
+                    ChessBoardUI.displayGame(theGame.getChessGame(), ChessGame.TeamColor.BLACK);
+                    System.out.println(EscapeSequences.GREEN + "Observing game " + params[0] + EscapeSequences.RESET_TEXT_COLOR);
+                    return new GamePlayUI(username, authToken, theGame, ChessGame.TeamColor.WHITE, isPlayer).run();
+
+                }
 
             }catch(NumberFormatException n){
                 return EscapeSequences.RED + "The game ID must be a number" + EscapeSequences.RESET_TEXT_COLOR;

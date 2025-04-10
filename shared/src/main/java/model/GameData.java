@@ -46,6 +46,7 @@ public class GameData {
     public ChessGame getChessGame(){
         return game;
     }
+    public void setChessGame(ChessGame chessGame){game = chessGame;}
 
     @Override
     public String toString() {

@@ -7,10 +7,12 @@ import chess.ChessPosition;
 import exception.ResponseException;
 import model.GameData;
 import ui.serverfacade.ServerFacade;
+//import websocket.WebSocketFacade;
 
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Scanner;
+
 
 import static ui.EscapeSequences.GREEN;
 
@@ -19,11 +21,15 @@ public class GamePlayUI {
     private String authToken;
     private String username;
     private int gameID;
+//    private WebSocketFacade client;
+    private HashMap<Integer, Integer> gameRefs;
+    private boolean isPlayer;
 
-    public GamePlayUI(String username, String authToken, GameData gameData, ChessGame.TeamColor asTeam, int gameID){
+
+    public GamePlayUI(String username, String authToken, GameData gameData, ChessGame.TeamColor asTeam, Boolean isPlayer) throws ResponseException {
         this.authToken = authToken;
         this.username = username;
-        this.gameID = gameID;
+//        this.client = new WebSocketFacade("http://localhost:8080");
 
     }
 
@@ -99,15 +105,25 @@ public class GamePlayUI {
 
 
     public String help() {
-        return """
-                - create <NAME> - a game
-                - list - games
-                - join <ID> [WHITE][BLACK] - a game
-                - observe <ID> - a game
-                - logout - when you are done
-                - quit - playing chess
-                - help - with possible commands
-                """;
+        if(isPlayer) {
+            return """
+                    - redraw - redraws board
+                    - leave
+                    - move
+                    - resign
+                    - highlight
+                    - quit - playing chess
+                    - help - with possible commands
+                    """;
+        }else{
+            return """
+                    - redraw - redraws board
+                    - leave
+                    - highlight
+                    - quit - playing chess
+                    - help - with possible commands
+                    """;
+        }
     }
 
 }

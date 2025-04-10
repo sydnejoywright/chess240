@@ -1,5 +1,6 @@
 package dataaccess;
 
+import chess.ChessGame;
 import exception.ResponseException;
 import model.*;
 
@@ -51,6 +52,7 @@ public class SqlGameDao implements GameDAO{
             throw new DataAccessException("This game already exists");
         }
         gameData.setGameID(max + 1);
+        gameData.setChessGame(new ChessGame());
         max ++;
         String game = new Gson().toJson(gameData);
         try(var conn = DatabaseManager.getConnection()) {
