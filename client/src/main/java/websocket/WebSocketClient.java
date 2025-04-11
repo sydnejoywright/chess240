@@ -66,8 +66,9 @@ public class WebSocketClient extends Endpoint {
     public void sendMessage(String command) throws IOException {
         try {
             System.out.println("Received commmand about to print it");
-            session.getBasicRemote().sendText(command);
             System.out.println(command);
+            session.getBasicRemote().sendText(command);
+
         } catch (IOException e) {
             System.out.println("Exception caught in sendMessage websocketClient: " + e.getMessage());
         }

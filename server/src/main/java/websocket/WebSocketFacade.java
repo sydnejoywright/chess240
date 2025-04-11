@@ -3,13 +3,16 @@ package websocket;
 import chess.ChessMove;
 import com.google.gson.Gson;
 import dataaccess.AuthDAO;
+import dataaccess.DataAccessException;
 import dataaccess.GameDAO;
 import dataaccess.UserDAO;
 import exception.ResponseException;
+import model.AuthtokenData;
 import org.eclipse.jetty.server.Authentication;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketClose;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
+import websocket.commands.ConnectCommand;
 import websocket.commands.MakeMoveCommand;
 import websocket.commands.UserGameCommand;
 import websocket.messages.NotificationType;
@@ -56,7 +59,7 @@ public class WebSocketFacade {
     }
 
     @OnWebSocketMessage
-    public void onMessage(Session session, String message) throws IOException {
+    public void onMessage(Session session, String message) throws IOException, DataAccessException {
         System.out.println("Message from " + activeSessions.get(session) + ": " + message);
         var command = new Gson().fromJson(message, UserGameCommand.class);
         switch (command.getCommandType()) {
@@ -101,11 +104,15 @@ public class WebSocketFacade {
     }
 
     private void makeMove(String authToken, int gameID, ChessMove move, Session session){}
-    private void leave(String authToken, int gameID, Session session) throws IOException {
-        System.out.println("zachs butt is juicy");
-        System.out.println("GameId of the person leaving: " + gameID);
-        broadcastMessage("hey everyone", gameID);
+
+
+    private void leave(String authToken, int gameID, Session session) throws IOException, DataAccessException {
+        AuthtokenData authtokenData = new AuthtokenData("", authToken);
+        AuthtokenData data = authDAO.getAuth(authtokenData);
+        broadcastMessage(data.username + " left the game", gameID);
     }
+
+
     private void resign(String authToken, int gameID, Session session){}
 
 

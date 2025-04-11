@@ -2,7 +2,7 @@ package server;
 
 import com.google.gson.GsonBuilder;
 
-public class TestFactory {
+public class TestFactorie {
 
     public static Long getMessageTime() {
         /*

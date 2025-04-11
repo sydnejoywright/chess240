@@ -9,6 +9,7 @@ import model.GameData;
 import ui.serverfacade.ServerFacade;
 import websocket.WebSocketClient;
 //import websocket.WebSocketFacade;
+import websocket.commands.ConnectCommand;
 import websocket.commands.UserGameCommand;
 import com.google.gson.Gson;
 
@@ -40,12 +41,8 @@ public class GamePlayUI {
         this.serverUrl = "http://localhost:8080";
         this.client = new WebSocketClient(serverUrl, gameData.getChessGame(), asTeam);
         this.gameID = gameID;
-
         client.sendMessage(new Gson().toJson(new UserGameCommand(UserGameCommand.CommandType.CONNECT, authToken, gameID)));
-        System.out.println("sydneee");
-
     }
-
 
     public String run() {
         System.out.print(help());
