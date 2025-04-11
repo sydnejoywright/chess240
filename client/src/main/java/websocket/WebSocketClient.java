@@ -16,6 +16,7 @@ import websocket.messages.LoadGameType;
 import websocket.messages.ServerMessage;
 
 //need to extend Endpoint for websocket to work properly
+@ClientEndpoint
 public class WebSocketClient extends Endpoint {
 
     Session session;
@@ -28,6 +29,7 @@ public class WebSocketClient extends Endpoint {
         try {
             url = url.replace("http", "ws");
             URI socketURI = new URI(url + "/ws");
+            System.out.println("Socket URI: " + socketURI);
 
             WebSocketContainer container = ContainerProvider.getWebSocketContainer();
             this.session = container.connectToServer(this, socketURI);
@@ -38,21 +40,42 @@ public class WebSocketClient extends Endpoint {
                 public void onMessage(String message) {
                     handle(message);
                 }
+
             });
 
         } catch (DeploymentException | IOException | URISyntaxException ex) {
+
             System.out.println("Problem in websocket facade: ");
             System.out.println(ex.getMessage());
         }
+
     }
 
     //Endpoint requires this method, but you don't have to do anything
     @Override
     public void onOpen(Session session, EndpointConfig endpointConfig) {
-        System.out.println("onOpen was called from WebSocketClient");
+        System.out.println("onOpen was called from WebSocketClient" + session.getBasicRemote());
+
     }
 
+
+    public void redraw(ChessGame.TeamColor asTeam){
+        ChessBoardUI.displayGame(currentGame, asTeam);
+    }
+
+    public void sendMessage(String command) throws IOException {
+        try {
+            System.out.println("Received commmand about to print it");
+            session.getBasicRemote().sendText(command);
+            System.out.println(command);
+        } catch (IOException e) {
+            System.out.println("Exception caught in sendMessage websocketClient: " + e.getMessage());
+        }
+    }
+
+
     private void handle(String string){
+        System.out.println(string);
         ServerMessage msg = new Gson().fromJson(string, ServerMessage.class);
         switch(msg.getServerMessageType()){
             case LOAD_GAME:

@@ -98,10 +98,9 @@ public class SqlGameDao implements GameDAO{
                 try (var rs = ps.executeQuery()) {
                     while (rs.next()) {
                         gameList.add(new Gson().fromJson(rs.getString("json"), GameData.class));
-                        System.out.println("Game: " + rs.getString("json"));
+//                        System.out.println("Game: " + rs.getString("json"));
                     }
                 }
-                System.out.println("Game List: " + gameList);
                 return gameList;
             }
         } catch (Exception e) {

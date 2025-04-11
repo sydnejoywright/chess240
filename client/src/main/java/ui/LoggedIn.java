@@ -1,5 +1,6 @@
 package ui;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Scanner;
@@ -147,11 +148,11 @@ public class LoggedIn {
                     if (params[1].equalsIgnoreCase("white")) {
                         ChessBoardUI.displayGame(theGame.getChessGame(), ChessGame.TeamColor.BLACK);
                         System.out.println(EscapeSequences.GREEN + "Successfully joined game " + params[0] + " as " + params[1] + EscapeSequences.RESET_TEXT_COLOR);
-                        return new GamePlayUI(username, authToken, theGame, ChessGame.TeamColor.BLACK, isPlayer).run();
+                        return new GamePlayUI(username, authToken, theGame, ChessGame.TeamColor.BLACK, isPlayer, gameID).run();
                     } else {
                         ChessBoardUI.displayGame(theGame.getChessGame(), ChessGame.TeamColor.WHITE);
                         System.out.println(EscapeSequences.GREEN + "Successfully joined game " + params[0] + " as " + params[1] + EscapeSequences.RESET_TEXT_COLOR);
-                        return new GamePlayUI(username, authToken, theGame, ChessGame.TeamColor.WHITE, isPlayer).run();
+                        return new GamePlayUI(username, authToken, theGame, ChessGame.TeamColor.WHITE, isPlayer, gameID).run();
                     }
                 }else{
                     System.out.println("the game is null");
@@ -170,6 +171,8 @@ public class LoggedIn {
                 }else {
                     return EscapeSequences.RED + "Cannot join game due to internal server error" + EscapeSequences.RESET_TEXT_COLOR;
                 }
+            } catch (IOException e) {
+                System.out.println("sorry2");
             }
         }
         return EscapeSequences.RED + "Check your parameters: Expected <gameID> [WHITE][BLACK]" + EscapeSequences.RESET_TEXT_COLOR;
@@ -192,12 +195,14 @@ public class LoggedIn {
                 if(theGame != null) {
                     ChessBoardUI.displayGame(theGame.getChessGame(), ChessGame.TeamColor.BLACK);
                     System.out.println(EscapeSequences.GREEN + "Observing game " + params[0] + EscapeSequences.RESET_TEXT_COLOR);
-                    return new GamePlayUI(username, authToken, theGame, ChessGame.TeamColor.WHITE, isPlayer).run();
+                    return new GamePlayUI(username, authToken, theGame, ChessGame.TeamColor.WHITE, isPlayer, gameID).run();
 
                 }
 
             }catch(NumberFormatException n){
                 return EscapeSequences.RED + "The game ID must be a number" + EscapeSequences.RESET_TEXT_COLOR;
+            } catch (IOException e) {
+                System.out.println("sorry");
             }
         }
         return EscapeSequences.RED + "Check your parameters and try again: Expected <gameID>" + EscapeSequences.RESET_TEXT_COLOR;

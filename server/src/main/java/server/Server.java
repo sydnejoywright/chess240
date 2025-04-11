@@ -7,21 +7,29 @@ import model.*;
 import service.GameService;
 import service.UserService;
 import spark.*;
+import websocket.WebSocketFacade;
+
 import java.util.HashMap;
 
 public class Server {
     AuthDAO authDao;
     UserDAO userDao;
     GameDAO gameDao;
+    WebSocketFacade webSocketFacade;
+
+
     {try{
         authDao = new SqlAuthDAO();
         userDao = new SqlUserDao();
         gameDao = new SqlGameDao();
+        webSocketFacade = new WebSocketFacade(authDao, gameDao, userDao);
     }catch(ResponseException | DataAccessException e)
     {throw new RuntimeException(e);}}
     UserService userService = new UserService(userDao, authDao);
     GameService gameService = new GameService(userDao, authDao, gameDao);
     public int run(int desiredPort) {Spark.port(desiredPort);Spark.staticFiles.location("web");
+    Spark.webSocket("/ws", webSocketFacade);
+
 //DELETE DATABASE........................................................................................................
         Spark.delete("/db", (request, response) -> {
             response.status(200); gameService.clearData(); return "";

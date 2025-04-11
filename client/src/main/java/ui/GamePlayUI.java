@@ -7,8 +7,13 @@ import chess.ChessPosition;
 import exception.ResponseException;
 import model.GameData;
 import ui.serverfacade.ServerFacade;
+import websocket.WebSocketClient;
 //import websocket.WebSocketFacade;
+import websocket.commands.UserGameCommand;
+import com.google.gson.Gson;
 
+
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Scanner;
@@ -24,12 +29,20 @@ public class GamePlayUI {
 //    private WebSocketFacade client;
     private HashMap<Integer, Integer> gameRefs;
     private boolean isPlayer;
+    private WebSocketClient client;
+    private ChessGame.TeamColor asTeam;
+    private String serverUrl;
 
-
-    public GamePlayUI(String username, String authToken, GameData gameData, ChessGame.TeamColor asTeam, Boolean isPlayer) throws ResponseException {
+    public GamePlayUI(String username, String authToken, GameData gameData, ChessGame.TeamColor asTeam, Boolean isPlayer, int gameID) throws ResponseException, IOException {
         this.authToken = authToken;
         this.username = username;
-//        this.client = new WebSocketFacade("http://localhost:8080");
+        this.asTeam = asTeam;
+        this.serverUrl = "http://localhost:8080";
+        this.client = new WebSocketClient(serverUrl, gameData.getChessGame(), asTeam);
+        this.gameID = gameID;
+
+        client.sendMessage(new Gson().toJson(new UserGameCommand(UserGameCommand.CommandType.CONNECT, authToken, gameID)));
+        System.out.println("sydneee");
 
     }
 
@@ -74,17 +87,31 @@ public class GamePlayUI {
             };
         } catch (ResponseException ex) {
             return ex.getMessage();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 
 
     public String redrawBoard () throws ResponseException{
+        client.redraw(asTeam);
         return "";
     };
-    public String leaveGame () throws ResponseException{
-        return "";
 
+    public String leaveGame () throws ResponseException, IOException {
+        System.out.println("beginning");
+
+        try {
+            client.sendMessage(new Gson().toJson(new UserGameCommand(UserGameCommand.CommandType.LEAVE, authToken, gameID)));
+            System.out.println("yoo");
+            return "Leaving Game...\n" + new LoggedIn(serverUrl, authToken, username).run();
+        } catch (Exception e) {
+            System.out.println("Exception caught in sendMessage websocketClient: " + e.getMessage());
+        }
+        return "";
     };
+
+
     public String makeMove(String... params) throws ResponseException{
         if(params.length == 2) {
             return "";
@@ -102,6 +129,7 @@ public class GamePlayUI {
        }
         return EscapeSequences.RED + "Check your parameters: Expected <position>" + EscapeSequences.RESET_TEXT_COLOR;
     };
+
 
 
     public String help() {
