@@ -21,7 +21,7 @@ public class LoggedOut {
     }
 
     public String run() {
-        System.out.println("\uD83D\uDC36 Welcome to 240 chess. Type Help to get started.");
+        System.out.println(EscapeSequences.GREEN + "Welcome to 240 chess. Type Help to get started.");
         System.out.print(help());
 
         Scanner scanner = new Scanner(System.in);
@@ -43,7 +43,7 @@ public class LoggedOut {
     }
 
     private void printPrompt() {
-        System.out.print("\n" + EscapeSequences.RESET_TEXT_COLOR + "[LOGGED OUT] >>> " + GREEN);
+        System.out.print(EscapeSequences.RESET_TEXT_COLOR + EscapeSequences.BLUE + "[LOGGED OUT] >>> " + GREEN);
     }
 
     public String eval(String input) {
@@ -56,7 +56,7 @@ public class LoggedOut {
                 case "login" -> login(params);
                 case "register" -> register(params);
                 case "help" -> help();
-                default -> "Unrecognized command. Type 'help' for a list of valid commands";
+                default -> EscapeSequences.RED + "Unrecognized command. Type 'help' for a list of valid commands\n";
             };
         } catch (ResponseException ex) {
             return ex.getMessage();
@@ -106,7 +106,7 @@ public class LoggedOut {
 
 
     public String help() {
-        return """
+        return EscapeSequences.SET_TEXT_COLOR_YELLOW + """
                 - register <USERNAME> <PASSWORD> <EMAIL> - to create an account
                 - login <USERNAME> <PASSWORD> - to play chess
                 - quit - playing chess
