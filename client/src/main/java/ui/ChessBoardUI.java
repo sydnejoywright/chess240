@@ -21,6 +21,13 @@ public class ChessBoardUI {
     private static final List<String> LETTERS = Arrays.asList("a", "b", "c", "d", "e", "f", "g", "h");
 
     public static void displayGame(ChessGame game, ChessGame.TeamColor asTeam) {
+        if(asTeam == ChessGame.TeamColor.WHITE){
+            asTeam = ChessGame.TeamColor.BLACK;
+        }
+        else{
+            asTeam = ChessGame.TeamColor.WHITE;
+        }
+
         horizontalBorder(asTeam);
         if(asTeam == ChessGame.TeamColor.WHITE) {
             for (int i = 1; i <= 8; i++) {
