@@ -6,9 +6,11 @@ import java.util.HashMap;
 import java.util.Scanner;
 
 import chess.ChessGame;
+import com.google.gson.Gson;
 import ui.serverfacade.ServerFacade;
 import model.*;
 import exception.ResponseException;
+import websocket.commands.UserGameCommand;
 
 import static ui.EscapeSequences.GREEN;
 
@@ -50,7 +52,7 @@ public class LoggedIn {
     }
 
     private void printPrompt() {
-        System.out.print("\n" + EscapeSequences.RESET_TEXT_COLOR + "[LOGGED IN] " + username +" >>> " + GREEN);
+        System.out.print(EscapeSequences.RESET_TEXT_COLOR + EscapeSequences.BLUE + "[" + username + "] >>> " + GREEN);
     }
 
     public String eval(String input) {
@@ -77,21 +79,21 @@ public class LoggedIn {
             try {
                 assertSignedIn();
                 server.createGame(params[0], authToken);
-                System.out.println(EscapeSequences.GREEN + "Successfully created game" + EscapeSequences.RESET_TEXT_COLOR);
+                System.out.println(EscapeSequences.GREEN + "Successfully created game\n" + EscapeSequences.RESET_TEXT_COLOR);
                 return "";
             } catch (ResponseException e) {
                 if (e.getMessage().equals("User is not logged in")) {
-                    return EscapeSequences.RED + "You must log in in order to perform this action" + EscapeSequences.RESET_TEXT_COLOR;
+                    return EscapeSequences.RED + "You must log in in order to perform this action\n" + EscapeSequences.RESET_TEXT_COLOR;
                 } else if (e.getMessage().equals("Error: bad request")) {
-                    return EscapeSequences.RED + "Bad request" + EscapeSequences.RESET_TEXT_COLOR;
+                    return EscapeSequences.RED + "Bad request\n" + EscapeSequences.RESET_TEXT_COLOR;
                 } else if (e.getMessage().equals("Error: unauthorized")) {
-                    return EscapeSequences.RED + "This action is not authorized" + EscapeSequences.RESET_TEXT_COLOR;
+                    return EscapeSequences.RED + "This action is not authorized\n" + EscapeSequences.RESET_TEXT_COLOR;
                 } else {
-                    return EscapeSequences.RED + "Cannot create game due to internal server error" + EscapeSequences.RESET_TEXT_COLOR;
+                    return EscapeSequences.RED + "Cannot create game due to internal server error\n" + EscapeSequences.RESET_TEXT_COLOR;
                 }
             }
         }
-        return EscapeSequences.RED + "Expected <gameID>. Check your number of parameters" + EscapeSequences.RESET_TEXT_COLOR;
+        return EscapeSequences.RED + "Expected <gameID>. Check your number of parameters\n" + EscapeSequences.RESET_TEXT_COLOR;
     }
 
     public String listGames() throws ResponseException {
@@ -105,28 +107,32 @@ public class LoggedIn {
                 gameRefs.put(counter, game.getGameID());
                 counter++;
             }
-            return prettyList;
+//            if (!prettyList.isEmpty()) {
+//                prettyList = prettyList.substring(0, prettyList.length() - 1);
+//            }
+            return EscapeSequences.SET_TEXT_COLOR_WHITE + prettyList + EscapeSequences.RESET_TEXT_COLOR;
 
         }catch (ResponseException e){
             if(e.getMessage().contains("401")){
-                return EscapeSequences.RED + "You aren't authorized to list games" + EscapeSequences.RESET_TEXT_COLOR;
+                return EscapeSequences.RED + "You aren't authorized to list games\n" + EscapeSequences.RESET_TEXT_COLOR;
             }
             else{
-                return EscapeSequences.RED + "Cannot list due to internal server error" + EscapeSequences.RESET_TEXT_COLOR;
+                return EscapeSequences.RED + "Cannot list due to internal server error\n" + EscapeSequences.RESET_TEXT_COLOR;
             }
         }
     }
 
     public String joinGame(String... params) throws ResponseException {
+        if (gameRefs.isEmpty()) { return EscapeSequences.RED + "You cannot join a game until you have listed them\n" + EscapeSequences.RESET_TEXT_COLOR; }
         if(params.length == 2) {
             try{
                 Integer gameID = Integer.parseInt(params[0]);
             }catch(NumberFormatException n){
-                return EscapeSequences.RED + "The game ID must be a number" + EscapeSequences.RESET_TEXT_COLOR;
+                return EscapeSequences.RED + "The game ID must be a number\n" + EscapeSequences.RESET_TEXT_COLOR;
             }
             if(     !params[1].equalsIgnoreCase("black") &&
                     !params[1].equalsIgnoreCase("white")){
-                return EscapeSequences.RED + "Your second parameter 'player color' must be BLACK or WHITE" + EscapeSequences.RESET_TEXT_COLOR;
+                return EscapeSequences.RED + "Your second parameter 'player color' must be BLACK or WHITE\n" + EscapeSequences.RESET_TEXT_COLOR;
             }
             try {
                 assertSignedIn();
@@ -146,13 +152,13 @@ public class LoggedIn {
                 boolean isPlayer = true;
                 if(theGame != null) {
                     if (params[1].equalsIgnoreCase("white")) {
-                        ChessBoardUI.displayGame(theGame.getChessGame(), ChessGame.TeamColor.BLACK);
-                        System.out.println(EscapeSequences.GREEN + "Successfully joined game " + params[0] + " as " + params[1] + EscapeSequences.RESET_TEXT_COLOR);
-                        return new GamePlayUI(username, authToken, theGame, ChessGame.TeamColor.BLACK, isPlayer, gameID).run();
-                    } else {
-                        ChessBoardUI.displayGame(theGame.getChessGame(), ChessGame.TeamColor.WHITE);
+//                        ChessBoardUI.displayGame(theGame.getChessGame(), ChessGame.TeamColor.WHITE);
                         System.out.println(EscapeSequences.GREEN + "Successfully joined game " + params[0] + " as " + params[1] + EscapeSequences.RESET_TEXT_COLOR);
                         return new GamePlayUI(username, authToken, theGame, ChessGame.TeamColor.WHITE, isPlayer, gameID).run();
+                    } else {
+//                        ChessBoardUI.displayGame(theGame.getChessGame(), ChessGame.TeamColor.BLACK);
+                        System.out.println(EscapeSequences.GREEN + "Successfully joined game " + params[0] + " as " + params[1] + EscapeSequences.RESET_TEXT_COLOR);
+                        return new GamePlayUI(username, authToken, theGame, ChessGame.TeamColor.BLACK, isPlayer, gameID).run();
                     }
                 }else{
                     System.out.println("the game is null");
@@ -161,21 +167,21 @@ public class LoggedIn {
 
             } catch (ResponseException e) {
                 if (e.getMessage().contains("401")) {
-                    return EscapeSequences.RED + "You must log in in order to perform this action" + EscapeSequences.RESET_TEXT_COLOR;
+                    return EscapeSequences.RED + "You must log in in order to perform this action\n" + EscapeSequences.RESET_TEXT_COLOR;
                 } else if (e.getMessage().contains("400")) {
-                    return EscapeSequences.RED + "This action is not authorized you must list first." + EscapeSequences.RESET_TEXT_COLOR;
+                    return EscapeSequences.RED + "This action is not authorized you must list first\n" + EscapeSequences.RESET_TEXT_COLOR;
                 }
                 else if(e.getMessage().contains("403")){
-                    return EscapeSequences.RED + "That spot is already full" + EscapeSequences.RESET_TEXT_COLOR;
+                    return EscapeSequences.RED + "That spot is already full\n" + EscapeSequences.RESET_TEXT_COLOR;
 
                 }else {
-                    return EscapeSequences.RED + "Cannot join game due to internal server error" + EscapeSequences.RESET_TEXT_COLOR;
+                    return EscapeSequences.RED + "Cannot join game due to internal server error\n" + EscapeSequences.RESET_TEXT_COLOR;
                 }
             } catch (IOException e) {
                 System.out.println("sorry2");
             }
         }
-        return EscapeSequences.RED + "Check your parameters: Expected <gameID> [WHITE][BLACK]" + EscapeSequences.RESET_TEXT_COLOR;
+        return EscapeSequences.RED + "Check your parameters: Expected <gameID> [WHITE][BLACK]\n" + EscapeSequences.RESET_TEXT_COLOR;
     }
 
     public String observeGame(String... params) throws ResponseException {
@@ -193,19 +199,19 @@ public class LoggedIn {
                     }
                 }
                 if(theGame != null) {
-                    ChessBoardUI.displayGame(theGame.getChessGame(), ChessGame.TeamColor.BLACK);
+//                    ChessBoardUI.displayGame(theGame.getChessGame(), ChessGame.TeamColor.WHITE);
                     System.out.println(EscapeSequences.GREEN + "Observing game " + params[0] + EscapeSequences.RESET_TEXT_COLOR);
                     return new GamePlayUI(username, authToken, theGame, ChessGame.TeamColor.WHITE, isPlayer, gameID).run();
 
                 }
 
             }catch(NumberFormatException n){
-                return EscapeSequences.RED + "The game ID must be a number" + EscapeSequences.RESET_TEXT_COLOR;
+                return EscapeSequences.RED + "The game ID must be a number\n" + EscapeSequences.RESET_TEXT_COLOR;
             } catch (IOException e) {
                 System.out.println("sorry");
             }
         }
-        return EscapeSequences.RED + "Check your parameters and try again: Expected <gameID>" + EscapeSequences.RESET_TEXT_COLOR;
+        return EscapeSequences.RED + "Check your parameters and try again: Expected <gameID>\n" + EscapeSequences.RESET_TEXT_COLOR;
     }
 
     public String logout() throws ResponseException {
@@ -216,17 +222,17 @@ public class LoggedIn {
 
         }catch(ResponseException e){
             if(e.getMessage().contains("401")){
-                return EscapeSequences.RED + "Logout unauthorized" + EscapeSequences.RESET_TEXT_COLOR;
+                return EscapeSequences.RED + "Logout unauthorized\n" + EscapeSequences.RESET_TEXT_COLOR;
             }
             else{
-                return EscapeSequences.RED + "Cannot log out due to internal server error" + EscapeSequences.RESET_TEXT_COLOR;
+                return EscapeSequences.RED + "Cannot log out due to internal server error\n" + EscapeSequences.RESET_TEXT_COLOR;
             }
         }
     }
 
 
     public String help() {
-        return """
+        return EscapeSequences.SET_TEXT_COLOR_YELLOW +"""
                 - create <NAME> - a game
                 - list - games
                 - join <ID> [WHITE][BLACK] - a game
