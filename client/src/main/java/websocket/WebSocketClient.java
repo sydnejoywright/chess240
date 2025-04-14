@@ -1,6 +1,9 @@
 package websocket;
 
+import model.GameData;
 import chess.ChessGame;
+import chess.ChessMove;
+import chess.InvalidMoveException;
 import exception.ResponseException;
 import com.google.gson.Gson;
 import javax.websocket.*;
@@ -9,27 +12,35 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 import ui.ChessBoardUI;
-import websocket.commands.*;
+import ui.EscapeSequences;
 import websocket.messages.NotificationType;
 import websocket.messages.ErrorType;
 import websocket.messages.LoadGameType;
 import websocket.messages.ServerMessage;
+
+import static ui.EscapeSequences.GREEN;
 
 //need to extend Endpoint for websocket to work properly
 @ClientEndpoint
 public class WebSocketClient extends Endpoint {
 
     Session session;
-    ChessGame currentGame;
+    GameData currentGameData;
     ChessGame.TeamColor asTeam;
+    String username;
+    String gameName;
 
-    public WebSocketClient(String url, ChessGame currentGame, ChessGame.TeamColor asTeam) throws ResponseException {
-        this.currentGame = currentGame;
+
+
+    public WebSocketClient(String url, ChessGame.TeamColor asTeam, GameData currentGameData, String username, String gameName) throws ResponseException {
+        this.currentGameData = currentGameData;
         this.asTeam = asTeam;
+        this.username = username;
+        this.gameName = gameName;
         try {
             url = url.replace("http", "ws");
             URI socketURI = new URI(url + "/ws");
-            System.out.println("Socket URI: " + socketURI);
+//            System.out.println("Socket URI: " + socketURI);
 
             WebSocketContainer container = ContainerProvider.getWebSocketContainer();
             this.session = container.connectToServer(this, socketURI);
@@ -51,22 +62,30 @@ public class WebSocketClient extends Endpoint {
 
     }
 
-    //Endpoint requires this method, but you don't have to do anything
     @Override
-    public void onOpen(Session session, EndpointConfig endpointConfig) {
-        System.out.println("onOpen was called from WebSocketClient" + session.getBasicRemote());
+    public void onOpen(Session session, EndpointConfig endpointConfig) {}
 
+    private void removePrompt() {
+        System.out.print("\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b");
+        for (int i = 0; i < username.length() + gameName.length() + asTeam.toString().length(); i++) {
+            System.out.print("\b");
+        }
+    }
+    private void printPrompt() {
+        removePrompt();
+        System.out.print(EscapeSequences.RESET_TEXT_COLOR + EscapeSequences.BLUE + "[" + username + ": playing in " + gameName + " as " + asTeam +"] >>> " + GREEN);
     }
 
-
     public void redraw(ChessGame.TeamColor asTeam){
-        ChessBoardUI.displayGame(currentGame, asTeam);
+        removePrompt();
+        ChessBoardUI.displayGame(currentGameData.getChessGame(), asTeam);
+        printPrompt();
     }
 
     public void sendMessage(String command) throws IOException {
         try {
-            System.out.println("Received commmand about to print it");
-            System.out.println(command);
+//            System.out.println("Received commmand about to print it");
+//            System.out.println(command);
             session.getBasicRemote().sendText(command);
 
         } catch (IOException e) {
@@ -76,22 +95,37 @@ public class WebSocketClient extends Endpoint {
 
 
     private void handle(String string){
-        System.out.println(string);
         ServerMessage msg = new Gson().fromJson(string, ServerMessage.class);
+//        System.out.println(string);
         switch(msg.getServerMessageType()){
             case LOAD_GAME:
                 LoadGameType loadGameType = new Gson().fromJson(string, LoadGameType.class);
-                currentGame = loadGameType.game();
-                ChessBoardUI.displayGame(currentGame, asTeam);
+                currentGameData = loadGameType.gameData();
+//                System.out.println("received update game in websocketclient");
+                removePrompt();
+                ChessBoardUI.displayGame(currentGameData.getChessGame(), asTeam);
+                printPrompt();
                 break;
             case ERROR:
+                removePrompt();
                 ErrorType errorType = new Gson().fromJson(string, ErrorType.class);
                 System.out.println(errorType.errorMessage());
+                printPrompt();
                 break;
             case NOTIFICATION:
+                removePrompt();
                 NotificationType notificationType = new Gson().fromJson(string, NotificationType.class);
                 System.out.println(notificationType.message());
+                printPrompt();
                 break;
         }
+    }
+
+    public GameData getCurrentGameData(){
+        return currentGameData;
+    }
+
+    public void makeMove(ChessMove move) throws InvalidMoveException {
+        currentGameData.getChessGame().makeMove(move);
     }
 }
