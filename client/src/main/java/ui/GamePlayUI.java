@@ -141,7 +141,6 @@ public class GamePlayUI {
     public String makeMove(String... params) throws ResponseException, IOException, InvalidMoveException {
         GameData currentGameData = client.getCurrentGameData();
         ChessGame currentGame = currentGameData.getChessGame();
-
         if (currentGameData.getChessGame().isInStalemate(ChessGame.TeamColor.WHITE)){ return EscapeSequences.RED
                 + "Stalemate: game is over\n" + EscapeSequences.RESET_TEXT_COLOR; }
         else if (currentGame.isInCheckmate(ChessGame.TeamColor.WHITE)){ return EscapeSequences.RED
@@ -150,15 +149,11 @@ public class GamePlayUI {
         else if (currentGame.isInCheckmate(ChessGame.TeamColor.BLACK)){ return EscapeSequences.RED
                 + currentGameData.getBlackUsername() + " is in checkmate: game is over\n"
                 + EscapeSequences.RESET_TEXT_COLOR; }
-
         if(currentGame.getTeamTurn()!=asTeam){
-            return EscapeSequences.RED + "It's not your turn\n" + EscapeSequences.RESET_TEXT_COLOR;
-        }
-        if(params.length == 2) {
-            //did the user give me two valid moves ie letter followed by number?
+            return EscapeSequences.RED + "It's not your turn\n" + EscapeSequences.RESET_TEXT_COLOR;}
+        if(params.length == 2) {//did the user give me two valid moves ie letter followed by number?
             String col1 = String.valueOf(params[0].charAt(0)).toLowerCase();
             String col2 = String.valueOf(params[1].charAt(0)).toLowerCase();
-
             if (!LETTERS.contains(col1) || !Character.isDigit(params[0].charAt(1))) {
                 return EscapeSequences.RED
                         + "Both of your parameters need to be in the form [letter <a-h>][number <1-8>]\n"
@@ -166,29 +161,19 @@ public class GamePlayUI {
             } else if (!LETTERS.contains(col2) || !Character.isDigit(params[1].charAt(1))) {
                 return EscapeSequences.RED
                         + "Both of your parameters need to be in the form [letter <a-h>][number <1-8>]\n"
-                        + EscapeSequences.RESET_TEXT_COLOR;
-            }
-
-            //create a chess move, which requires changing letters to numbers.
+                        + EscapeSequences.RESET_TEXT_COLOR;} //create a chess move, which requires changing l to n.
             int from = convertLetters(col1);
             int to = convertLetters(col2);
-
             ChessPosition start = new ChessPosition(Integer.parseInt(String.valueOf(params[0].charAt(1))), from);
             ChessPosition end = new ChessPosition(Integer.parseInt(String.valueOf(params[1].charAt(1))), to);
             ChessMove move = new ChessMove(start, end, null);
-
             ChessPiece piece = currentGame.getBoard().getPiece(start);
-            //if they try to move a piece that isn't there
-            if(piece == null){
+            if(piece == null){ //if they try to move a piece that isn't there
                 return EscapeSequences.RED + "There is no piece at that position, check your parameters and try again\n"
-                        + EscapeSequences.RESET_TEXT_COLOR;
-            }
-            //check if the piece they are trying to move is their own
-            if(!(piece.getTeamColor() == asTeam)){
+                        + EscapeSequences.RESET_TEXT_COLOR; }
+            if(!(piece.getTeamColor() == asTeam)){ //check if the piece they are trying to move is their own
                 return EscapeSequences.RED + "That piece doesn't belong to you\n" + EscapeSequences.RESET_TEXT_COLOR;
-            }
-            else {
-                // check if it's a pawn, and if so it will need promotion
+            } else {// check if it's a pawn, and if so it will need promotion
                 if ((piece.getPieceType().equals(ChessPiece.PieceType.PAWN)) &&
                         ((asTeam == ChessGame.TeamColor.WHITE && start.getRow() == 7) ||
                                 (asTeam == ChessGame.TeamColor.BLACK && start.getRow() == 2))) {
@@ -225,30 +210,17 @@ public class GamePlayUI {
                                         System.out.println(EscapeSequences.RED +
                                                 "\tThat piece isn't valid. Here are your options: " +
                                                 "\n\tQUEEN, KNIGHT, ROOK, BISHOP" + EscapeSequences.RESET_TEXT_COLOR);
-                            }
-                        }
-                    }
-
-                }
-                // if it's not a pawn
+                            }}}}// if it's not a pawn
                 Collection<ChessMove> validMoves = currentGame.validMoves(start);
                 boolean moveHappened = false;
-                for (ChessMove currMove : validMoves) {
-                    if (moveHappened) { continue; }
-                    if (currMove.equals(move)) {
-                        executeMove(currentGameData, currentGame, move);
-                        moveHappened = true;
-                    }
-                }
+                for (ChessMove currMove : validMoves) { if (moveHappened) { continue; }
+                    if (currMove.equals(move)) { executeMove(currentGameData, currentGame, move); moveHappened = true;}}
                 if (!moveHappened){
-//                        System.out.println(moves);
-//                        System.out.println(move);
                     if (!validMoves.contains(move) && piece.pieceMoves(currentGame.getBoard(), start).contains(move)){
                         return EscapeSequences.RED + "That move leaves or places your king in check!\n"
                                 + EscapeSequences.RESET_TEXT_COLOR;}
                     return EscapeSequences.RED + "That's not a valid move for that piece\n"
-                            + EscapeSequences.RESET_TEXT_COLOR;
-                }
+                            + EscapeSequences.RESET_TEXT_COLOR;}
                 if (currentGameData.getChessGame().isInStalemate(ChessGame.TeamColor.WHITE))
                 {removePrompt(); System.out.println(EscapeSequences.GREEN + "Stalemate. Game is over."
                         + EscapeSequences.RESET_TEXT_COLOR); printPrompt(); }
@@ -263,10 +235,7 @@ public class GamePlayUI {
                         + EscapeSequences.RESET_TEXT_COLOR); printPrompt(); }
                 else if (currentGameData.getChessGame().isInCheck(ChessGame.TeamColor.BLACK))
                 {removePrompt(); System.out.println(EscapeSequences.GREEN + "You put the other team in check"
-                        + EscapeSequences.RESET_TEXT_COLOR); printPrompt(); }
-            }
-            return "";
-        }
+                        + EscapeSequences.RESET_TEXT_COLOR); printPrompt(); }} return "";}
         return EscapeSequences.RED + "Check your parameters: Expected <start position> <end position>\n"
             + EscapeSequences.RESET_TEXT_COLOR;
     };
@@ -274,9 +243,7 @@ public class GamePlayUI {
         GameData currentGameData = client.getCurrentGameData();
         ChessGame currentGame = currentGameData.getChessGame();
         if (currentGame.isFinished()) {
-            return "You cannot resign. The game is already finished";
-        }
-        boolean doIt = false;
+            return "You cannot resign. The game is already finished";} boolean doIt = false;
         while (!doIt) {
             System.out.print(EscapeSequences.SET_TEXT_COLOR_MAGENTA + "\tAre you sure you want to resign (y/n)?\n\t"
                     + EscapeSequences.RESET_TEXT_COLOR);
@@ -304,9 +271,7 @@ public class GamePlayUI {
         } catch (IOException e) {
             System.out.println("Exception caught in sendMessage websocketClient: " + e.getMessage()
                     + "request came from resignGame gameplay");
-        }
-        return "";
-
+        } return "";
     };
     public String highlightMoves(String... params) throws ResponseException{
        if(params.length == 1){
