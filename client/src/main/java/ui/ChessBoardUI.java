@@ -4,7 +4,6 @@ import chess.*;
 import static ui.EscapeSequences.*;
 
 
-import javax.swing.text.TabExpander;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -96,16 +95,16 @@ public class ChessBoardUI {
                 rowSquares += makeSquare(squareColor, findPiece(row, i, game));
             }
         }else{
-            for (int i = 8; i >= 1; i--) {
-                String squareColor;
-                if (highlightThis != null  && highlightThis.equals(new ChessPosition(row, i))) {
-                    squareColor = SET_BG_COLOR_YELLOW;
-                } else if ((row + i) % 2 == 0) {
-                    squareColor = (highlightThese != null && highlightThese.contains(new ChessPosition(row, i))) ? HIGHLIGHT_BLACK : BLACK_TILE;
+            for (int l = 8; l >= 1; l--) {
+                String skwareColor;
+                if (highlightThis != null  && highlightThis.equals(new ChessPosition(row, l))) {
+                    skwareColor = SET_BG_COLOR_YELLOW;
+                } else if ((row + l) % 2 == 0) {
+                    skwareColor = (highlightThese != null && highlightThese.contains(new ChessPosition(row, l))) ? HIGHLIGHT_BLACK : BLACK_TILE;
                 } else {
-                    squareColor = (highlightThese != null && highlightThese.contains(new ChessPosition(row, i))) ? HIGHLIGHT_WHITE : WHITE_TILE;
+                    skwareColor = (highlightThese != null && highlightThese.contains(new ChessPosition(row, l))) ? HIGHLIGHT_WHITE : WHITE_TILE;
                 }
-                rowSquares += makeSquare(squareColor, findPiece(row, i, game));
+                rowSquares += makeSquare(skwareColor, findPiece(row, l, game));
             }
         }
         rowSquares += makeSquare(BORDER_COLOR, Integer.toString(row));

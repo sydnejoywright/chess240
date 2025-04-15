@@ -117,14 +117,14 @@ public class WebSocketFacade {
     }
 
     private void notifyOthers(String msg, int gameID, Session dontNotify){
-        String message = new Gson().toJson(new NotificationType(NOTIFICATION, msg));
-        for(HashMap.Entry<Session, SessionInfo> sesh : activeSessions.entrySet()){
-            if(sesh.getKey() != dontNotify) {
-                if (sesh.getValue().gameID() == gameID) {
+        String massage = new Gson().toJson(new NotificationType(NOTIFICATION, msg));
+        for(HashMap.Entry<Session, SessionInfo> seshypoopoo : activeSessions.entrySet()){
+            if(seshypoopoo.getKey() != dontNotify) {
+                if (seshypoopoo.getValue().gameID() == gameID) {
                     try {
-                        sesh.getKey().getRemote().sendString(message);
-                    } catch (IOException e) {
-                        System.out.println("Error in broadcast: " + e.getMessage());
+                        seshypoopoo.getKey().getRemote().sendString(massage);
+                    } catch (IOException r) {
+                        System.out.println("Error in broadcast: " + r.getMessage());
                     }
                 }
             }
@@ -139,16 +139,18 @@ public class WebSocketFacade {
             GameData gameData = gameDAO.getGame(gameID);
             authData = authDAO.getAuth(new AuthtokenData(null, authToken));
             if (gameData == null) {
-                session.getRemote().sendString(new Gson().toJson(new ErrorType(ServerMessage.ServerMessageType.ERROR, "Bad GameID")));
+                session.getRemote().sendString(new Gson().toJson(new ErrorType(ServerMessage.ServerMessageType.ERROR,
+                        "Bad GameID")));
                 return;
             } else if (authData == null) {
-                session.getRemote().sendString(new Gson().toJson(new ErrorType(ServerMessage.ServerMessageType.ERROR, "Bad authToken")));
+                session.getRemote().sendString(new Gson().toJson(new ErrorType(ServerMessage.ServerMessageType.ERROR,
+                        "Bad authToken")));
                 return;
             }
             String team = null;
-            if (gameData.getWhiteUsername() == authData.username) team = "white";
-            else if (gameData.getBlackUsername() == authData.username) team = "black";
-            else team = "observer";
+            if (gameData.getWhiteUsername() == authData.username) {team = "white";}
+            else if (gameData.getBlackUsername() == authData.username) {team = "black";}
+            else {team = "observer";}
             String message = new Gson().toJson(new LoadGameType(ServerMessage.ServerMessageType.LOAD_GAME, gameData));
             session.getRemote().sendString(message);
             System.out.println("updating game");
@@ -158,20 +160,23 @@ public class WebSocketFacade {
 
         } catch (Exception e) {
             if (authData == null) {
-                try { session.getRemote().sendString(new Gson().toJson(new ErrorType(ServerMessage.ServerMessageType.ERROR, "Bad authToken"))); }
+                try { session.getRemote().sendString(new Gson().toJson(
+                        new ErrorType(ServerMessage.ServerMessageType.ERROR, "Bad authToken"))); }
                 catch (Exception exception) {}
             return;
         }System.out.println("exception thrown in connect() in WebSocketFacade()"); }
     }
 
-    private void makeMove(String authToken, int gameID, ChessMove move, GameData currentGameData, Session session) throws DataAccessException {
+    private void makeMove(String authToken, int gameID, ChessMove move, GameData currentGameData, Session session)
+            throws DataAccessException {
 //        gameDAO.updateGame(currentGameData);
         GameData gameData = gameDAO.getGame(gameID);
         AuthtokenData authData = null;
         authData = authDAO.getAuth(new AuthtokenData(null, authToken));
         if (authData == null) {
             try {
-                session.getRemote().sendString(new Gson().toJson(new ErrorType(ServerMessage.ServerMessageType.ERROR, "Bad authToken")));
+                session.getRemote().sendString(new Gson().toJson(new ErrorType(ServerMessage.ServerMessageType.ERROR,
+                        "Bad authToken")));
             } catch (Exception exception) {}
             return;
         }
@@ -184,16 +189,20 @@ public class WebSocketFacade {
             return;
         }
 
-        if ((gameData.getChessGame().getTeamTurn() == ChessGame.TeamColor.BLACK && !authData.username.equals(gameData.getBlackUsername()))
-           || gameData.getChessGame().getTeamTurn() == ChessGame.TeamColor.WHITE && !authData.username.equals(gameData.getWhiteUsername()) ) {
+        if ((gameData.getChessGame().getTeamTurn() == ChessGame.TeamColor.BLACK &&
+                !authData.username.equals(gameData.getBlackUsername()))
+           || gameData.getChessGame().getTeamTurn() == ChessGame.TeamColor.WHITE &&
+                !authData.username.equals(gameData.getWhiteUsername()) ) {
             try {
-                session.getRemote().sendString(new Gson().toJson(new ErrorType(ServerMessage.ServerMessageType.ERROR, "Not your turn")));
+                session.getRemote().sendString(new Gson().toJson(new ErrorType(ServerMessage.ServerMessageType.ERROR,
+                        "Not your turn")));
             } catch (Exception exception) {}
             return;
         }
         try { gameData.getChessGame().makeMove(move); }
         catch(Exception exc) {
-            try { session.getRemote().sendString(new Gson().toJson(new ErrorType(ServerMessage.ServerMessageType.ERROR, "Illegal move"))); }
+            try { session.getRemote().sendString(new Gson().toJson(new ErrorType(ServerMessage.ServerMessageType.ERROR,
+                    "Illegal move"))); }
             catch (Exception exception) {}
             return;
         }
@@ -204,27 +213,36 @@ public class WebSocketFacade {
 
         // adding logic for checkmate, mate, check
         if (currentGameData.getChessGame().isInStalemate(ChessGame.TeamColor.WHITE)){notifyOthers(
-                data.username + " made a move from " + convertNumbers(move.getStartPosition().getColumn()) + move.getStartPosition().getRow()
+                data.username + " made a move from " + convertNumbers(move.getStartPosition().getColumn())
+                        + move.getStartPosition().getRow()
                         + " to " + convertNumbers(move.getEndPosition().getColumn()) + move.getEndPosition().getRow()
                         + "\nStalemate: game is over", gameID, session);}
         else if (currentGameData.getChessGame().isInCheckmate(ChessGame.TeamColor.WHITE)){notifyOthers(
-                data.username + " made a move from " + convertNumbers(move.getStartPosition().getColumn()) + move.getStartPosition().getRow()
+                data.username + " made a move from " + convertNumbers(move.getStartPosition().getColumn())
+                        + move.getStartPosition().getRow()
                         + " to " + convertNumbers(move.getEndPosition().getColumn()) + move.getEndPosition().getRow()
-                        + "\n" + currentGameData.getWhiteUsername() + " is in checkmate: game is over", gameID, session);}
+                        + "\n" + currentGameData.getWhiteUsername() +
+                        " is in checkmate: game is over", gameID, session);}
         else if (currentGameData.getChessGame().isInCheckmate(ChessGame.TeamColor.BLACK)){notifyOthers(
-                data.username + " made a move from " + convertNumbers(move.getStartPosition().getColumn()) + move.getStartPosition().getRow()
+                data.username + " made a move from " + convertNumbers(move.getStartPosition().getColumn()) +
+                        move.getStartPosition().getRow()
                         + " to " + convertNumbers(move.getEndPosition().getColumn()) + move.getEndPosition().getRow()
-                        + "\n" + currentGameData.getBlackUsername() + " is in checkmate: game is over", gameID, session);}
+                        + "\n" + currentGameData.getBlackUsername() + " is in checkmate: game is over",
+                gameID, session);}
         else if (currentGameData.getChessGame().isInCheck(ChessGame.TeamColor.WHITE)){notifyOthers(
-                data.username + " made a move from " + convertNumbers(move.getStartPosition().getColumn()) + move.getStartPosition().getRow() +
+                data.username + " made a move from " + convertNumbers(move.getStartPosition().getColumn())
+                        + move.getStartPosition().getRow() +
                         " to " + convertNumbers(move.getEndPosition().getColumn()) + move.getEndPosition().getRow()
                         + "\n" + currentGameData.getWhiteUsername() + " is in check", gameID, session);}
         else if (currentGameData.getChessGame().isInCheck(ChessGame.TeamColor.BLACK)){ notifyOthers(
-                data.username + " made a move from " + convertNumbers(move.getStartPosition().getColumn()) + move.getStartPosition().getRow()
+                data.username + " made a move from " + convertNumbers(move.getStartPosition().getColumn())
+                        + move.getStartPosition().getRow()
                         + " to " + convertNumbers(move.getEndPosition().getColumn()) + move.getEndPosition().getRow()
                         + "\n" + currentGameData.getBlackUsername() + " is in check", gameID, session);}
-        else notifyOthers(data.username + " made a move from " + convertNumbers(move.getStartPosition().getColumn()) + move.getStartPosition().getRow()
-                    + " to " + convertNumbers(move.getEndPosition().getColumn()) + move.getEndPosition().getRow(), gameID, session);
+        else {notifyOthers(data.username + " made a move from "
+                    + convertNumbers(move.getStartPosition().getColumn()) + move.getStartPosition().getRow()
+                    + " to " + convertNumbers(move.getEndPosition().getColumn()) + move.getEndPosition().getRow(),
+                    gameID, session);}
 
         updateAllUserGames(currentGameData, gameID);
     }
@@ -234,11 +252,11 @@ public class WebSocketFacade {
         GameData gameData = gameDAO.getGame(gameID);
         AuthtokenData authtokenData = authDAO.getAuth(new AuthtokenData(null, authToken));
         ChessGame.TeamColor asTeam = null;
-        if (gameData.getBlackUsername() != null && gameData.getBlackUsername().equals(authtokenData.username))
-            asTeam = ChessGame.TeamColor.BLACK;
-        else if (gameData.getWhiteUsername() != null && gameData.getWhiteUsername().equals(authtokenData.username))
+        if (gameData.getBlackUsername() != null && gameData.getBlackUsername().equals(authtokenData.username)){
+            asTeam = ChessGame.TeamColor.BLACK;}
+        else if (gameData.getWhiteUsername() != null && gameData.getWhiteUsername().equals(authtokenData.username)){
             asTeam = ChessGame.TeamColor.WHITE;
-        activeSessions.remove(session);
+        activeSessions.remove(session);}
         if(asTeam != null && asTeam.equals(ChessGame.TeamColor.WHITE)){
             gameData.setWhiteUsername(null);
             gameDAO.updateGame(gameData);
@@ -256,21 +274,25 @@ public class WebSocketFacade {
         authData = authDAO.getAuth(new AuthtokenData(null, authToken));
             if (authData == null) {
                 try {
-                    session.getRemote().sendString(new Gson().toJson(new ErrorType(ServerMessage.ServerMessageType.ERROR, "Bad authToken")));
+                    session.getRemote().sendString(new Gson().toJson(new
+                            ErrorType(ServerMessage.ServerMessageType.ERROR, "Bad authToken")));
                 } catch (Exception exception) {}
                 return;
             }
             if (gameDAO.getGame(gameID).getChessGame().isFinished()) {
                 try {
-                    session.getRemote().sendString(new Gson().toJson(new ErrorType(ServerMessage.ServerMessageType.ERROR,
+                    session.getRemote().sendString(new Gson().toJson(new ErrorType(
+                            ServerMessage.ServerMessageType.ERROR,
                             "Cannot resign, the game is over")));
                 } catch (Exception exception) {}
                 return;
             }
             GameData gameData = gameDAO.getGame(gameID);
-            if (!authData.username.equals(gameData.getWhiteUsername()) && !authData.username.equals(gameData.getBlackUsername())){
+            if (!authData.username.equals(gameData.getWhiteUsername()) && !authData.username.equals
+                    (gameData.getBlackUsername())){
                 try {
-                    session.getRemote().sendString(new Gson().toJson(new ErrorType(ServerMessage.ServerMessageType.ERROR,
+                    session.getRemote().sendString(new Gson().toJson(new ErrorType(
+                            ServerMessage.ServerMessageType.ERROR,
                             "Can't resign as observer")));
                 } catch (Exception exception) {}
                 return;

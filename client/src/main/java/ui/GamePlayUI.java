@@ -52,22 +52,22 @@ public class GamePlayUI {
     public String run() {
         System.out.print(help());
 //        try{redrawBoard();} catch (Exception e) {}
-        Scanner scanner = new Scanner(System.in);
-        var result = "";
-        while (!result.equals("quit")) {
+        Scanner scannerz = new Scanner(System.in);
+        var end = "";
+        while (!end.equals("quit")) {
             printPrompt();
-            String line = scanner.nextLine();
+            String liney = scannerz.nextLine();
 
             try {
-                result = eval(line);
-                System.out.print(EscapeSequences.BLUE + result);
-            } catch (Throwable f) {
-                var msg = f.toString();
+                end = eval(liney);
+                System.out.print(EscapeSequences.BLUE + end);
+            } catch (Throwable q) {
+                var msg = q.toString();
                 System.out.print(msg);
             }
         }
         System.out.println();
-        return result;
+        return end;
     }
     private void removePrompt() {
         System.out.print("\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b");
@@ -243,9 +243,9 @@ public class GamePlayUI {
                 if (!moveHappened){
 //                        System.out.println(moves);
 //                        System.out.println(move);
-                    if (!validMoves.contains(move) && piece.pieceMoves(currentGame.getBoard(), start).contains(move))
+                    if (!validMoves.contains(move) && piece.pieceMoves(currentGame.getBoard(), start).contains(move)){
                         return EscapeSequences.RED + "That move leaves or places your king in check!\n"
-                                + EscapeSequences.RESET_TEXT_COLOR;
+                                + EscapeSequences.RESET_TEXT_COLOR;}
                     return EscapeSequences.RED + "That's not a valid move for that piece\n"
                             + EscapeSequences.RESET_TEXT_COLOR;
                 }

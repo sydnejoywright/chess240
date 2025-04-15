@@ -280,7 +280,7 @@ public class ChessGame {
                     //create a move that would capture the king from the current position of the piece
                     ChessMove killThreat = new ChessMove(position, threateningPiece, null);
                     if (moves.contains(killThreat)) {
-                        if (isInCheck(teamColor)) finished = true;
+                        if (isInCheck(teamColor)) {finished = true;}
                         return (isInCheck(teamColor));
                     }
             }
