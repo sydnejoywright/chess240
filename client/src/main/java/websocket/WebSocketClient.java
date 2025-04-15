@@ -31,7 +31,8 @@ public class WebSocketClient extends Endpoint {
     String gameName;
     String name;
 
-    public WebSocketClient(String url, ChessGame.TeamColor asTeam, GameData currentGameData, String username, String gameName, String name) throws ResponseException {
+    public WebSocketClient(String url, ChessGame.TeamColor asTeam, GameData currentGameData, String username,
+                           String gameName, String name) throws ResponseException {
         this.currentGameData = currentGameData;
         this.asTeam = asTeam;
         this.username = username;
@@ -73,7 +74,10 @@ public class WebSocketClient extends Endpoint {
     }
     private void printPrompt() {
         removePrompt();
-        System.out.print(EscapeSequences.RESET_TEXT_COLOR + EscapeSequences.BLUE + "[" + EscapeSequences.GREEN + username + EscapeSequences.BLUE + ": in game " + EscapeSequences.GREEN + gameName + EscapeSequences.BLUE + " as " + EscapeSequences.GREEN + name + EscapeSequences.BLUE + "] >>> " + GREEN);
+        System.out.print(EscapeSequences.RESET_TEXT_COLOR + EscapeSequences.BLUE + "["
+                + EscapeSequences.GREEN + username + EscapeSequences.BLUE +
+                ": in game " + EscapeSequences.GREEN + gameName + EscapeSequences.BLUE +
+                " as " + EscapeSequences.GREEN + name + EscapeSequences.BLUE + "] >>> " + GREEN);
     }
 
     public void redraw(ChessGame.TeamColor asTeam){

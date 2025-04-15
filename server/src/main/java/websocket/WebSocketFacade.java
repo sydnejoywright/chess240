@@ -178,7 +178,8 @@ public class WebSocketFacade {
 
         if (gameData.getChessGame().isFinished()) {
             try {
-                session.getRemote().sendString(new Gson().toJson(new ErrorType(ServerMessage.ServerMessageType.ERROR, "Cannot make moves, the game is over")));
+                session.getRemote().sendString(new Gson().toJson(new ErrorType(ServerMessage.ServerMessageType.ERROR,
+                        "Cannot make moves, the game is over")));
             } catch (Exception exception) {}
             return;
         }
@@ -202,12 +203,28 @@ public class WebSocketFacade {
         AuthtokenData data = authDAO.getAuth(authtokenData);
 
         // adding logic for checkmate, mate, check
-        if (currentGameData.getChessGame().isInStalemate(ChessGame.TeamColor.WHITE)){notifyOthers(data.username + " made a move from " + convert_numbers(move.getStartPosition().getColumn()) + move.getStartPosition().getRow() + " to " + convert_numbers(move.getEndPosition().getColumn()) + move.getEndPosition().getRow() + "\nStalemate: game is over", gameID, session);}
-        else if (currentGameData.getChessGame().isInCheckmate(ChessGame.TeamColor.WHITE)){notifyOthers(data.username + " made a move from " + convert_numbers(move.getStartPosition().getColumn()) + move.getStartPosition().getRow() + " to " + convert_numbers(move.getEndPosition().getColumn()) + move.getEndPosition().getRow() + "\n" + currentGameData.getWhiteUsername() + " is in checkmate: game is over", gameID, session);}
-        else if (currentGameData.getChessGame().isInCheckmate(ChessGame.TeamColor.BLACK)){notifyOthers(data.username + " made a move from " + convert_numbers(move.getStartPosition().getColumn()) + move.getStartPosition().getRow() + " to " + convert_numbers(move.getEndPosition().getColumn()) + move.getEndPosition().getRow() + "\n" + currentGameData.getBlackUsername() + " is in checkmate: game is over", gameID, session);}
-        else if (currentGameData.getChessGame().isInCheck(ChessGame.TeamColor.WHITE)){notifyOthers(data.username + " made a move from " + convert_numbers(move.getStartPosition().getColumn()) + move.getStartPosition().getRow() + " to " + convert_numbers(move.getEndPosition().getColumn()) + move.getEndPosition().getRow() + "\n" + currentGameData.getWhiteUsername() + " is in check", gameID, session);}
-        else if (currentGameData.getChessGame().isInCheck(ChessGame.TeamColor.BLACK)){ notifyOthers(data.username + " made a move from " + convert_numbers(move.getStartPosition().getColumn()) + move.getStartPosition().getRow() + " to " + convert_numbers(move.getEndPosition().getColumn()) + move.getEndPosition().getRow() + "\n" + currentGameData.getBlackUsername() + " is in check", gameID, session);}
-        else notifyOthers(data.username + " made a move from " + convert_numbers(move.getStartPosition().getColumn()) + move.getStartPosition().getRow() + " to " + convert_numbers(move.getEndPosition().getColumn()) + move.getEndPosition().getRow(), gameID, session);
+        if (currentGameData.getChessGame().isInStalemate(ChessGame.TeamColor.WHITE)){notifyOthers(
+                data.username + " made a move from " + convertNumbers(move.getStartPosition().getColumn()) + move.getStartPosition().getRow()
+                        + " to " + convertNumbers(move.getEndPosition().getColumn()) + move.getEndPosition().getRow()
+                        + "\nStalemate: game is over", gameID, session);}
+        else if (currentGameData.getChessGame().isInCheckmate(ChessGame.TeamColor.WHITE)){notifyOthers(
+                data.username + " made a move from " + convertNumbers(move.getStartPosition().getColumn()) + move.getStartPosition().getRow()
+                        + " to " + convertNumbers(move.getEndPosition().getColumn()) + move.getEndPosition().getRow()
+                        + "\n" + currentGameData.getWhiteUsername() + " is in checkmate: game is over", gameID, session);}
+        else if (currentGameData.getChessGame().isInCheckmate(ChessGame.TeamColor.BLACK)){notifyOthers(
+                data.username + " made a move from " + convertNumbers(move.getStartPosition().getColumn()) + move.getStartPosition().getRow()
+                        + " to " + convertNumbers(move.getEndPosition().getColumn()) + move.getEndPosition().getRow()
+                        + "\n" + currentGameData.getBlackUsername() + " is in checkmate: game is over", gameID, session);}
+        else if (currentGameData.getChessGame().isInCheck(ChessGame.TeamColor.WHITE)){notifyOthers(
+                data.username + " made a move from " + convertNumbers(move.getStartPosition().getColumn()) + move.getStartPosition().getRow() +
+                        " to " + convertNumbers(move.getEndPosition().getColumn()) + move.getEndPosition().getRow()
+                        + "\n" + currentGameData.getWhiteUsername() + " is in check", gameID, session);}
+        else if (currentGameData.getChessGame().isInCheck(ChessGame.TeamColor.BLACK)){ notifyOthers(
+                data.username + " made a move from " + convertNumbers(move.getStartPosition().getColumn()) + move.getStartPosition().getRow()
+                        + " to " + convertNumbers(move.getEndPosition().getColumn()) + move.getEndPosition().getRow()
+                        + "\n" + currentGameData.getBlackUsername() + " is in check", gameID, session);}
+        else notifyOthers(data.username + " made a move from " + convertNumbers(move.getStartPosition().getColumn()) + move.getStartPosition().getRow()
+                    + " to " + convertNumbers(move.getEndPosition().getColumn()) + move.getEndPosition().getRow(), gameID, session);
 
         updateAllUserGames(currentGameData, gameID);
     }
@@ -245,14 +262,16 @@ public class WebSocketFacade {
             }
             if (gameDAO.getGame(gameID).getChessGame().isFinished()) {
                 try {
-                    session.getRemote().sendString(new Gson().toJson(new ErrorType(ServerMessage.ServerMessageType.ERROR, "Cannot resign, the game is over")));
+                    session.getRemote().sendString(new Gson().toJson(new ErrorType(ServerMessage.ServerMessageType.ERROR,
+                            "Cannot resign, the game is over")));
                 } catch (Exception exception) {}
                 return;
             }
             GameData gameData = gameDAO.getGame(gameID);
             if (!authData.username.equals(gameData.getWhiteUsername()) && !authData.username.equals(gameData.getBlackUsername())){
                 try {
-                    session.getRemote().sendString(new Gson().toJson(new ErrorType(ServerMessage.ServerMessageType.ERROR, "Can't resign as observer")));
+                    session.getRemote().sendString(new Gson().toJson(new ErrorType(ServerMessage.ServerMessageType.ERROR,
+                            "Can't resign as observer")));
                 } catch (Exception exception) {}
                 return;
             }
@@ -262,7 +281,7 @@ public class WebSocketFacade {
         } catch (Exception exception) { System.out.println("Error in resign() in WebSocketFacade.java"); }
     }
 
-    public String convert_numbers(int num) {
+    public String convertNumbers(int num) {
         return switch (num) {
             case 1 -> "a";
             case 2 -> "b";

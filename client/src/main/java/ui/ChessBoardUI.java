@@ -78,7 +78,9 @@ public class ChessBoardUI {
         return color + " " + character + " ";
     }
 
-    public static void makeRow(int row, ChessGame game, ChessGame.TeamColor asTeam, Collection<ChessPosition> highlightThese, ChessPosition highlightThis) {
+    public static void makeRow(int row, ChessGame game, ChessGame.TeamColor asTeam,
+                               Collection<ChessPosition> highlightThese,
+                               ChessPosition highlightThis) {
         String rowSquares = "";
         rowSquares += makeSquare(BORDER_COLOR, Integer.toString(row));
         if(!asTeam.equals(ChessGame.TeamColor.WHITE)) {

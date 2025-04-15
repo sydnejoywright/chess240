@@ -34,7 +34,8 @@ public class GamePlayUI {
     private String serverUrl;
     private static final List<String> LETTERS = Arrays.asList("a", "b", "c", "d", "e", "f", "g", "h");
 
-    public GamePlayUI(String username, String authToken, GameData gameData, ChessGame.TeamColor asTeam, Boolean isPlayer, int gameID, String color) throws ResponseException, IOException {
+    public GamePlayUI(String username, String authToken, GameData gameData, ChessGame.TeamColor asTeam,
+                      Boolean isPlayer, int gameID, String color) throws ResponseException, IOException {
         this.authToken = authToken;
         this.username = username;
         this.asTeam = asTeam;
@@ -43,7 +44,8 @@ public class GamePlayUI {
         this.serverUrl = "http://localhost:8080";
         this.client = new WebSocketClient(serverUrl, asTeam, gameData, username, this.gameName, color);
         this.gameID = gameID;
-        client.sendMessage(new Gson().toJson(new UserGameCommand(UserGameCommand.CommandType.CONNECT, authToken, gameID)));
+        client.sendMessage(new Gson().toJson(new UserGameCommand(UserGameCommand.CommandType.CONNECT,
+                authToken, gameID)));
         this.isPlayer = isPlayer;
     }
 
@@ -75,7 +77,10 @@ public class GamePlayUI {
     }
     private void printPrompt() {
         removePrompt();
-        System.out.print(EscapeSequences.RESET_TEXT_COLOR + EscapeSequences.BLUE + "[" + EscapeSequences.GREEN + username + EscapeSequences.BLUE + ": in game " + EscapeSequences.GREEN + gameName + EscapeSequences.BLUE + " as " + EscapeSequences.GREEN + color + EscapeSequences.BLUE + "] >>> " + GREEN);
+        System.out.print(EscapeSequences.RESET_TEXT_COLOR + EscapeSequences.BLUE + "["
+                + EscapeSequences.GREEN + username + EscapeSequences.BLUE + ": in game "
+                + EscapeSequences.GREEN + gameName + EscapeSequences.BLUE + " as "
+                + EscapeSequences.GREEN + color + EscapeSequences.BLUE + "] >>> " + GREEN);
     }
 
 
@@ -112,7 +117,8 @@ public class GamePlayUI {
 
     public String leaveGame () throws ResponseException, IOException {
         try {
-            client.sendMessage(new Gson().toJson(new LeaveCommand(UserGameCommand.CommandType.LEAVE, new AuthtokenData(username, authToken), gameID, asTeam)));
+            client.sendMessage(new Gson().toJson(new LeaveCommand(UserGameCommand.CommandType.LEAVE,
+                    new AuthtokenData(username, authToken), gameID, asTeam)));
             return "Leaving Game...\n" + new LoggedIn(serverUrl, authToken, username).run();
         } catch (Exception e) {
             System.out.println("Exception caught in sendMessage websocketClient: " + e.getMessage());
@@ -124,9 +130,11 @@ public class GamePlayUI {
         currentGame.makeMove(move);
         currentData.setChessGame(currentGame);
         try {
-            client.sendMessage(new Gson().toJson(new MakeMoveCommand(UserGameCommand.CommandType.MAKE_MOVE, move, gameID, authToken, currentData)));
+            client.sendMessage(new Gson().toJson(new MakeMoveCommand(UserGameCommand.CommandType.MAKE_MOVE,
+                    move, gameID, authToken, currentData)));
         } catch (IOException e) {
-            System.out.println("Exception caught in sendMessage websocketClient: " + e.getMessage() + "request came from makeMove gameplay");
+            System.out.println("Exception caught in sendMessage websocketClient: " + e.getMessage()
+                    + "request came from makeMove gameplay");
         }
     }
 
@@ -134,9 +142,14 @@ public class GamePlayUI {
         GameData currentGameData = client.getCurrentGameData();
         ChessGame currentGame = currentGameData.getChessGame();
 
-        if (currentGameData.getChessGame().isInStalemate(ChessGame.TeamColor.WHITE)){ return EscapeSequences.RED + "Stalemate: game is over\n" + EscapeSequences.RESET_TEXT_COLOR; }
-        else if (currentGame.isInCheckmate(ChessGame.TeamColor.WHITE)){ return EscapeSequences.RED + currentGameData.getWhiteUsername() + " is in checkmate: game is over\n" + EscapeSequences.RESET_TEXT_COLOR; }
-        else if (currentGame.isInCheckmate(ChessGame.TeamColor.BLACK)){ return EscapeSequences.RED + currentGameData.getBlackUsername() + " is in checkmate: game is over\n" + EscapeSequences.RESET_TEXT_COLOR; }
+        if (currentGameData.getChessGame().isInStalemate(ChessGame.TeamColor.WHITE)){ return EscapeSequences.RED
+                + "Stalemate: game is over\n" + EscapeSequences.RESET_TEXT_COLOR; }
+        else if (currentGame.isInCheckmate(ChessGame.TeamColor.WHITE)){ return EscapeSequences.RED
+                + currentGameData.getWhiteUsername() + " is in checkmate: game is over\n"
+                + EscapeSequences.RESET_TEXT_COLOR; }
+        else if (currentGame.isInCheckmate(ChessGame.TeamColor.BLACK)){ return EscapeSequences.RED
+                + currentGameData.getBlackUsername() + " is in checkmate: game is over\n"
+                + EscapeSequences.RESET_TEXT_COLOR; }
 
         if(currentGame.getTeamTurn()!=asTeam){
             return EscapeSequences.RED + "It's not your turn\n" + EscapeSequences.RESET_TEXT_COLOR;
@@ -147,14 +160,18 @@ public class GamePlayUI {
             String col2 = String.valueOf(params[1].charAt(0)).toLowerCase();
 
             if (!LETTERS.contains(col1) || !Character.isDigit(params[0].charAt(1))) {
-                return EscapeSequences.RED + "Both of your parameters need to be in the form [letter <a-h>][number <1-8>]\n" + EscapeSequences.RESET_TEXT_COLOR;
+                return EscapeSequences.RED
+                        + "Both of your parameters need to be in the form [letter <a-h>][number <1-8>]\n"
+                        + EscapeSequences.RESET_TEXT_COLOR;
             } else if (!LETTERS.contains(col2) || !Character.isDigit(params[1].charAt(1))) {
-                return EscapeSequences.RED + "Both of your parameters need to be in the form [letter <a-h>][number <1-8>]\n" + EscapeSequences.RESET_TEXT_COLOR;
+                return EscapeSequences.RED
+                        + "Both of your parameters need to be in the form [letter <a-h>][number <1-8>]\n"
+                        + EscapeSequences.RESET_TEXT_COLOR;
             }
 
             //create a chess move, which requires changing letters to numbers.
-            int from = convert_letters(col1);
-            int to = convert_letters(col2);
+            int from = convertLetters(col1);
+            int to = convertLetters(col2);
 
             ChessPosition start = new ChessPosition(Integer.parseInt(String.valueOf(params[0].charAt(1))), from);
             ChessPosition end = new ChessPosition(Integer.parseInt(String.valueOf(params[1].charAt(1))), to);
@@ -163,7 +180,8 @@ public class GamePlayUI {
             ChessPiece piece = currentGame.getBoard().getPiece(start);
             //if they try to move a piece that isn't there
             if(piece == null){
-                return EscapeSequences.RED + "There is no piece at that position, check your parameters and try again\n" + EscapeSequences.RESET_TEXT_COLOR;
+                return EscapeSequences.RED + "There is no piece at that position, check your parameters and try again\n"
+                        + EscapeSequences.RESET_TEXT_COLOR;
             }
             //check if the piece they are trying to move is their own
             if(!(piece.getTeamColor() == asTeam)){
@@ -171,27 +189,42 @@ public class GamePlayUI {
             }
             else {
                 // check if it's a pawn, and if so it will need promotion
-                if ((piece.getPieceType().equals(ChessPiece.PieceType.PAWN)) && ((asTeam == ChessGame.TeamColor.WHITE && start.getRow() == 7) || (asTeam == ChessGame.TeamColor.BLACK && start.getRow() == 2))) {
+                if ((piece.getPieceType().equals(ChessPiece.PieceType.PAWN)) &&
+                        ((asTeam == ChessGame.TeamColor.WHITE && start.getRow() == 7) ||
+                                (asTeam == ChessGame.TeamColor.BLACK && start.getRow() == 2))) {
                     boolean selectedPiece = false;
                     while (!selectedPiece) {
-                        System.out.print(EscapeSequences.SET_TEXT_COLOR_MAGENTA + "\tWhat piece do you want to promote to?\n\t" + EscapeSequences.RESET_TEXT_COLOR);
+                        System.out.print(EscapeSequences.SET_TEXT_COLOR_MAGENTA
+                                + "\tWhat piece do you want to promote to?\n\t" + EscapeSequences.RESET_TEXT_COLOR);
                         Scanner scanner = new Scanner(System.in);
                         String line = scanner.nextLine();
                         var tokens = line.toLowerCase().split(" ");
                         if (tokens.length > 1) {
-                            System.out.println(EscapeSequences.RED + "\tYour piece should be one word. Here are your options: \n\tQUEEN, KNIGHT, ROOK, BISHOP" + EscapeSequences.RESET_TEXT_COLOR);
+                            System.out.println(EscapeSequences.RED
+                                    + "\tYour piece should be one word. Here are your options: " +
+                                    "\n\tQUEEN, KNIGHT, ROOK, BISHOP" + EscapeSequences.RESET_TEXT_COLOR);
                         } else {
                             switch (tokens[0]) {
                                 case "bishop" ->
-                                { executeMove(currentGameData, currentGame, new ChessMove(move.getStartPosition(), move.getEndPosition(), ChessPiece.PieceType.BISHOP)); selectedPiece = true; break; }
+                                { executeMove(currentGameData, currentGame, new ChessMove(move.getStartPosition(),
+                                        move.getEndPosition(), ChessPiece.PieceType.BISHOP));
+                                    selectedPiece = true; break; }
                                 case "queen" ->
-                                { executeMove(currentGameData, currentGame, new ChessMove(move.getStartPosition(), move.getEndPosition(), ChessPiece.PieceType.QUEEN)); selectedPiece = true; break; }
+                                { executeMove(currentGameData, currentGame, new ChessMove(move.getStartPosition(),
+                                        move.getEndPosition(), ChessPiece.PieceType.QUEEN));
+                                    selectedPiece = true; break; }
                                 case "rook" ->
-                                { executeMove(currentGameData, currentGame, new ChessMove(move.getStartPosition(), move.getEndPosition(), ChessPiece.PieceType.ROOK)); selectedPiece = true; break; }
+                                { executeMove(currentGameData, currentGame, new ChessMove(move.getStartPosition(),
+                                        move.getEndPosition(), ChessPiece.PieceType.ROOK));
+                                    selectedPiece = true; break; }
                                 case "knight" ->
-                                { executeMove(currentGameData, currentGame, new ChessMove(move.getStartPosition(), move.getEndPosition(), ChessPiece.PieceType.KNIGHT)); selectedPiece = true; break; }
+                                { executeMove(currentGameData, currentGame, new ChessMove(move.getStartPosition(),
+                                        move.getEndPosition(), ChessPiece.PieceType.KNIGHT));
+                                    selectedPiece = true; break; }
                                 case null, default ->
-                                        System.out.println(EscapeSequences.RED + "\tThat piece isn't valid. Here are your options: \n\tQUEEN, KNIGHT, ROOK, BISHOP" + EscapeSequences.RESET_TEXT_COLOR);
+                                        System.out.println(EscapeSequences.RED +
+                                                "\tThat piece isn't valid. Here are your options: " +
+                                                "\n\tQUEEN, KNIGHT, ROOK, BISHOP" + EscapeSequences.RESET_TEXT_COLOR);
                             }
                         }
                     }
@@ -211,18 +244,31 @@ public class GamePlayUI {
 //                        System.out.println(moves);
 //                        System.out.println(move);
                     if (!validMoves.contains(move) && piece.pieceMoves(currentGame.getBoard(), start).contains(move))
-                        return EscapeSequences.RED + "That move leaves or places your king in check!\n" + EscapeSequences.RESET_TEXT_COLOR;
-                    return EscapeSequences.RED + "That's not a valid move for that piece\n" + EscapeSequences.RESET_TEXT_COLOR;
+                        return EscapeSequences.RED + "That move leaves or places your king in check!\n"
+                                + EscapeSequences.RESET_TEXT_COLOR;
+                    return EscapeSequences.RED + "That's not a valid move for that piece\n"
+                            + EscapeSequences.RESET_TEXT_COLOR;
                 }
-                if (currentGameData.getChessGame().isInStalemate(ChessGame.TeamColor.WHITE))     {removePrompt(); System.out.println(EscapeSequences.GREEN + "Stalemate. Game is over." + EscapeSequences.RESET_TEXT_COLOR); printPrompt(); }
-                else if (currentGameData.getChessGame().isInCheckmate(ChessGame.TeamColor.WHITE)){removePrompt(); System.out.println(EscapeSequences.GREEN + "Checkmate. You won." + EscapeSequences.RESET_TEXT_COLOR); printPrompt(); }
-                else if (currentGameData.getChessGame().isInCheckmate(ChessGame.TeamColor.BLACK)){removePrompt(); System.out.println(EscapeSequences.GREEN + "Checkmate. You won." + EscapeSequences.RESET_TEXT_COLOR); printPrompt(); }
-                else if (currentGameData.getChessGame().isInCheck(ChessGame.TeamColor.WHITE))    {removePrompt(); System.out.println(EscapeSequences.GREEN + "You put the other team in check" + EscapeSequences.RESET_TEXT_COLOR); printPrompt(); }
-                else if (currentGameData.getChessGame().isInCheck(ChessGame.TeamColor.BLACK))    {removePrompt(); System.out.println(EscapeSequences.GREEN + "You put the other team in check" + EscapeSequences.RESET_TEXT_COLOR); printPrompt(); }
+                if (currentGameData.getChessGame().isInStalemate(ChessGame.TeamColor.WHITE))
+                {removePrompt(); System.out.println(EscapeSequences.GREEN + "Stalemate. Game is over."
+                        + EscapeSequences.RESET_TEXT_COLOR); printPrompt(); }
+                else if (currentGameData.getChessGame().isInCheckmate(ChessGame.TeamColor.WHITE))
+                {removePrompt(); System.out.println(EscapeSequences.GREEN + "Checkmate. You won."
+                        + EscapeSequences.RESET_TEXT_COLOR); printPrompt(); }
+                else if (currentGameData.getChessGame().isInCheckmate(ChessGame.TeamColor.BLACK))
+                {removePrompt(); System.out.println(EscapeSequences.GREEN + "Checkmate. You won."
+                        + EscapeSequences.RESET_TEXT_COLOR); printPrompt(); }
+                else if (currentGameData.getChessGame().isInCheck(ChessGame.TeamColor.WHITE))
+                {removePrompt(); System.out.println(EscapeSequences.GREEN + "You put the other team in check"
+                        + EscapeSequences.RESET_TEXT_COLOR); printPrompt(); }
+                else if (currentGameData.getChessGame().isInCheck(ChessGame.TeamColor.BLACK))
+                {removePrompt(); System.out.println(EscapeSequences.GREEN + "You put the other team in check"
+                        + EscapeSequences.RESET_TEXT_COLOR); printPrompt(); }
             }
             return "";
         }
-        return EscapeSequences.RED + "Check your parameters: Expected <start position> <end position>\n" + EscapeSequences.RESET_TEXT_COLOR;
+        return EscapeSequences.RED + "Check your parameters: Expected <start position> <end position>\n"
+            + EscapeSequences.RESET_TEXT_COLOR;
     };
     public String resignGame() throws ResponseException{
         GameData currentGameData = client.getCurrentGameData();
@@ -232,25 +278,32 @@ public class GamePlayUI {
         }
         boolean doIt = false;
         while (!doIt) {
-            System.out.print(EscapeSequences.SET_TEXT_COLOR_MAGENTA + "\tAre you sure you want to resign (y/n)?\n\t" + EscapeSequences.RESET_TEXT_COLOR);
+            System.out.print(EscapeSequences.SET_TEXT_COLOR_MAGENTA + "\tAre you sure you want to resign (y/n)?\n\t"
+                    + EscapeSequences.RESET_TEXT_COLOR);
             Scanner scanner = new Scanner(System.in);
             String line = scanner.nextLine();
             var tokens = line.toLowerCase().split(" ");
             if (tokens.length > 1) {
-                System.out.println(EscapeSequences.SET_TEXT_COLOR_MAGENTA + "\tAre you sure you want to resign (y/n)?\n\n" + EscapeSequences.RESET_TEXT_COLOR);
+                System.out.println(EscapeSequences.SET_TEXT_COLOR_MAGENTA
+                        + "\tAre you sure you want to resign (y/n)?\n\n"
+                        + EscapeSequences.RESET_TEXT_COLOR);
             } else {
                 switch (tokens[0]) {
                     case "y" -> {doIt = true;}
                     case "n" -> {return "";}
                     case null, default ->
-                            System.out.println(EscapeSequences.SET_TEXT_COLOR_MAGENTA + "\tAre you sure you want to resign (y/n)?\n\n" + EscapeSequences.RESET_TEXT_COLOR);
+                            System.out.println(EscapeSequences.SET_TEXT_COLOR_MAGENTA
+                                    + "\tAre you sure you want to resign (y/n)?\n\n"
+                                    + EscapeSequences.RESET_TEXT_COLOR);
                 }
             }
         }
         try {
-            client.sendMessage(new Gson().toJson(new UserGameCommand(UserGameCommand.CommandType.RESIGN, authToken, gameID)));
+            client.sendMessage(new Gson().toJson(new UserGameCommand(UserGameCommand.CommandType.RESIGN,
+                    authToken, gameID)));
         } catch (IOException e) {
-            System.out.println("Exception caught in sendMessage websocketClient: " + e.getMessage() + "request came from resignGame gameplay");
+            System.out.println("Exception caught in sendMessage websocketClient: " + e.getMessage()
+                    + "request came from resignGame gameplay");
         }
         return "";
 
@@ -259,9 +312,11 @@ public class GamePlayUI {
        if(params.length == 1){
            String col1 = String.valueOf(params[0].charAt(0)).toLowerCase();
            if (!LETTERS.contains(col1) || !Character.isDigit(params[0].charAt(1))) {
-               return EscapeSequences.RED + "Both of your parameters need to be in the form [letter <a-h>][number <1-8>]\n" + EscapeSequences.RESET_TEXT_COLOR;
+               return EscapeSequences.RED +
+                       "Both of your parameters need to be in the form [letter <a-h>][number <1-8>]\n"
+                       + EscapeSequences.RESET_TEXT_COLOR;
            }
-           int from = convert_letters(col1);
+           int from = convertLetters(col1);
            ChessPosition start = new ChessPosition(Integer.parseInt(String.valueOf(params[0].charAt(1))), from);
            GameData currentGameData = client.getCurrentGameData();
            if (currentGameData.getChessGame().getBoard().getPiece(start) == null) {
@@ -274,7 +329,7 @@ public class GamePlayUI {
     };
 
 
-    public int convert_letters(String letter) {
+    public int convertLetters(String letter) {
         return switch (letter) {
             case "a" -> 1;
             case "b" -> 2;
