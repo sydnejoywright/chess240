@@ -154,11 +154,11 @@ public class LoggedIn {
                     if (params[1].equalsIgnoreCase("white")) {
 //                        ChessBoardUI.displayGame(theGame.getChessGame(), ChessGame.TeamColor.WHITE);
                         System.out.println(EscapeSequences.GREEN + "Successfully joined game " + params[0] + " as " + params[1] + EscapeSequences.RESET_TEXT_COLOR);
-                        return new GamePlayUI(username, authToken, theGame, ChessGame.TeamColor.WHITE, isPlayer, gameID).run();
+                        return new GamePlayUI(username, authToken, theGame, ChessGame.TeamColor.WHITE, isPlayer, gameID, "white").run();
                     } else {
 //                        ChessBoardUI.displayGame(theGame.getChessGame(), ChessGame.TeamColor.BLACK);
                         System.out.println(EscapeSequences.GREEN + "Successfully joined game " + params[0] + " as " + params[1] + EscapeSequences.RESET_TEXT_COLOR);
-                        return new GamePlayUI(username, authToken, theGame, ChessGame.TeamColor.BLACK, isPlayer, gameID).run();
+                        return new GamePlayUI(username, authToken, theGame, ChessGame.TeamColor.BLACK, isPlayer, gameID, "black").run();
                     }
                 }else{
                     System.out.println("the game is null");
@@ -193,15 +193,16 @@ public class LoggedIn {
 
                 GamesList games = (GamesList) server.listGames(authToken);
                 for(GameData game: games.games()){
-
+                    try {
                     if (game.getGameID() == gameID){
                         theGame = game;
-                    }
+                    }}
+                    catch (Exception e) {return EscapeSequences.RED + "You must call 'list' before you can observe a game\n" + EscapeSequences.RESET_TEXT_COLOR; }
                 }
                 if(theGame != null) {
 //                    ChessBoardUI.displayGame(theGame.getChessGame(), ChessGame.TeamColor.WHITE);
                     System.out.println(EscapeSequences.GREEN + "Observing game " + params[0] + EscapeSequences.RESET_TEXT_COLOR);
-                    return new GamePlayUI(username, authToken, theGame, ChessGame.TeamColor.WHITE, isPlayer, gameID).run();
+                    return new GamePlayUI(username, authToken, theGame, ChessGame.TeamColor.WHITE, isPlayer, gameID, "observer").run();
 
                 }
 

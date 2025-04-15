@@ -28,18 +28,20 @@ public class GamePlayUI {
 //    private WebSocketFacade client;
     private HashMap<Integer, Integer> gameRefs;
     private boolean isPlayer;
+    String color;
     private WebSocketClient client;
     private ChessGame.TeamColor asTeam;
     private String serverUrl;
     private static final List<String> LETTERS = Arrays.asList("a", "b", "c", "d", "e", "f", "g", "h");
 
-    public GamePlayUI(String username, String authToken, GameData gameData, ChessGame.TeamColor asTeam, Boolean isPlayer, int gameID) throws ResponseException, IOException {
+    public GamePlayUI(String username, String authToken, GameData gameData, ChessGame.TeamColor asTeam, Boolean isPlayer, int gameID, String color) throws ResponseException, IOException {
         this.authToken = authToken;
         this.username = username;
         this.asTeam = asTeam;
+        this.color = color;
         this.gameName = gameData.getGameName();
         this.serverUrl = "http://localhost:8080";
-        this.client = new WebSocketClient(serverUrl, asTeam, gameData, username, this.gameName);
+        this.client = new WebSocketClient(serverUrl, asTeam, gameData, username, this.gameName, color);
         this.gameID = gameID;
         client.sendMessage(new Gson().toJson(new UserGameCommand(UserGameCommand.CommandType.CONNECT, authToken, gameID)));
         this.isPlayer = isPlayer;
@@ -73,7 +75,7 @@ public class GamePlayUI {
     }
     private void printPrompt() {
         removePrompt();
-        System.out.print(EscapeSequences.RESET_TEXT_COLOR + EscapeSequences.BLUE + "[" + EscapeSequences.GREEN + username + EscapeSequences.BLUE + ": playing in " + EscapeSequences.GREEN + gameName + EscapeSequences.BLUE + " as " + EscapeSequences.GREEN + asTeam + EscapeSequences.BLUE + "] >>> " + GREEN);
+        System.out.print(EscapeSequences.RESET_TEXT_COLOR + EscapeSequences.BLUE + "[" + EscapeSequences.GREEN + username + EscapeSequences.BLUE + ": in game " + EscapeSequences.GREEN + gameName + EscapeSequences.BLUE + " as " + EscapeSequences.GREEN + color + EscapeSequences.BLUE + "] >>> " + GREEN);
     }
 
 
@@ -169,59 +171,54 @@ public class GamePlayUI {
             }
             else {
                 // check if it's a pawn, and if so it will need promotion
-                if (piece.getPieceType().equals(ChessPiece.PieceType.PAWN)){
-                    if ((asTeam == ChessGame.TeamColor.WHITE && start.getRow() == 7) || (asTeam == ChessGame.TeamColor.BLACK && start.getRow() == 2)) {
-                        boolean selectedPiece = false;
-                        while (!selectedPiece) {
-                            System.out.print(EscapeSequences.SET_TEXT_COLOR_MAGENTA + "\tWhat piece do you want to promote to?\n\t" + EscapeSequences.RESET_TEXT_COLOR);
-                            Scanner scanner = new Scanner(System.in);
-                            String line = scanner.nextLine();
-                            var tokens = line.toLowerCase().split(" ");
-                            if (tokens.length > 1) {
-                                System.out.println(EscapeSequences.RED + "\tYour piece should be one word. Here are your options: \n\tQUEEN, KNIGHT, ROOK, BISHOP" + EscapeSequences.RESET_TEXT_COLOR);
-                            } else {
-                                switch (tokens[0]) {
-                                    case "bishop" ->
-                                    { executeMove(currentGameData, currentGame, new ChessMove(move.getStartPosition(), move.getEndPosition(), ChessPiece.PieceType.BISHOP)); selectedPiece = true; break; }
-                                    case "queen" ->
-                                    { executeMove(currentGameData, currentGame, new ChessMove(move.getStartPosition(), move.getEndPosition(), ChessPiece.PieceType.QUEEN)); selectedPiece = true; break; }
-                                    case "rook" ->
-                                    { executeMove(currentGameData, currentGame, new ChessMove(move.getStartPosition(), move.getEndPosition(), ChessPiece.PieceType.ROOK)); selectedPiece = true; break; }
-                                    case "knight" ->
-                                    { executeMove(currentGameData, currentGame, new ChessMove(move.getStartPosition(), move.getEndPosition(), ChessPiece.PieceType.KNIGHT)); selectedPiece = true; break; }
-                                    case null, default ->
-                                            System.out.println(EscapeSequences.RED + "\tThat piece isn't valid. Here are your options: \n\tQUEEN, KNIGHT, ROOK, BISHOP" + EscapeSequences.RESET_TEXT_COLOR);
-                                }
+                if ((piece.getPieceType().equals(ChessPiece.PieceType.PAWN)) && ((asTeam == ChessGame.TeamColor.WHITE && start.getRow() == 7) || (asTeam == ChessGame.TeamColor.BLACK && start.getRow() == 2))) {
+                    boolean selectedPiece = false;
+                    while (!selectedPiece) {
+                        System.out.print(EscapeSequences.SET_TEXT_COLOR_MAGENTA + "\tWhat piece do you want to promote to?\n\t" + EscapeSequences.RESET_TEXT_COLOR);
+                        Scanner scanner = new Scanner(System.in);
+                        String line = scanner.nextLine();
+                        var tokens = line.toLowerCase().split(" ");
+                        if (tokens.length > 1) {
+                            System.out.println(EscapeSequences.RED + "\tYour piece should be one word. Here are your options: \n\tQUEEN, KNIGHT, ROOK, BISHOP" + EscapeSequences.RESET_TEXT_COLOR);
+                        } else {
+                            switch (tokens[0]) {
+                                case "bishop" ->
+                                { executeMove(currentGameData, currentGame, new ChessMove(move.getStartPosition(), move.getEndPosition(), ChessPiece.PieceType.BISHOP)); selectedPiece = true; break; }
+                                case "queen" ->
+                                { executeMove(currentGameData, currentGame, new ChessMove(move.getStartPosition(), move.getEndPosition(), ChessPiece.PieceType.QUEEN)); selectedPiece = true; break; }
+                                case "rook" ->
+                                { executeMove(currentGameData, currentGame, new ChessMove(move.getStartPosition(), move.getEndPosition(), ChessPiece.PieceType.ROOK)); selectedPiece = true; break; }
+                                case "knight" ->
+                                { executeMove(currentGameData, currentGame, new ChessMove(move.getStartPosition(), move.getEndPosition(), ChessPiece.PieceType.KNIGHT)); selectedPiece = true; break; }
+                                case null, default ->
+                                        System.out.println(EscapeSequences.RED + "\tThat piece isn't valid. Here are your options: \n\tQUEEN, KNIGHT, ROOK, BISHOP" + EscapeSequences.RESET_TEXT_COLOR);
                             }
                         }
                     }
-                    executeMove(currentGameData, currentGame, move);
+
                 }
                 // if it's not a pawn
-                else {
-                    Collection<ChessMove> validMoves = currentGame.validMoves(start);
-                    boolean moveHappened = false;
-                    for (ChessMove currMove : validMoves) {
-                        if (moveHappened) { continue; }
-                        if (currMove.equals(move)) {
-                            executeMove(currentGameData, currentGame, move);
-                            moveHappened = true;
-                        }
+                Collection<ChessMove> validMoves = currentGame.validMoves(start);
+                boolean moveHappened = false;
+                for (ChessMove currMove : validMoves) {
+                    if (moveHappened) { continue; }
+                    if (currMove.equals(move)) {
+                        executeMove(currentGameData, currentGame, move);
+                        moveHappened = true;
                     }
-                    if (!moveHappened){
+                }
+                if (!moveHappened){
 //                        System.out.println(moves);
 //                        System.out.println(move);
-                        if (!validMoves.contains(move) && piece.pieceMoves(currentGame.getBoard(), start).contains(move))
-                            return EscapeSequences.RED + "That move leaves or places your king in check!\n" + EscapeSequences.RESET_TEXT_COLOR;
-                        return EscapeSequences.RED + "That's not a valid move for that piece\n" + EscapeSequences.RESET_TEXT_COLOR;
-                    }
+                    if (!validMoves.contains(move) && piece.pieceMoves(currentGame.getBoard(), start).contains(move))
+                        return EscapeSequences.RED + "That move leaves or places your king in check!\n" + EscapeSequences.RESET_TEXT_COLOR;
+                    return EscapeSequences.RED + "That's not a valid move for that piece\n" + EscapeSequences.RESET_TEXT_COLOR;
                 }
                 if (currentGameData.getChessGame().isInStalemate(ChessGame.TeamColor.WHITE))     {removePrompt(); System.out.println(EscapeSequences.GREEN + "Stalemate. Game is over." + EscapeSequences.RESET_TEXT_COLOR); printPrompt(); }
                 else if (currentGameData.getChessGame().isInCheckmate(ChessGame.TeamColor.WHITE)){removePrompt(); System.out.println(EscapeSequences.GREEN + "Checkmate. You won." + EscapeSequences.RESET_TEXT_COLOR); printPrompt(); }
                 else if (currentGameData.getChessGame().isInCheckmate(ChessGame.TeamColor.BLACK)){removePrompt(); System.out.println(EscapeSequences.GREEN + "Checkmate. You won." + EscapeSequences.RESET_TEXT_COLOR); printPrompt(); }
                 else if (currentGameData.getChessGame().isInCheck(ChessGame.TeamColor.WHITE))    {removePrompt(); System.out.println(EscapeSequences.GREEN + "You put the other team in check" + EscapeSequences.RESET_TEXT_COLOR); printPrompt(); }
                 else if (currentGameData.getChessGame().isInCheck(ChessGame.TeamColor.BLACK))    {removePrompt(); System.out.println(EscapeSequences.GREEN + "You put the other team in check" + EscapeSequences.RESET_TEXT_COLOR); printPrompt(); }
-
             }
             return "";
         }
@@ -232,6 +229,23 @@ public class GamePlayUI {
         ChessGame currentGame = currentGameData.getChessGame();
         if (currentGame.isFinished()) {
             return "You cannot resign. The game is already finished";
+        }
+        boolean doIt = false;
+        while (!doIt) {
+            System.out.print(EscapeSequences.SET_TEXT_COLOR_MAGENTA + "\tAre you sure you want to resign (y/n)?\n\t" + EscapeSequences.RESET_TEXT_COLOR);
+            Scanner scanner = new Scanner(System.in);
+            String line = scanner.nextLine();
+            var tokens = line.toLowerCase().split(" ");
+            if (tokens.length > 1) {
+                System.out.println(EscapeSequences.SET_TEXT_COLOR_MAGENTA + "\tAre you sure you want to resign (y/n)?\n\n" + EscapeSequences.RESET_TEXT_COLOR);
+            } else {
+                switch (tokens[0]) {
+                    case "y" -> {doIt = true;}
+                    case "n" -> {return "";}
+                    case null, default ->
+                            System.out.println(EscapeSequences.SET_TEXT_COLOR_MAGENTA + "\tAre you sure you want to resign (y/n)?\n\n" + EscapeSequences.RESET_TEXT_COLOR);
+                }
+            }
         }
         try {
             client.sendMessage(new Gson().toJson(new UserGameCommand(UserGameCommand.CommandType.RESIGN, authToken, gameID)));
@@ -250,6 +264,9 @@ public class GamePlayUI {
            int from = convert_letters(col1);
            ChessPosition start = new ChessPosition(Integer.parseInt(String.valueOf(params[0].charAt(1))), from);
            GameData currentGameData = client.getCurrentGameData();
+           if (currentGameData.getChessGame().getBoard().getPiece(start) == null) {
+               return EscapeSequences.RED + "There is no piece on that space\n" + EscapeSequences.RESET_TEXT_COLOR;
+           }
            ChessBoardUI.highlightGame(currentGameData.getChessGame(), asTeam, start);
            return "";
        }

@@ -80,7 +80,7 @@ public class LoggedOut {
                 }
             }
         }
-        return EscapeSequences.RED + "Expected <USERNAME> <PASSWORD>" + EscapeSequences.RESET_TEXT_COLOR;
+        return EscapeSequences.RED + "Expected <USERNAME> <PASSWORD>\n" + EscapeSequences.RESET_TEXT_COLOR;
     }
 
     public String register(String... params) throws ResponseException {
@@ -91,18 +91,18 @@ public class LoggedOut {
                 return new LoggedIn(serverUrl, registerResult.authToken(), registerResult.username()).run();
             }catch(ResponseException e){
                 if(e.getMessage().contains("403")){
-                    return EscapeSequences.RED + "Sorry, that username is already taken." + EscapeSequences.RESET_TEXT_COLOR;
+                    return EscapeSequences.RED + "Sorry, that username is already taken.\n" + EscapeSequences.RESET_TEXT_COLOR;
                 }
                 else if(e.getMessage().contains("400")){
-                    return EscapeSequences.RED + "Bad request" + EscapeSequences.RESET_TEXT_COLOR;
+                    return EscapeSequences.RED + "Bad request\n" + EscapeSequences.RESET_TEXT_COLOR;
                 }
                 else{
                     System.out.println(e.getMessage());
-                    return EscapeSequences.RED + "Cannot register user due to internal service error." + EscapeSequences.RESET_TEXT_COLOR;
+                    return EscapeSequences.RED + "Cannot register user due to internal service error.\n" + EscapeSequences.RESET_TEXT_COLOR;
                 }
             }
         }
-        return EscapeSequences.RED + "Expected <USERNAME> <PASSWORD> <EMAIL>" + EscapeSequences.RESET_TEXT_COLOR;    }
+        return EscapeSequences.RED + "Expected <USERNAME> <PASSWORD> <EMAIL>\n" + EscapeSequences.RESET_TEXT_COLOR;    }
 
 
     public String help() {

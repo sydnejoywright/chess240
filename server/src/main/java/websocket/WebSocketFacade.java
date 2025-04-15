@@ -145,10 +145,14 @@ public class WebSocketFacade {
                 session.getRemote().sendString(new Gson().toJson(new ErrorType(ServerMessage.ServerMessageType.ERROR, "Bad authToken")));
                 return;
             }
+            String team = null;
+            if (gameData.getWhiteUsername() == authData.username) team = "white";
+            else if (gameData.getBlackUsername() == authData.username) team = "black";
+            else team = "observer";
             String message = new Gson().toJson(new LoadGameType(ServerMessage.ServerMessageType.LOAD_GAME, gameData));
             session.getRemote().sendString(message);
             System.out.println("updating game");
-            notifyOthers(authData.username + " has joined the game.", gameID, session);
+            notifyOthers(authData.username + " has joined the game as " + team, gameID, session);
             activeSessions.put(session, info);
 
 
@@ -209,20 +213,19 @@ public class WebSocketFacade {
     }
 
 
-    private void leave(String authtoken, int gameID, Session session) throws IOException, DataAccessException {
+    private void leave(String authToken, int gameID, Session session) throws IOException, DataAccessException {
         GameData gameData = gameDAO.getGame(gameID);
-        AuthtokenData authtokenData = authDAO.getAuth(new AuthtokenData(null, authtoken));
+        AuthtokenData authtokenData = authDAO.getAuth(new AuthtokenData(null, authToken));
         ChessGame.TeamColor asTeam = null;
         if (gameData.getBlackUsername() != null && gameData.getBlackUsername().equals(authtokenData.username))
             asTeam = ChessGame.TeamColor.BLACK;
         else if (gameData.getWhiteUsername() != null && gameData.getWhiteUsername().equals(authtokenData.username))
             asTeam = ChessGame.TeamColor.WHITE;
         activeSessions.remove(session);
-        if(asTeam == ChessGame.TeamColor.WHITE){
+        if(asTeam != null && asTeam.equals(ChessGame.TeamColor.WHITE)){
             gameData.setWhiteUsername(null);
             gameDAO.updateGame(gameData);
-        }
-        else if (asTeam != null){
+        } else if(asTeam != null && asTeam.equals(ChessGame.TeamColor.BLACK)){
             gameData.setBlackUsername(null);
             gameDAO.updateGame(gameData);
         }
