@@ -49,7 +49,7 @@ public class GamePlayUI {
         this.isPlayer = isPlayer;
     }
 
-    public String run() {
+    public String runy() {
         System.out.print(help());
 //        try{redrawBoard();} catch (Exception e) {}
         Scanner scannerz = new Scanner(System.in);
@@ -181,8 +181,7 @@ public class GamePlayUI {
                     while (!selectedPiece) {
                         System.out.print(EscapeSequences.SET_TEXT_COLOR_MAGENTA
                                 + "\tWhat piece do you want to promote to?\n\t" + EscapeSequences.RESET_TEXT_COLOR);
-                        Scanner scanner = new Scanner(System.in);
-                        String line = scanner.nextLine();
+                        Scanner scanner = new Scanner(System.in); String line = scanner.nextLine();
                         var tokens = line.toLowerCase().split(" ");
                         if (tokens.length > 1) {
                             System.out.println(EscapeSequences.RED

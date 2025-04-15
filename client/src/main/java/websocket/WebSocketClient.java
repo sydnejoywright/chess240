@@ -72,7 +72,7 @@ public class WebSocketClient extends Endpoint {
             System.out.print("\b");
         }
     }
-    private void printPrompt() {
+    private void printPromptyPoo() {
         removePrompt();
         System.out.print(EscapeSequences.RESET_TEXT_COLOR + EscapeSequences.BLUE + "["
                 + EscapeSequences.GREEN + username + EscapeSequences.BLUE +
@@ -83,7 +83,7 @@ public class WebSocketClient extends Endpoint {
     public void redraw(ChessGame.TeamColor asTeam){
         removePrompt();
         ChessBoardUI.displayGame(currentGameData.getChessGame(), asTeam);
-        printPrompt();
+        printPromptyPoo();
     }
 
     public void sendMessage(String command) throws IOException {
@@ -110,19 +110,19 @@ public class WebSocketClient extends Endpoint {
                 removePrompt();
                 ChessBoardUI.displayGame(currentGameData.getChessGame(), asTeam);
                 System.out.print(EscapeSequences.RESET_TEXT_COLOR);
-                printPrompt();
+                printPromptyPoo();
                 break;
             case ERROR:
                 removePrompt();
                 ErrorType errorType = new Gson().fromJson(string, ErrorType.class);
                 System.out.println(EscapeSequences.RED + errorType.errorMessage() + EscapeSequences.RESET_TEXT_COLOR);
-                printPrompt();
+                printPromptyPoo();
                 break;
             case NOTIFICATION:
                 removePrompt();
                 NotificationType notificationType = new Gson().fromJson(string, NotificationType.class);
                 System.out.println(notificationType.message() + EscapeSequences.RESET_TEXT_COLOR);
-                printPrompt();
+                printPromptyPoo();
                 break;
         }
     }
