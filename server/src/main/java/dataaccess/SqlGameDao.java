@@ -62,7 +62,7 @@ public class SqlGameDao implements GameDAO{
             ps.setInt(1, gameData.getGameID());
             ps.setString(2, game);
             ps.executeUpdate();
-            System.out.println("i witowy did dis");
+//            System.out.println("i witowy did dis");
             return gameData.getGameID();
 
         }catch (SQLException | DataAccessException e) {
@@ -74,7 +74,7 @@ public class SqlGameDao implements GameDAO{
     public GameData getGame(int gameID) throws DataAccessException {
         try (var conn = DatabaseManager.getConnection()) {
             var statement = "SELECT * FROM games WHERE gameID=?";
-            System.out.println(gameID);
+//            System.out.println(gameID);
             try (var ps = conn.prepareStatement(statement)) {
                 ps.setInt(1, gameID);
                 try (var rs = ps.executeQuery()) {

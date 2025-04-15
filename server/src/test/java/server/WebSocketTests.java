@@ -1,15 +1,11 @@
 package server;
 
-import chess.ChessGame;
-import chess.ChessMove;
-import chess.ChessPosition;
-import org.junit.jupiter.api.TestFactory;
+import chess.*;
 import org.junit.jupiter.api.*;
 import passoff.model.*;
 import passoff.server.TestServerFacade;
-import passoff.websocket.TestCommand;
-import passoff.websocket.TestMessage;
-import passoff.websocket.WebsocketTestingEnvironment;
+import passoff.websocket.*;
+import server.Server;
 import websocket.commands.UserGameCommand;
 import websocket.messages.ServerMessage;
 
@@ -43,7 +39,7 @@ public class WebSocketTests {
 
         serverFacade = new TestServerFacade("localhost", port);
         serverFacade.clear();
-        environment = new WebsocketTestingEnvironment("localhost", port, "/ws", org.junit.jupiter.api.TestFactory.getGsonBuilder());
+        environment = new WebsocketTestingEnvironment("localhost", port, "/ws", TestFactory.getGsonBuilder());
         waitTime = TestFactory.getMessageTime();
     }
 
@@ -281,7 +277,7 @@ public class WebSocketTests {
         leave(white, gameID, Set.of(black, observer), Set.of(white2, black2, observer2));
     }
 
-    private void setupNormalGame() {
+    private void  setupNormalGame() {
         connectToGame(white, gameID, true, Set.of(), Set.of()); //connect white player
         connectToGame(black, gameID, true, Set.of(white), Set.of()); //connect black player
         connectToGame(observer, gameID, true,  Set.of(white, black), Set.of()); //connect observer
@@ -315,7 +311,6 @@ public class WebSocketTests {
         TestCommand connectCommand = new TestCommand(UserGameCommand.CommandType.CONNECT, sender.authToken(), gameID);
         Map<String, Integer> numExpectedMessages = expectedMessages(sender, 1, inGame, (expectSuccess ? 1 : 0), otherClients);
         Map<String, List<TestMessage>> actualMessages = environment.exchange(sender.username(), connectCommand, numExpectedMessages, waitTime);
-
         assertCommandMessages(actualMessages, expectSuccess, sender, types(LOAD_GAME), inGame, types(NOTIFICATION), otherClients);
     }
 
@@ -352,7 +347,7 @@ public class WebSocketTests {
 
         assertCommandMessages(actualMessages, true, sender, types(), inGame, types(NOTIFICATION), otherClients);
     }
-    
+
     private Map<String, Integer> expectedMessages(WebsocketUser sender, int senderExpected,
                                                   Set<WebsocketUser> inGame, int inGameExpected, Set<WebsocketUser> otherClients) {
         Map<String, Integer> expectedMessages = new HashMap<>();
@@ -363,9 +358,9 @@ public class WebSocketTests {
     }
 
     private void assertCommandMessages(Map<String, List<TestMessage>> messages, boolean expectSuccess,
-                                            WebsocketUser user, ServerMessage.ServerMessageType[] userExpectedTypes,
-                                            Set<WebsocketUser> inGame, ServerMessage.ServerMessageType[] inGameExpectedTypes,
-                                            Set<WebsocketUser> otherClients) {
+                                       WebsocketUser user, ServerMessage.ServerMessageType[] userExpectedTypes,
+                                       Set<WebsocketUser> inGame, ServerMessage.ServerMessageType[] inGameExpectedTypes,
+                                       Set<WebsocketUser> otherClients) {
         if(!expectSuccess) {
             userExpectedTypes = new ServerMessage.ServerMessageType[]{ERROR};
             inGameExpectedTypes = new ServerMessage.ServerMessageType[0];

@@ -79,7 +79,7 @@ public class LoggedIn {
             try {
                 assertSignedIn();
                 server.createGame(params[0], authToken);
-                System.out.println(EscapeSequences.GREEN + "Successfully created game\n" + EscapeSequences.RESET_TEXT_COLOR);
+                System.out.println(EscapeSequences.GREEN + "Successfully created game " + params[0] + EscapeSequences.RESET_TEXT_COLOR);
                 return "";
             } catch (ResponseException e) {
                 if (e.getMessage().equals("User is not logged in")) {

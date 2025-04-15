@@ -1,8 +1,5 @@
 package ui;
-import chess.ChessBoard;
-import chess.ChessGame;
-import chess.ChessPiece;
-import chess.ChessPosition;
+import chess.*;
 
 import static ui.EscapeSequences.*;
 
@@ -10,6 +7,7 @@ import static ui.EscapeSequences.*;
 import javax.swing.text.TabExpander;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 public class ChessBoardUI {
@@ -18,25 +16,43 @@ public class ChessBoardUI {
     private static final String BLACK_TILE = SET_BG_COLOR_BLACK;
     private static final String WHITE_TEAM = RED;
     private static final String BLACK_TEAM = BLUE;
+    private static final String HIGHLIGHT_BLACK = SET_BG_COLOR_DARK_GREEN;
+    private static final String HIGHLIGHT_WHITE = SET_BG_COLOR_GREEN;
     private static final List<String> LETTERS = Arrays.asList("a", "b", "c", "d", "e", "f", "g", "h");
 
-    public static void displayGame(ChessGame game, ChessGame.TeamColor asTeam) {
-        if(asTeam == ChessGame.TeamColor.WHITE){
-            asTeam = ChessGame.TeamColor.BLACK;
+    public static void highlightGame(ChessGame game, ChessGame.TeamColor asTeam, ChessPosition highlightThis) {
+        asTeam = (asTeam == ChessGame.TeamColor.WHITE) ? ChessGame.TeamColor.BLACK : ChessGame.TeamColor.WHITE;
+        Collection<ChessMove> validMoves = game.validMoves(highlightThis);
+        Collection<ChessPosition> highlightThese = new ArrayList<>(List.of());
+        for (ChessMove move : validMoves) {
+            highlightThese.add(move.getEndPosition());
         }
-        else{
-            asTeam = ChessGame.TeamColor.WHITE;
-        }
-
         horizontalBorder(asTeam);
         if(asTeam == ChessGame.TeamColor.WHITE) {
             for (int i = 1; i <= 8; i++) {
-                makeRow(i, game, asTeam);
+                makeRow(i, game, asTeam, highlightThese, highlightThis);
             }
         }
         else{
             for (int i = 8; i >= 1; i--) {
-                makeRow(i, game, asTeam);
+                makeRow(i, game, asTeam, highlightThese, highlightThis);
+            }
+        }
+        horizontalBorder(asTeam);
+    }
+
+    public static void displayGame(ChessGame game, ChessGame.TeamColor asTeam) {
+        asTeam = (asTeam == ChessGame.TeamColor.WHITE) ? ChessGame.TeamColor.BLACK : ChessGame.TeamColor.WHITE;
+
+        horizontalBorder(asTeam);
+        if(asTeam == ChessGame.TeamColor.WHITE) {
+            for (int i = 1; i <= 8; i++) {
+                makeRow(i, game, asTeam, null, null);
+            }
+        }
+        else{
+            for (int i = 8; i >= 1; i--) {
+                makeRow(i, game, asTeam, null, null);
             }
         }
         horizontalBorder(asTeam);
@@ -62,26 +78,30 @@ public class ChessBoardUI {
         return color + " " + character + " ";
     }
 
-    public static void makeRow(int row, ChessGame game, ChessGame.TeamColor asTeam) {
+    public static void makeRow(int row, ChessGame game, ChessGame.TeamColor asTeam, Collection<ChessPosition> highlightThese, ChessPosition highlightThis) {
         String rowSquares = "";
         rowSquares += makeSquare(BORDER_COLOR, Integer.toString(row));
         if(!asTeam.equals(ChessGame.TeamColor.WHITE)) {
             for (int i = 1; i <= 8; i++) {
                 String squareColor;
-                if ((row + i) % 2 == 0) {
-                    squareColor = BLACK_TILE;
+                if (highlightThis != null  && highlightThis.equals(new ChessPosition(row, i))) {
+                    squareColor = SET_BG_COLOR_YELLOW;
+                } else if ((row + i) % 2 == 0) {
+                    squareColor = (highlightThese != null && highlightThese.contains(new ChessPosition(row, i))) ? HIGHLIGHT_BLACK : BLACK_TILE;
                 } else {
-                    squareColor = WHITE_TILE;
+                    squareColor = (highlightThese != null && highlightThese.contains(new ChessPosition(row, i))) ? HIGHLIGHT_WHITE : WHITE_TILE;
                 }
                 rowSquares += makeSquare(squareColor, findPiece(row, i, game));
             }
         }else{
             for (int i = 8; i >= 1; i--) {
                 String squareColor;
-                if ((row + i) % 2 == 0) {
-                    squareColor = BLACK_TILE;
+                if (highlightThis != null  && highlightThis.equals(new ChessPosition(row, i))) {
+                    squareColor = SET_BG_COLOR_YELLOW;
+                } else if ((row + i) % 2 == 0) {
+                    squareColor = (highlightThese != null && highlightThese.contains(new ChessPosition(row, i))) ? HIGHLIGHT_BLACK : BLACK_TILE;
                 } else {
-                    squareColor = WHITE_TILE;
+                    squareColor = (highlightThese != null && highlightThese.contains(new ChessPosition(row, i))) ? HIGHLIGHT_WHITE : WHITE_TILE;
                 }
                 rowSquares += makeSquare(squareColor, findPiece(row, i, game));
             }

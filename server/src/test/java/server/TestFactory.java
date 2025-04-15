@@ -2,7 +2,7 @@ package server;
 
 import com.google.gson.GsonBuilder;
 
-public class TestFactorie {
+public class TestFactory {
 
     public static Long getMessageTime() {
         /*
@@ -15,7 +15,7 @@ public class TestFactorie {
          * enough time to receive messages you send while debugging. Just make sure to decrease it when you
          * stop debugging and start running the tests again.
          */
-        return 3000L;
+        return 5000L;
     }
 
     public static GsonBuilder getGsonBuilder() {

@@ -83,7 +83,7 @@ public class GameService {
                 throw new ResponseException("Error: bad request");
             } else {
                 GameData gameData = gameDao.getGame(gameRequest.gameID());
-                System.out.println("poopoo doodoo " + gameData);
+//                System.out.println("poopoo doodoo " + gameData);
 
                 if(gameData == null){
                     System.out.println("touched here");

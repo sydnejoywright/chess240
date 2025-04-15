@@ -8,6 +8,7 @@ import websocket.WebSocketClient;
 //import websocket.WebSocketFacade;
 import websocket.commands.LeaveCommand;
 import websocket.commands.MakeMoveCommand;
+import websocket.commands.ResignCommand;
 import websocket.commands.UserGameCommand;
 import com.google.gson.Gson;
 
@@ -46,7 +47,7 @@ public class GamePlayUI {
 
     public String run() {
         System.out.print(help());
-        try{redrawBoard();} catch (Exception e) {}
+//        try{redrawBoard();} catch (Exception e) {}
         Scanner scanner = new Scanner(System.in);
         var result = "";
         while (!result.equals("quit")) {
@@ -72,7 +73,7 @@ public class GamePlayUI {
     }
     private void printPrompt() {
         removePrompt();
-        System.out.print(EscapeSequences.RESET_TEXT_COLOR + EscapeSequences.BLUE + "[" + username + ": playing in " + gameName + " as " + asTeam +"] >>> " + GREEN);
+        System.out.print(EscapeSequences.RESET_TEXT_COLOR + EscapeSequences.BLUE + "[" + EscapeSequences.GREEN + username + EscapeSequences.BLUE + ": playing in " + EscapeSequences.GREEN + gameName + EscapeSequences.BLUE + " as " + EscapeSequences.GREEN + asTeam + EscapeSequences.BLUE + "] >>> " + GREEN);
     }
 
 
@@ -130,7 +131,10 @@ public class GamePlayUI {
     public String makeMove(String... params) throws ResponseException, IOException, InvalidMoveException {
         GameData currentGameData = client.getCurrentGameData();
         ChessGame currentGame = currentGameData.getChessGame();
-//        System.out.println("It's this person's turn: " + currentGame.getTeamTurn().toString());
+
+        if (currentGameData.getChessGame().isInStalemate(ChessGame.TeamColor.WHITE)){ return EscapeSequences.RED + "Stalemate: game is over\n" + EscapeSequences.RESET_TEXT_COLOR; }
+        else if (currentGame.isInCheckmate(ChessGame.TeamColor.WHITE)){ return EscapeSequences.RED + currentGameData.getWhiteUsername() + " is in checkmate: game is over\n" + EscapeSequences.RESET_TEXT_COLOR; }
+        else if (currentGame.isInCheckmate(ChessGame.TeamColor.BLACK)){ return EscapeSequences.RED + currentGameData.getBlackUsername() + " is in checkmate: game is over\n" + EscapeSequences.RESET_TEXT_COLOR; }
 
         if(currentGame.getTeamTurn()!=asTeam){
             return EscapeSequences.RED + "It's not your turn\n" + EscapeSequences.RESET_TEXT_COLOR;
@@ -145,6 +149,7 @@ public class GamePlayUI {
             } else if (!LETTERS.contains(col2) || !Character.isDigit(params[1].charAt(1))) {
                 return EscapeSequences.RED + "Both of your parameters need to be in the form [letter <a-h>][number <1-8>]\n" + EscapeSequences.RESET_TEXT_COLOR;
             }
+
             //create a chess move, which requires changing letters to numbers.
             int from = convert_letters(col1);
             int to = convert_letters(col2);
@@ -194,9 +199,9 @@ public class GamePlayUI {
                 }
                 // if it's not a pawn
                 else {
-                    Collection<ChessMove> moves = piece.pieceMoves(currentGame.getBoard(), start);
+                    Collection<ChessMove> validMoves = currentGame.validMoves(start);
                     boolean moveHappened = false;
-                    for (ChessMove currMove : piece.pieceMoves(currentGame.getBoard(), start)) {
+                    for (ChessMove currMove : validMoves) {
                         if (moveHappened) { continue; }
                         if (currMove.equals(move)) {
                             executeMove(currentGameData, currentGame, move);
@@ -206,24 +211,49 @@ public class GamePlayUI {
                     if (!moveHappened){
 //                        System.out.println(moves);
 //                        System.out.println(move);
+                        if (!validMoves.contains(move) && piece.pieceMoves(currentGame.getBoard(), start).contains(move))
+                            return EscapeSequences.RED + "That move leaves or places your king in check!\n" + EscapeSequences.RESET_TEXT_COLOR;
                         return EscapeSequences.RED + "That's not a valid move for that piece\n" + EscapeSequences.RESET_TEXT_COLOR;
                     }
                 }
+                if (currentGameData.getChessGame().isInStalemate(ChessGame.TeamColor.WHITE))     {removePrompt(); System.out.println(EscapeSequences.GREEN + "Stalemate. Game is over." + EscapeSequences.RESET_TEXT_COLOR); printPrompt(); }
+                else if (currentGameData.getChessGame().isInCheckmate(ChessGame.TeamColor.WHITE)){removePrompt(); System.out.println(EscapeSequences.GREEN + "Checkmate. You won." + EscapeSequences.RESET_TEXT_COLOR); printPrompt(); }
+                else if (currentGameData.getChessGame().isInCheckmate(ChessGame.TeamColor.BLACK)){removePrompt(); System.out.println(EscapeSequences.GREEN + "Checkmate. You won." + EscapeSequences.RESET_TEXT_COLOR); printPrompt(); }
+                else if (currentGameData.getChessGame().isInCheck(ChessGame.TeamColor.WHITE))    {removePrompt(); System.out.println(EscapeSequences.GREEN + "You put the other team in check" + EscapeSequences.RESET_TEXT_COLOR); printPrompt(); }
+                else if (currentGameData.getChessGame().isInCheck(ChessGame.TeamColor.BLACK))    {removePrompt(); System.out.println(EscapeSequences.GREEN + "You put the other team in check" + EscapeSequences.RESET_TEXT_COLOR); printPrompt(); }
+
             }
             return "";
         }
         return EscapeSequences.RED + "Check your parameters: Expected <start position> <end position>\n" + EscapeSequences.RESET_TEXT_COLOR;
     };
     public String resignGame() throws ResponseException{
+        GameData currentGameData = client.getCurrentGameData();
+        ChessGame currentGame = currentGameData.getChessGame();
+        if (currentGame.isFinished()) {
+            return "You cannot resign. The game is already finished";
+        }
+        try {
+            client.sendMessage(new Gson().toJson(new UserGameCommand(UserGameCommand.CommandType.RESIGN, authToken, gameID)));
+        } catch (IOException e) {
+            System.out.println("Exception caught in sendMessage websocketClient: " + e.getMessage() + "request came from resignGame gameplay");
+        }
         return "";
 
     };
     public String highlightMoves(String... params) throws ResponseException{
        if(params.length == 1){
+           String col1 = String.valueOf(params[0].charAt(0)).toLowerCase();
+           if (!LETTERS.contains(col1) || !Character.isDigit(params[0].charAt(1))) {
+               return EscapeSequences.RED + "Both of your parameters need to be in the form [letter <a-h>][number <1-8>]\n" + EscapeSequences.RESET_TEXT_COLOR;
+           }
+           int from = convert_letters(col1);
+           ChessPosition start = new ChessPosition(Integer.parseInt(String.valueOf(params[0].charAt(1))), from);
+           GameData currentGameData = client.getCurrentGameData();
+           ChessBoardUI.highlightGame(currentGameData.getChessGame(), asTeam, start);
            return "";
-
        }
-        return EscapeSequences.RED + "Check your parameters: Expected <position>\n" + EscapeSequences.RESET_TEXT_COLOR;
+       return EscapeSequences.RED + "Check your parameters: Expected <position>\n" + EscapeSequences.RESET_TEXT_COLOR;
     };
 
 

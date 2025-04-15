@@ -15,11 +15,13 @@ import java.util.Objects;
 public class ChessGame {
     private TeamColor teamTurn;
     private ChessBoard gameBoard;
+    private boolean finished;
 
     public ChessGame() {
         this.teamTurn = TeamColor.WHITE;
         this.gameBoard = new ChessBoard();
         this.gameBoard.resetBoard();
+        this.finished = false;
     }
 
     /**
@@ -133,12 +135,6 @@ public class ChessGame {
         }
     }
 
-    /**
-     * Determines if the given team is in check
-     *
-     * @param teamColor which team to check for check
-     * @return True if the specified team is in check
-     */
     public boolean pawnCheck(ChessPiece piece, ChessPosition position, ChessPosition kingsPosition, Collection<ChessMove> moves){
         if(piece.getPieceType() == ChessPiece.PieceType.PAWN){
             ChessMove checkKingpromoteBishop = new ChessMove(position,kingsPosition,ChessPiece.PieceType.BISHOP);
@@ -284,6 +280,7 @@ public class ChessGame {
                     //create a move that would capture the king from the current position of the piece
                     ChessMove killThreat = new ChessMove(position, threateningPiece, null);
                     if (moves.contains(killThreat)) {
+                        if (isInCheck(teamColor)) finished = true;
                         return (isInCheck(teamColor));
                     }
             }
@@ -295,6 +292,7 @@ public class ChessGame {
         // can we block the piece that is putting us in check?
 
     }
+        finished = true;
     return true;
     }
 
@@ -321,7 +319,12 @@ public class ChessGame {
                 }
             }
         }
+        finished = true;
         return true;
+    }
+
+    public boolean isFinished() {
+        return finished;
     }
 
     /**
@@ -331,6 +334,9 @@ public class ChessGame {
      */
     public void setBoard(ChessBoard board) {
         gameBoard = board;
+    }
+    public void resign() {
+        finished = true;
     }
 
     /**

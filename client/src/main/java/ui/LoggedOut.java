@@ -73,10 +73,10 @@ public class LoggedOut {
                 return new LoggedIn(serverUrl, authToken, authtokenData.username).run();
             }catch(ResponseException e){
                 if(e.getMessage().contains("401")){
-                    return EscapeSequences.RED + "Cannot log in, check your credentials or register a new user." + EscapeSequences.RESET_TEXT_COLOR;
+                    return EscapeSequences.RED + "Cannot log in, check your credentials or register a new user.\n" + EscapeSequences.RESET_TEXT_COLOR;
                 }
                 else{
-                    return EscapeSequences.RED + "Cannot log in due to internal service error." + EscapeSequences.RESET_TEXT_COLOR;
+                    return EscapeSequences.RED + "Cannot log in due to internal service error.\n" + EscapeSequences.RESET_TEXT_COLOR;
                 }
             }
         }
