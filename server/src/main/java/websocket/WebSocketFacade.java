@@ -255,8 +255,8 @@ public class WebSocketFacade {
         if (gameData.getBlackUsername() != null && gameData.getBlackUsername().equals(authtokenData.username)){
             asTeam = ChessGame.TeamColor.BLACK;}
         else if (gameData.getWhiteUsername() != null && gameData.getWhiteUsername().equals(authtokenData.username)){
-            asTeam = ChessGame.TeamColor.WHITE;
-        activeSessions.remove(session);}
+            asTeam = ChessGame.TeamColor.WHITE;}
+        activeSessions.remove(session);
         if(asTeam != null && asTeam.equals(ChessGame.TeamColor.WHITE)){
             gameData.setWhiteUsername(null);
             gameDAO.updateGame(gameData);
