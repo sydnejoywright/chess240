@@ -137,6 +137,43 @@ public class GamePlayUI {
                     + "request came from makeMove gameplay");
         }
     }
+    public String makeMoveWithPawn(GameData currentGameData, ChessGame currentGame, ChessMove move)
+            throws InvalidMoveException {
+        boolean selectedPiece = false;
+        while (!selectedPiece) {
+            System.out.print(EscapeSequences.SET_TEXT_COLOR_MAGENTA
+                    + "\tWhat piece do you want to promote to?\n\t" + EscapeSequences.RESET_TEXT_COLOR);
+            Scanner scanner = new Scanner(System.in); String line = scanner.nextLine();
+            var tokens = line.toLowerCase().split(" ");
+            if (tokens.length > 1) {
+                System.out.println(EscapeSequences.RED
+                        + "\tYour piece should be one word. Here are your options: " +
+                        "\n\tQUEEN, KNIGHT, ROOK, BISHOP" + EscapeSequences.RESET_TEXT_COLOR);
+            } else {
+                switch (tokens[0]) {
+                    case "bishop" ->
+                    { executeMove(currentGameData, currentGame, new ChessMove(move.getStartPosition(),
+                            move.getEndPosition(), ChessPiece.PieceType.BISHOP));
+                        selectedPiece = true; break; }
+                    case "queen" ->
+                    { executeMove(currentGameData, currentGame, new ChessMove(move.getStartPosition(),
+                            move.getEndPosition(), ChessPiece.PieceType.QUEEN));
+                        selectedPiece = true; break; }
+                    case "rook" ->
+                    { executeMove(currentGameData, currentGame, new ChessMove(move.getStartPosition(),
+                            move.getEndPosition(), ChessPiece.PieceType.ROOK));
+                        selectedPiece = true; break; }
+                    case "knight" ->
+                    { executeMove(currentGameData, currentGame, new ChessMove(move.getStartPosition(),
+                            move.getEndPosition(), ChessPiece.PieceType.KNIGHT));
+                        selectedPiece = true; break; }
+                    case null, default ->
+                            System.out.println(EscapeSequences.RED +
+                                    "\tThat piece isn't valid. Here are your options: " +
+                                    "\n\tQUEEN, KNIGHT, ROOK, BISHOP" + EscapeSequences.RESET_TEXT_COLOR);
+                }}}
+        return "";
+    }
 
     public String makeMove(String... params) throws ResponseException, IOException, InvalidMoveException {
         GameData currentGameData = client.getCurrentGameData();
@@ -177,39 +214,7 @@ public class GamePlayUI {
                 if ((piece.getPieceType().equals(ChessPiece.PieceType.PAWN)) &&
                         ((asTeam == ChessGame.TeamColor.WHITE && start.getRow() == 7) ||
                                 (asTeam == ChessGame.TeamColor.BLACK && start.getRow() == 2))) {
-                    boolean selectedPiece = false;
-                    while (!selectedPiece) {
-                        System.out.print(EscapeSequences.SET_TEXT_COLOR_MAGENTA
-                                + "\tWhat piece do you want to promote to?\n\t" + EscapeSequences.RESET_TEXT_COLOR);
-                        Scanner scanner = new Scanner(System.in); String line = scanner.nextLine();
-                        var tokens = line.toLowerCase().split(" ");
-                        if (tokens.length > 1) {
-                            System.out.println(EscapeSequences.RED
-                                    + "\tYour piece should be one word. Here are your options: " +
-                                    "\n\tQUEEN, KNIGHT, ROOK, BISHOP" + EscapeSequences.RESET_TEXT_COLOR);
-                        } else {
-                            switch (tokens[0]) {
-                                case "bishop" ->
-                                { executeMove(currentGameData, currentGame, new ChessMove(move.getStartPosition(),
-                                        move.getEndPosition(), ChessPiece.PieceType.BISHOP));
-                                    selectedPiece = true; break; }
-                                case "queen" ->
-                                { executeMove(currentGameData, currentGame, new ChessMove(move.getStartPosition(),
-                                        move.getEndPosition(), ChessPiece.PieceType.QUEEN));
-                                    selectedPiece = true; break; }
-                                case "rook" ->
-                                { executeMove(currentGameData, currentGame, new ChessMove(move.getStartPosition(),
-                                        move.getEndPosition(), ChessPiece.PieceType.ROOK));
-                                    selectedPiece = true; break; }
-                                case "knight" ->
-                                { executeMove(currentGameData, currentGame, new ChessMove(move.getStartPosition(),
-                                        move.getEndPosition(), ChessPiece.PieceType.KNIGHT));
-                                    selectedPiece = true; break; }
-                                case null, default ->
-                                        System.out.println(EscapeSequences.RED +
-                                                "\tThat piece isn't valid. Here are your options: " +
-                                                "\n\tQUEEN, KNIGHT, ROOK, BISHOP" + EscapeSequences.RESET_TEXT_COLOR);
-                            }}}}// if it's not a pawn
+                    makeMoveWithPawn(currentGameData, currentGame, move);}// if it's not a pawn
                 Collection<ChessMove> validMoves = currentGame.validMoves(start);
                 boolean moveHappened = false;
                 for (ChessMove currMove : validMoves) { if (moveHappened) { continue; }
