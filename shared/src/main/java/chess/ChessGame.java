@@ -259,6 +259,12 @@ public class ChessGame {
         }
         return true;
     }
+    public boolean checkMateBuddy(Collection<ChessMove> moves, ChessMove killThreat, ChessGame.TeamColor teamColor){
+        if (moves.contains(killThreat)) {
+            if (isInCheck(teamColor)) {finished = true;}
+        }
+        return (isInCheck(teamColor));
+    }
     public boolean isInCheckmate(TeamColor teamColor) {
         if(!isInCheck(teamColor)){  //if the king is not in check then it cannot be checkmate
             return false;
@@ -267,7 +273,6 @@ public class ChessGame {
         if (!validMoves(findKing(teamColor)).isEmpty()) {
             return false;
         }
-
         ChessPosition threateningPiece = findThreat(teamColor);
         ChessPiece.PieceType threatType = gameBoard.getPiece(threateningPiece).getPieceType();
             //can we capture the piece that is putting us in check?
@@ -279,18 +284,13 @@ public class ChessGame {
                     Collection<ChessMove> moves = piece.pieceMoves(gameBoard, position);
                     //create a move that would capture the king from the current position of the piece
                     ChessMove killThreat = new ChessMove(position, threateningPiece, null);
-                    if (moves.contains(killThreat)) {
-                        if (isInCheck(teamColor)) {finished = true;}
-                        return (isInCheck(teamColor));
-                    }
+                    checkMateBuddy(moves, killThreat,teamColor);
             }
         }
         if(!chodey(threatType, teamColor)){
             return false;
         }
-
         // can we block the piece that is putting us in check?
-
     }
         finished = true;
     return true;
